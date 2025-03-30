@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import About from '../Pages/About'
+import About from '../pages/About'
 const Navbar = () => {
   return (
     <nav className="flex justify-between items-center py-6 bg-[#111111]">
