@@ -1,9 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import Home from './pages/Home'
-import About from './Pages/About'
+import About from './pages/About'
 import Navbar from './components/Navbar'
 import AiEcom from './projects/AiEcom'
-import Projects from './Pages/Projects'
+import Projects from './pages/Projects'
 import ImageGen from './projects/ImageGen'
 import YoutubeClone from './projects/YoutubeClone'
 
