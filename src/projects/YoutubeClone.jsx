@@ -71,7 +71,7 @@ const YoutubeClone = () => {
             View Source Code
           </a>
           <a
-            href="https://youtube-clone-demo.com"
+            href="https://youtube-q0wgesd34-sahilpathak2005-gmailcoms-projects.vercel.app/"
             target="_blank"
             rel="noopener noreferrer"
             className='bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300'
