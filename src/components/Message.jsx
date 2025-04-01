@@ -3,7 +3,7 @@ import BlurFade from './BlurFade'
 import { BLUR_FADE_DELAY } from '../Config/constants'
 import PlaceholdersAndVanishInput from './PlaceholdersAndVanishInput'
 import { motion } from 'framer-motion'
-import constants from '../config/constants';
+import constants from '../Config/constants';
 
 const Message = () => {
   const [name, setName] = useState('')
