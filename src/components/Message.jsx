@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import BlurFade from './BlurFade'
-import { BLUR_FADE_DELAY } from '../config/constants'
+import { BLUR_FADE_DELAY } from '../Config/constants'
 import PlaceholdersAndVanishInput from './PlaceholdersAndVanishInput'
 import { motion } from 'framer-motion'
+import constants from '../config/constants';
 
 const Message = () => {
   const [name, setName] = useState('')
