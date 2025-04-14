@@ -7,6 +7,8 @@ import Projects from './pages/Projects'
 import ImageGen from './projects/ImageGen'
 import YoutubeClone from './projects/YoutubeClone'
 import Aiterminal from './projects/Aiterminal'
+import Practice from './projects/Practice'
+
 
 function App() {
   return (
@@ -21,7 +23,7 @@ function App() {
           <Route path="/image-gen" element={<ImageGen />} />
           <Route path="/aiterminal" element={<Aiterminal />} />
           <Route path="/youtube-clone" element={<YoutubeClone />} />
-          {/* Redirect any unknown routes to home */}
+          <Route path="/practice" element={<Practice />} /> 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>

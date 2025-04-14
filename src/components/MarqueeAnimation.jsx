@@ -6,6 +6,7 @@ import { SiExpress } from "react-icons/si";
 import { DiMongodb, DiMysql } from "react-icons/di";
 import { BiLogoTailwindCss } from "react-icons/bi";
 import { TbBrandRedux } from "react-icons/tb";
+import { SiTypescript,SiTensorflow  } from "react-icons/si";
 
 const skillsWithIcons1 = [
   { name: 'HTML', icon: <FaHtml5 className="ml-2" size={20} /> },
@@ -14,6 +15,7 @@ const skillsWithIcons1 = [
   { name: 'React', icon: <FaReact className="ml-2" size={20} /> },
   { name: 'Node.js', icon: <FaNodeJs className="ml-2" size={20} /> },
   { name: 'Express.js', icon: <SiExpress className="ml-2" size={20} /> },
+  { name: 'TypeScript', icon: <SiTypescript className="ml-2" size={20} /> },
 ];
 const skillsWithIcons2 = [
   { name: 'MongoDB', icon: <DiMongodb className="ml-2" size={20} /> },
@@ -21,7 +23,8 @@ const skillsWithIcons2 = [
   { name: 'Python', icon: <FaPython className="ml-2" size={20} /> },
   { name: 'Redux', icon: <TbBrandRedux className="ml-2" size={20} /> },
   { name: 'AI/ML', icon: <FaRobot className="ml-2" size={20} /> },
-  { name: 'SQL', icon: <DiMysql className="ml-2" size={20} /> }
+  { name: 'SQL', icon: <DiMysql className="ml-2" size={20} /> },
+  { name: 'Tensorflow', icon: <SiTensorflow  className="ml-2" size={20} /> }
 ];
 
 const MarqueeAnimation = () => {

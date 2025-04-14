@@ -36,6 +36,13 @@ const Projects = () => {
       image: "https://images.unsplash.com/photo-1611162616475-46b635cb6868?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60",
       tech: ["React", "Firebase", "Redux"]
     },
+    {
+      title: "Practice Projects",
+      description: "A collection of various practice projects to enhance my skills.",
+      link: "/Practice",
+      image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80",
+      tech: ["React", "Firebase", "Redux"]
+    },
   ]
 
   return (
