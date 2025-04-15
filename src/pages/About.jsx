@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import profileimage from '../assets/profile.jpg'; 
+import resume from '../assets/resume-sahil.pdf'; // Example resume file
 import profileimage2 from '../assets/profile2.jpg';
 
 const About = () => {
@@ -272,7 +273,7 @@ const About = () => {
           >
             {/* Profile card */}
             <div className="bg-[#1a1a1a] rounded-xl overflow-hidden shadow-xl border border-gray-800/50">
-              <div className="h-32 bg-gradient-to-r from-blue-500 to-purple-600 relative">
+              <div className="h-32 bg-gradient-to-r from-black-300 to-white relative">
                 <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                   <div className="w-24 h-24 rounded-full border-4 border-[#1a1a1a] overflow-hidden">
                     <img 
@@ -375,9 +376,9 @@ const About = () => {
               whileHover={{ y: -5, transition: { duration: 0.2 } }}
             >
               <a 
-                href="https://docs.google.com/document/d/13mbt09Y85GFBqK1XHz-hsDIynav9VCoxI2sYTTiSjNk/edit?usp=sharing" 
+                href={resume}
                 download
-                className="inline-block w-full py-3 px-6 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 rounded-lg text-white font-medium transition-all duration-300 transform hover:scale-[1.02]"
+                className="inline-block w-full py-3 px-6 bg-gradient-to-r from-black-500 to-white-600 hover:from-blue-600 hover:to-purple-700 rounded-lg text-white font-medium transition-all duration-300 transform hover:scale-[1.02]"
               >
                 <div className="flex items-center justify-center">
                   <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
