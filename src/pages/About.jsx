@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import profileimage from '../assets/profile.jpg'; 
+import profileimage2 from '../assets/profile2.jpg';
 
 const About = () => {
   // Skills data structured by categories
@@ -274,7 +276,7 @@ const About = () => {
                 <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
                   <div className="w-24 h-24 rounded-full border-4 border-[#1a1a1a] overflow-hidden">
                     <img 
-                      src="https://via.placeholder.com/200" 
+                      src={profileimage2} 
                       alt="Profile" 
                       className="w-full h-full object-cover"
                       // Replace with your actual profile photo
