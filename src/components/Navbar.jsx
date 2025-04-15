@@ -28,11 +28,11 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex justify-between items-center py-6 bg-[#111111]">
+    <nav className="flex justify-between items-center py-6 px-4 sm:px-6 bg-[#111111]">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <div 
-            className="w-8 h-8 sm:w-8 sm:h-8 md:w-16 md:h-16 rounded-full border-4 border-[#1a1a1a] overflow-hidden cursor-pointer transform transition duration-300 hover:scale-110"
+            className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 rounded-full border-2 sm:border-4 border-[#111111] overflow-hidden cursor-pointer transition duration-300 hover:scale-105 flex-shrink-0 shadow-lg shadow-white-500/20"
             onClick={toggleProfileImage}
           >
             <img 
@@ -44,12 +44,12 @@ const Navbar = () => {
           </div>
         </div>
         
-        <div className='flex space-x-4 sm:space-x-6'>
-          <Link to="/Home" className="text-white hover:text-blue-400 transition-colors">Home</Link>
-          <Link to="/About" className="text-white hover:text-blue-400 transition-colors">About</Link>
-          <Link to="/Projects" className="text-white hover:text-blue-400 transition-colors">Projects</Link>
+        <div className='flex items-center space-x-4 sm:space-x-6'>
+          <Link to="/Home" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">Home</Link>
+          <Link to="/About" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">About</Link>
+          <Link to="/Projects" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">Projects</Link>
           <a href='https://docs.google.com/document/d/13mbt09Y85GFBqK1XHz-hsDIynav9VCoxI2sYTTiSjNk/edit?usp=sharing' 
-             className="text-white hover:text-blue-400 transition-colors"
+             className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base"
              target="_blank" 
              rel="noopener noreferrer">Resume</a>
         </div>
