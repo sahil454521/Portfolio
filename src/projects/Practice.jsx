@@ -178,17 +178,17 @@ document.querySelector('.todo-list').addEventListener('click', (e) => {
     { id: 'learnings', label: 'Learnings' }
   ];
 
-  // Find the index of active section for progress calculation
+ 
   const activeIndex = navigationItems.findIndex(item => item.id === activeSection);
-  // Make sure progress shows complete when at learnings section
+  
   const calculatedProgressPercentage = activeSection === 'learnings' ? 100 : (activeIndex / (navigationItems.length - 1)) * 100;
 
-  // Project links
+ 
   const githubUrl = "https://github.com/sahil454521/Practice_Projects";
   
   return (
     <div className='bg-[#111111] min-h-screen px-4 py-16 relative'>
-      {/* Sidebar Navigation - Changed to green/teal theme */}
+    
       <div className='hidden lg:block fixed top-1/3 left-8 transform -translate-y-1/2 bg-[#1a1a1a] p-6 rounded-xl border border-[#1f3a32] shadow-xl z-10'>
         <div className="mb-4">
           <h3 className="text-white text-lg font-medium mb-3">Project Navigation</h3>

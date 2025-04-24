@@ -11,7 +11,6 @@ const Aiterminal = () => {
   const featuresRef = useRef(null);
   const technologiesRef = useRef(null);
   const architectureRef = useRef(null);
-  const codeExamplesRef = useRef(null);
   const performanceRef = useRef(null);
 
   const features = [
@@ -36,156 +35,7 @@ const Aiterminal = () => {
     "Server-Side Rendering"
   ];
 
-  const codeSnippets = [
-    {
-      title: "Prompt Submissions",
-      language: "TypeScript",
-  code: `const handlePromptSubmission = async (userPrompt) => {
-      setIsLoading(true);
-      setIsTyping(true);
   
-      try {
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userPrompt,
-            url: initialUrl,
-            urlContent: urlContent, // Add this field
-          }),
-        });
-  
-        if (!response.ok) {
-          throw new Error(\`HTTP error! status: \${response.status}\`);
-        }
-  
-        const result = await response.json();
-  
-        const assistantMessage = {
-          role: "assistant",
-          content: result.choices[0].message.content || "Sorry, I couldn't",
-          type: "TEXT",
-        };
-  
-        setMessages((prev) => [...prev, assistantMessage]);
-      } catch (error) {
-        console.error("Error fetching response:", error);
-        setMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: "Error: Unable to process your request." },
-        ]);
-      } finally {
-        setIsLoading(false);
-        setIsTyping(false);
-      }
-    };
-  
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      if (!input.trim()) return;
-  
-      const userPrompt = input;
-      setInput("");
-  
-      // Add user message to state with its type
-      const { type } = detectPromptType(userPrompt);
-      setMessages((prev) => [...prev, { role: "user", content: userPrompt, type }]);
-  
-      await handlePromptSubmission(userPrompt);
-    };`
-    },
-    {
-      title: "Rendering of message",
-      language: "tsx",
-      code: `const renderMessage = (message: ChatMessage, index: number) => {
-    if (message.role === "system") {
-      return (
-        <div className="flex items-center">
-          <span className="text-white-500 mr-2">$</span>
-          <span>{message.content}</span>
-        </div>
-      );
-    }
-
-    return (
-      <div
-        className={\`inline-block px-4 py-3 rounded-lg \${
-          message.role === "user"
-            ? "bg-indigo-600/80 text-white border border-indigo-500/80 shadow-md shadow-indigo-600/20"
-            : "bg-gray-800/70 text-gray-100 border border-gray-700/50"
-        } max-w-[80%]\`}
-      >
-        {message.role === "user" && (
-          <div className="mb-1 text-xs text-indigo-200 flex items-center justify-end">
-            <span>You</span>
-            <span className="ml-1 h-2 w-2 rounded-full bg-indigo-300 inline-block"></span>
-          </div>
-        )}
-        <div className="text-sm leading-relaxed">{message.content}</div>
-        <div className={\`text-xs \${message.role === "user" ? "text-indigo-200/50" : "text-gray-500"} mt-1 text-right\`}>
-          {new Date().toLocaleTimeString()}
-        </div>
-      </div>
-    );
-  };`
-    },
-    {
-      title: "Code Syntax Highlighting",
-      language: "jsx",
-      code: `const MessageContent = ({ content, isAi }) => {
-  // Find and process code blocks with regex
-  const processedContent = useMemo(() => {
-    if (!content) return [];
-    
-    // Split by code blocks (marked with \`\`\`)
-    const segments = content.split(/(\`\`\`[a-z]*\n[\s\S]*?\`\`\`)/g);
-    
-    return segments.map((segment, index) => {
-      // Check if this is a code block
-      const codeMatch = segment.match(/\`\`\`([a-z]*)\n([\s\S]*?)\`\`\`/);
-      
-      if (codeMatch) {
-        // Extract language and code content
-        const language = codeMatch[1] || 'javascript';
-        const code = codeMatch[2];
-        
-        return (
-          <div key={index} className="my-3 rounded-md overflow-hidden">
-            <div className="bg-gray-900 text-xs text-gray-400 px-4 py-1 flex justify-between">
-              <span>{language}</span>
-              <button 
-                onClick={() => copyToClipboard(code)}
-                className="hover:text-white"
-              >
-                Copy
-              </button>
-            </div>
-            <SyntaxHighlighter
-              language={language}
-              style={vscDarkPlus}
-              className="text-sm"
-            >
-              {code}
-            </SyntaxHighlighter>
-          </div>
-        );
-      }
-      
-      // Regular text - parse markdown and return
-      return (
-        <div key={index} className="markdown-content">
-          <ReactMarkdown>{segment}</ReactMarkdown>
-        </div>
-      );
-    });
-  }, [content]);
-
-  return <div className="message-content">{processedContent}</div>;
-};`
-    }
-  ];
 
   // Handle scroll to update active section
   useEffect(() => {
@@ -198,7 +48,6 @@ const Aiterminal = () => {
         { ref: featuresRef, id: 'features' },
         { ref: technologiesRef, id: 'technologies' },
         { ref: architectureRef, id: 'architecture' },
-        { ref: codeExamplesRef, id: 'code-examples' },
         { ref: performanceRef, id: 'performance' },
       ];
       
@@ -234,7 +83,6 @@ const Aiterminal = () => {
     { id: 'features', label: 'Key Features', ref: featuresRef },
     { id: 'technologies', label: 'Technologies', ref: technologiesRef },
     { id: 'architecture', label: 'Architecture', ref: architectureRef },
-    { id: 'code-examples', label: 'Code Examples', ref: codeExamplesRef },
     { id: 'performance', label: 'Demo & Results', ref: performanceRef }
   ];
 
@@ -767,33 +615,7 @@ result = calculate_sum([1, 2, 3, 4])`}
           </div>
         </motion.div>
         
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          ref={codeExamplesRef}
-          className='bg-[#1a1a1a] rounded-lg p-8 mb-10 shadow-lg border border-gray-800'
-          id="code-examples-section"
-        >
-          <h2 className='text-2xl font-bold text-white mb-4'>Code Examples</h2>
-          <p className='text-gray-300 leading-relaxed mb-6'>
-            Here are some key code snippets that showcase the implementation of AI Terminal Chat:
-          </p>
-          
-          <div className="space-y-8">
-            {codeSnippets.map((snippet, index) => (
-              <div key={index} className="rounded-lg overflow-hidden">
-                <div className="bg-gray-800 px-4 py-2 flex justify-between items-center">
-                  <h3 className="text-white font-medium">{snippet.title}</h3>
-                  <span className="text-xs text-gray-400 uppercase">{snippet.language}</span>
-                </div>
-                <div className="bg-gray-900 p-4 overflow-x-auto">
-                  <pre className="text-gray-300 text-sm"><code>{snippet.code}</code></pre>
-                </div>
-              </div>
-            ))}
-          </div>
-          
+        <motion.div>
           <div className="mt-8 bg-green-900/20 rounded-lg p-4 border border-green-800/40">
             <h3 className="text-green-300 font-medium mb-2">Implementation Notes</h3>
             <ul className="text-gray-300 space-y-2 text-sm">
