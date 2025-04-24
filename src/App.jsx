@@ -8,6 +8,7 @@ import ImageGen from './projects/ImageGen'
 import YoutubeClone from './projects/YoutubeClone'
 import Aiterminal from './projects/Aiterminal'
 import Practice from './projects/Practice'
+import AMGExperience from './workexp/amg'
 
 
 function App() {
@@ -23,6 +24,7 @@ function App() {
           <Route path="/image-gen" element={<ImageGen />} />
           <Route path="/aiterminal" element={<Aiterminal />} />
           <Route path="/youtube-clone" element={<YoutubeClone />} />
+          <Route path="/AMGExperience" element={<AMGExperience />} />
           <Route path="/practice" element={<Practice />} /> 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

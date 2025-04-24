@@ -35,64 +35,7 @@ const ImageGen = () => {
     "PIL"
   ]
 
-  const codeSnippets = [
-    {
-      title: "Text Encoding with CLIP",
-      language: "python",
-      code: `def encode_text(text_prompt):
-    # Tokenize and encode the text using CLIP's text encoder
-    text_tokens = tokenizer(text_prompt, padding="max_length", 
-                           max_length=77, truncation=True, 
-                           return_tensors="pt")
-    
-    with torch.no_grad():
-        text_features = text_encoder(
-            text_tokens.input_ids.to(device)
-        ).last_hidden_state
-        
-    return text_features`
-    },
-    {
-      title: "Image Generation Pipeline",
-      language: "python",
-      code: `def generate_images(text_embedding, num_steps=50, guidance_scale=7.5):
-    # Initialize latent image from random noise
-    latents = torch.randn((1, 4, 64, 64)).to(device)
-    scheduler.set_timesteps(num_steps)
-    
-    # Diffusion process
-    for t in tqdm(scheduler.timesteps):
-        # Expand latents for classifier-free guidance
-        latent_model_input = torch.cat([latents] * 2)
-        
-        # Get noise prediction
-        with torch.no_grad():
-            noise_pred = unet(
-                latent_model_input, 
-                t, 
-                encoder_hidden_states=text_embedding
-            ).sample
-            
-        # Perform guidance
-        noise_pred_uncond, noise_pred_text = noise_pred.chunk(2)
-        noise_pred = noise_pred_uncond + guidance_scale * (noise_pred_text - noise_pred_uncond)
-        
-        # Update latents
-        latents = scheduler.step(noise_pred, t, latents).prev_sample
-    
-    # Decode latents to image
-    with torch.no_grad():
-        image = vae.decode(latents / 0.18215).sample
-        
-    # Post-process image
-    image = (image / 2 + 0.5).clamp(0, 1)
-    image = image.detach().cpu().permute(0, 2, 3, 1).numpy()
-    image = (image * 255).round().astype("uint8")[0]
-    
-    return Image.fromarray(image)`
-    },
-   
-  ];
+ 
 
   // Handle scroll to update active section
   useEffect(() => {
@@ -141,7 +84,7 @@ const ImageGen = () => {
     { id: 'features', label: 'Key Features', ref: featuresRef },
     { id: 'technologies', label: 'Technologies', ref: technologiesRef },
     { id: 'implementation', label: 'Implementation', ref: implementationRef },
-    { id: 'code-snippets', label: 'Code Examples', ref: codeSnippetsRef },
+ 
     { id: 'results', label: 'Results & Demo', ref: resultsRef }
   ];
 
@@ -525,32 +468,8 @@ const ImageGen = () => {
           </div>
         </motion.div>
         
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.5 }}
-          ref={codeSnippetsRef}
-          className='bg-[#1a1a1a] rounded-lg p-8 mb-10 shadow-lg border border-gray-800'
-          id="code-snippets-section"
-        >
-          <h2 className='text-2xl font-bold text-white mb-4'>Code Examples</h2>
-          <p className='text-gray-300 leading-relaxed mb-6'>
-            Key code snippets from the AI Image Generator implementation:
-          </p>
-          
-          <div className="space-y-8">
-            {codeSnippets.map((snippet, index) => (
-              <div key={index} className="rounded-lg overflow-hidden">
-                <div className="bg-gray-800 px-4 py-2 flex justify-between items-center">
-                  <h3 className="text-white font-medium">{snippet.title}</h3>
-                  <span className="text-xs text-gray-400 uppercase">{snippet.language}</span>
-                </div>
-                <div className="bg-gray-900 p-4 overflow-x-auto">
-                  <pre className="text-gray-300 text-sm"><code>{snippet.code}</code></pre>
-                </div>
-              </div>
-            ))}
-          </div>
+        <motion.div >
+         
           
           <div className="mt-6 bg-blue-900/20 rounded-lg p-4 border border-blue-800/40">
             <h3 className="text-blue-300 font-medium mb-2">Implementation Highlights</h3>
