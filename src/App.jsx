@@ -9,6 +9,8 @@ import YoutubeClone from './projects/YoutubeClone'
 import Aiterminal from './projects/Aiterminal'
 import Practice from './projects/Practice'
 import AMGExperience from './workexp/amg'
+import Blog from './components/Blog'
+import AiCompiler from './projects/Ai-compiler'
 
 
 function App() {
@@ -27,6 +29,8 @@ function App() {
           <Route path="/AMGExperience" element={<AMGExperience />} />
           <Route path="/practice" element={<Practice />} /> 
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/AiCompiler" element={<AiCompiler />} />
         </Routes>
       </div>
     </Router>

@@ -43,7 +43,7 @@ const CompactWorkExperience = () => {
                 <path/>
               </svg>
             </Link>
-            <div className="flex ite-left text-gray-400 text-sm mb-1">Frontend Developer Intern <span className="ml-2 text-gray-500">| 3 Months</span></div>
+            <div className="flex ite-left text-gray-400 text-sm mb-1">Frontend Developer Intern <span className="ml-2 text-gray-500"></span></div>
             <div className="text-gray-500 text-sm mb-2">
               Developed AI-powered project cost estimator tool and redesigned success metrics visualization using React & Tailwind CSS.
             </div>

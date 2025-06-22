@@ -1,7 +1,7 @@
-import React from 'react'
-import projectImage1 from '../assets/p1.png'
+import projectImage4 from '../assets/ai-compiler.png'
+
 import projectImage from '../assets/p2.png'
-import projectImage2 from '../assets/p3.png'
+
 import projectImage3 from '../assets/ai-terminal.png'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion' // You'll need to install framer-motion
@@ -10,10 +10,10 @@ const Myprojects = () => {
   const projects = [
     {
       id: 1,
-      title: 'Image-Generator',
-      imageUrl: projectImage1,
-      projectUrl: '/Image-gen',
-      description: 'An AI-powered image generation project'
+      title: 'AiCompiler',
+      imageUrl: projectImage4,
+      projectUrl: '/AiCompiler',
+      description: 'An intelligent, VS Code-style online code editor that suggests machine learning code snippets in real-time using a custom-trained ML model'
     },
     {
       id: 2,
