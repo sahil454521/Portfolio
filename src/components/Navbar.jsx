@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useState, useEffect } from 'react'
+import Blog from './Blog'
 
 // Import the images directly
 import profileimage2 from '../assets/profile2.jpg'
@@ -48,6 +49,9 @@ const Navbar = () => {
           <Link to="/Home" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">Home</Link>
           <Link to="/About" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">About</Link>
           <Link to="/Projects" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">Projects</Link>
+          <Link to="/Blog" className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base">
+            Blog
+          </Link>
           <a href='https://docs.google.com/document/d/13mbt09Y85GFBqK1XHz-hsDIynav9VCoxI2sYTTiSjNk/edit?usp=sharing' 
              className="text-white hover:text-blue-400 transition-colors text-sm sm:text-base"
              target="_blank" 

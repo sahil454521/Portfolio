@@ -1,0 +1,10 @@
+User's request for the contents of the file: /ai-ecommerce/ai-ecommerce/public/robots.txt
+
+User's project specification indicates that this file provides instructions to web crawlers about which pages to crawl or not.
+
+Here are the contents for the robots.txt file:
+
+User-agent: *
+Disallow: /api/
+Disallow: /admin/
+Allow: /
