@@ -1,4 +1,4 @@
-import React from 'react'
+
 import Card from '../components/Card'
 import MarqueeAnimation from '../components/MarqueeAnimation'
 import Myprojects from '../projects/Myprojects'
