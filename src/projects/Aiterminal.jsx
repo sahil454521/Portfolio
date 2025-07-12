@@ -1,9 +1,12 @@
-import React from 'react'
+import React,{useEffect} from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import projectImage from '../assets/ai-terminal.png'
 
 const Aiterminal = () => {
+    useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
   return (
     <div className="mx-auto max-w-7xl px-4 py-16 overflow-auto custom-scrollbar">
       <motion.div
