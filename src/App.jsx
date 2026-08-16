@@ -4,8 +4,11 @@ import './App.css'
 import SkillMarquee from './components/SkillMarquee'
 import PointerHighlightDemo from './components/PointerHighlightDemo'
 import TargetCursorDemo from './components/TargetCursorDemo'
+import HireMeDashboard from './components/HireMeDashboard'
+import FootstepsAnimation from './components/FootstepsAnimation'
+import PokemonBattleModal from './components/PokemonBattleModal'
 
-const sections = ['about', 'research', 'projects', 'experience', 'skills', 'contact']
+const sections = ['about', 'research', 'projects', 'experience', 'skills', 'connect', 'contact']
 
 const bootLines = [
   { tag: 'Name', val: 'Sahil Pathak', cls: 'ok' },
@@ -24,6 +27,8 @@ function App() {
   const [activeSection, setActiveSection] = useState('about')
   const [revealedSections, setRevealedSections] = useState(() => new Set(['about']))
   const [bootRows, setBootRows] = useState([])
+  const [arcadeOpen, setArcadeOpen] = useState(false)
+  const [arcadeMode, setArcadeMode] = useState('choice')
 
   useEffect(() => {
     const stored = localStorage.getItem('sahil-theme')
@@ -128,6 +133,7 @@ function App() {
 
   return (
     <>
+      <FootstepsAnimation />
       <header className="topbar">
         <div className="topbar-inner">
           <div className="brand"><span className="core" /> Sahil Pathak</div>
@@ -137,6 +143,18 @@ function App() {
             <a href="#projects" className={activeSection === 'projects' ? 'active' : ''}>Projects</a>
             <a href="#experience" className={activeSection === 'experience' ? 'active' : ''}>Experience</a>
             <a href="#skills" className={activeSection === 'skills' ? 'active' : ''}>Skills</a>
+            <a href="#connect" className={activeSection === 'connect' ? 'active' : ''}>Hire me</a>
+            <a
+              href="#resume"
+              onClick={(e) => {
+                e.preventDefault()
+                setArcadeMode('choice')
+                setArcadeOpen(true)
+              }}
+              style={{ color: 'var(--accent)', fontWeight: 600 }}
+            >
+              Resume 🕹️
+            </a>
             <a href="#contact" className={activeSection === 'contact' ? 'active' : ''}>Contact</a>
           </nav>
           <button className="theme-toggle" id="themeToggle" aria-label="Toggle color theme" onClick={toggleTheme}>
@@ -169,6 +187,19 @@ function App() {
             <div className="statusbar">
               <a href="https://github.com/sahil454521" target="_blank" rel="noopener noreferrer"><Icon><path d="M12 2C6.48 2 2 6.48 2 12a10 10 0 0 0 6.84 9.5c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.95 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03a9.6 9.6 0 0 1 5 0c1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.4.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.85-2.34 4.7-4.57 4.94.36.31.68.92.68 1.85V21c0 .27.18.58.69.48A10 10 0 0 0 22 12c0-5.52-4.48-10-10-10Z"/></Icon>github/sahil454521</a>
               <div className="sep"><a href="mailto:sahilpathak2005@gmail.com"><Icon><path d="M3 5h18v14H3z"/><path d="m3 6 9 7 9-7"/></Icon>email</a></div>
+              <div className="sep">
+                <a
+                  href="#resume"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setArcadeMode('choice')
+                    setArcadeOpen(true)
+                  }}
+                  style={{ color: 'var(--accent)' }}
+                >
+                  <Icon><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></Icon>resume / arcade 🕹️
+                </a>
+              </div>
             </div>
           </div>
         </section>
@@ -271,6 +302,8 @@ function App() {
           <div className="section-head"><div className="path fineline"><span className="dot" />&nbsp;Interests</div><h2 className="title">Off the clock</h2></div>
           <div className="chip-row"><span className="chip">Guitar</span><span className="chip">Chess</span><span className="chip">Gym</span><span className="chip">Cooking</span><span className="chip">Reading</span></div>
         </section>
+
+        <HireMeDashboard />
       </main>
 
       <footer id="contact">
@@ -287,6 +320,11 @@ function App() {
           </div>
         </TargetCursorDemo>
       </footer>
+      <PokemonBattleModal
+        isOpen={arcadeOpen}
+        onClose={() => setArcadeOpen(false)}
+        initialMode={arcadeMode}
+      />
     </>
   )
 }
