@@ -89,6 +89,9 @@
     tex.minFilter = THREE.LinearFilter;
     tex.magFilter = THREE.LinearFilter;
     tex.generateMipmaps = false;
+    // The panels sit at an angle and the resting one is scaled down, so
+    // without this the footage resamples to mush along the tilt.
+    tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
 
     // The footage is the subject, so it is unlit. Lighting it would tint a
     // screenshot of somebody's real website, which is the one thing that must
@@ -175,12 +178,24 @@
     })
     .catch(() => { root.setAttribute('data-fallback', ''); });
 
-  /* ---- scroll is the playhead ------------------------------------ */
-  function progress() {
-    if (!act) return 0;
+  /* ---- scroll is the playhead ------------------------------------
+     Read once per scroll, never inside the render loop. Calling
+     getComputedStyle every frame forces a full style recalculation every
+     frame, which is most of what made this stutter. Scroll position only
+     changes on scroll, so that is when it is read. */
+  let pRaw = 0, pQueued = false;
+  function readProgress() {
+    pQueued = false;
+    if (!act) return;
     const n = parseFloat(getComputedStyle(act).getPropertyValue('--sc-p'));
-    return Number.isFinite(n) ? clamp(n, 0, 1) : 0;
+    if (Number.isFinite(n)) pRaw = clamp(n, 0, 1);
   }
+  addEventListener('scroll', () => {
+    if (pQueued) return;
+    pQueued = true;
+    requestAnimationFrame(readProgress);
+  }, { passive: true });
+  readProgress();
 
   /* ---- pointer: look into the case ------------------------------- */
   let px = 0, py = 0, tx = 0, ty = 0, dragging = false, lx = 0, ly = 0;
@@ -266,25 +281,27 @@
     requestAnimationFrame(frame);
     if (!W) { resize(); if (!W) return; }
 
-    const target = progress();
+    const target = pRaw;
     if (!pInit) { pS = target; pInit = true; }
-    pS += (target - pS) * 0.11;          // wheel events arrive in lumps
+    pS += (target - pS) * 0.14;          // wheel events arrive in lumps
 
     // Two acts, one per site. Each one holds the frame while it plays its own
     // scroll end to end, then hands over. Running both at once against the
     // same progress meant neither was ever actually being read.
     const hand = smooth(pS, 0.44, 0.60);       // 0 = first site, 1 = second
     const focus = [1 - hand, hand];
-
     if (armed) {
       videos.forEach((s, i) => {
         if (!s.ready || !s.dur) return;
+        // Seek only the panel that currently holds the frame. Seeking both
+        // doubled the decoder work for a clip nobody is reading.
+        if (focus[i] < 0.15) return;
         const local = i === 0
           ? clamp(pS / 0.50, 0, 1)             // Desi Totes runs 0.00 to 0.50
           : clamp((pS - 0.50) / 0.50, 0, 1);   // AMG runs 0.50 to 1.00
-        const want = local * s.dur;
-        s.head += (want - s.head) * 0.2;
-        if (!s.seeking && Math.abs(s.v.currentTime - s.head) > 0.01) {
+        s.head += (local * s.dur - s.head) * 0.22;
+        // a deadband wide enough that a seek always buys a visible change
+        if (!s.seeking && Math.abs(s.v.currentTime - s.head) > 0.035) {
           s.seeking = true;
           s.v.currentTime = s.head;
         }
