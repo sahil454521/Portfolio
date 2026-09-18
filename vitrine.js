@@ -23,9 +23,14 @@
   const coarse = matchMedia('(max-width: 820px)');
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
-  // Reduced motion, or no WebGL, gets the posters. They are already in the
-  // markup, so there is nothing to build and nothing to wait for.
-  if (reduced.matches || !window.THREE) { root.setAttribute('data-fallback', ''); return; }
+  // No WebGL at all falls back to the posters, which are already in the markup.
+  if (!window.THREE) { root.setAttribute('data-fallback', ''); return; }
+
+  // Reduced motion keeps the room and drops the movement. Falling back to two
+  // flat images here was wrong: the depth is the design, not decoration, and
+  // "reduce motion" is a common OS setting rather than a rare one. The scene
+  // still builds, renders once, and holds.
+  const still = reduced.matches;
 
   const THREE = window.THREE;
   const PANELS = [...root.querySelectorAll('[data-panel]')].map((el) => ({
@@ -148,7 +153,16 @@
         setTimeout(res, 9000);
       });
     })))
-    .then(() => { armed = true; root.setAttribute('data-ready', ''); })
+    .then(() => {
+      armed = true;
+      root.setAttribute('data-ready', '');
+      // With motion reduced there is no loop, so park both clips on a frame
+      // that shows something worth seeing and draw the scene once.
+      if (still) {
+        videos.forEach((s2) => { if (s2.dur) s2.v.currentTime = s2.dur * 0.34; });
+        setTimeout(() => { resize(); draw(); }, 400);
+      }
+    })
     .catch(() => { root.setAttribute('data-fallback', ''); });
 
   /* ---- scroll is the playhead ------------------------------------ */
@@ -161,7 +175,7 @@
   /* ---- pointer: look into the case ------------------------------- */
   let px = 0, py = 0, tx = 0, ty = 0, dragging = false, lx = 0, ly = 0;
   const fine = matchMedia('(hover: hover) and (pointer: fine)');
-  if (fine.matches) {
+  if (fine.matches && !still) {
     root.addEventListener('pointermove', (e) => {
       if (dragging) return;
       const r = root.getBoundingClientRect();
@@ -170,7 +184,7 @@
     });
     root.addEventListener('pointerleave', () => { tx = 0; ty = 0; });
   }
-  root.addEventListener('pointerdown', (e) => {
+  if (!still) root.addEventListener('pointerdown', (e) => {
     dragging = true; lx = e.clientX; ly = e.clientY;
     root.setPointerCapture(e.pointerId);
   });
@@ -220,6 +234,15 @@
     pool.position.y = stacked ? -0.1 : -0.25;
   }
 
+  function draw() {
+    if (!W) { resize(); if (!W) return; }
+    group.rotation.y = stacked ? -0.06 : -0.14;
+    group.rotation.x = 0.02;
+    group.position.set(0, 0.02, -0.4);
+    camera.lookAt(0, -0.05, 0);
+    renderer.render(scene, camera);
+  }
+
   function frame() {
     if (!alive) return;
     requestAnimationFrame(frame);
@@ -257,9 +280,10 @@
 
   videos.forEach((s) => s.v.addEventListener('seeked', () => { s.seeking = false; }));
 
-  addEventListener('resize', resize, { passive: true });
+  addEventListener('resize', () => { resize(); if (still) draw(); }, { passive: true });
   new IntersectionObserver((es) => {
     const vis = es.some((e) => e.isIntersecting);
+    if (still) { if (vis) { resize(); draw(); } return; }
     if (vis && !alive) { alive = true; resize(); requestAnimationFrame(frame); }
     else if (!vis) alive = false;      // nothing renders offscreen
   }, { rootMargin: '25% 0px' }).observe(root);
