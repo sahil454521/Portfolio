@@ -1,0 +1,4 @@
+# The site is the repo root. Nothing below is part of it.
+legacy/
+scrollcraft/
+node_modules/
