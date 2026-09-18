@@ -68,7 +68,21 @@
 
   const PANEL_W = 3.15;
   const PANEL_H = PANEL_W * (1000 / 1600);
-  const FOCUS_Z = 1.15;
+
+  // Two slots, both always in shot. The big one holds the front of the room,
+  // the small one stands beside it. Scroll trades the two sites between them.
+  const SMALL = 0.60;
+  const BOW_X = 0.62;          // how far apart they pass during the swap
+  const SLOT = {
+    wide: {
+      big:   { x: -0.92, y: 0.02, z: 0.55, s: 1,     rot: 0.05 },
+      small: { x: 1.42,  y: -0.10, z: -1.05, s: SMALL, rot: -0.30 },
+    },
+    stacked: {
+      big:   { x: 0,    y: 0.66,  z: 0.55, s: 1,     rot: 0.03 },
+      small: { x: 0.30, y: -1.12, z: -1.05, s: SMALL, rot: -0.22 },
+    },
+  };
 
   const loader = new THREE.TextureLoader();
   const load = (url) => new Promise((res, rej) => loader.load(url, res, undefined, rej));
@@ -191,14 +205,26 @@
     camera.aspect = W / H;
     stacked = innerWidth <= 900;
 
-    // Solve the distance from the FOCUSED panel, since that is the thing being
-    // read and the thing that should hold a fixed share of the frame at any
-    // window size. A hand picked distance fits one window and clips in others.
+    // Solve the distance so BOTH slots stay in shot, since the whole point is
+    // that you can see the two sites at once. Fitting only the focused one is
+    // what left the smaller site hiding behind the bigger one.
+    const S = stacked ? SLOT.stacked : SLOT.wide;
     const t = Math.tan((camera.fov * Math.PI) / 180 / 2);
-    const FILL = stacked ? 0.94 : 0.72;
-    const forW = (PANEL_W / 2) / FILL / (t * camera.aspect);
-    const forH = (PANEL_H / 2 + 0.16) / t;
-    camera.position.z = Math.max(forW, forH) + FOCUS_Z;
+    const FILL = stacked ? 0.94 : 0.90;
+
+    const halfW = Math.max(
+      Math.abs(S.big.x) + (PANEL_W * S.big.s) / 2,
+      Math.abs(S.small.x) + (PANEL_W * S.small.s) / 2,
+      // the widest point of the swap, or they clip as they pass
+      Math.abs(S.small.x) + BOW_X + (PANEL_W * 0.8) / 2,
+    );
+    const halfH = Math.max(
+      Math.abs(S.big.y) + (PANEL_H * S.big.s) / 2,
+      Math.abs(S.small.y) + (PANEL_H * S.small.s) / 2,
+    );
+    const forW = halfW / FILL / (t * camera.aspect);
+    const forH = (halfH + 0.14) / FILL / t;
+    camera.position.z = Math.max(forW, forH) + S.big.z;
     camera.updateProjectionMatrix();
   }
 
@@ -215,19 +241,25 @@
       py += (ty - py) * 0.055;
     }
 
-    PANELS.forEach((p, i) => {
-      const f = focus[i];
-      const side = i === 0 ? -1 : 1;
-      const restX = stacked ? side * 0.26 : side * 1.58;
-      const restY = stacked ? side * -1.02 : 0;
+    const S = stacked ? SLOT.stacked : SLOT.wide;
 
+    PANELS.forEach((p, i) => {
+      const f = focus[i];   // 1 = this one has the big slot
+
+      // Travel between the small slot and the big one. Both move at once, so
+      // without this they meet in the middle and sit on top of each other. A
+      // bow sends them past each other on opposite sides and at different
+      // depths, so the swap reads as two things shuffling rather than one
+      // muddle.
+      const arc = Math.sin(Math.PI * f);        // 0 at both ends, 1 mid swap
+      const bow = i === 0 ? -1 : 1;
       p.cell.position.set(
-        lerp(restX, 0, f),
-        lerp(restY, 0.04, f),
-        lerp(-1.5, FOCUS_Z, f),
+        lerp(S.small.x, S.big.x, f) + arc * BOW_X * bow,
+        lerp(S.small.y, S.big.y, f) + arc * 0.10 * bow,
+        lerp(S.small.z, S.big.z, f) + arc * 0.55 * bow,
       );
-      p.cell.rotation.y = lerp(p.rot, -0.03 * side, f);
-      const sc = lerp(0.82, 1, f);
+      p.cell.rotation.y = lerp(S.small.rot, S.big.rot, f);
+      const sc = lerp(S.small.s, S.big.s, f);
       p.cell.scale.set(sc, sc, 1);
 
       // The forward panel also changes what it is showing, driven by its own
@@ -237,11 +269,14 @@
       const swap = i === 0
         ? smooth(pS, 0.12, 0.38)     // Desi: hero, then the printed range
         : smooth(pS, 0.64, 0.90);    // AMG: hero, then the projects
-      const a = lerp(0.36, 1, f);
-      p.faceA.material.opacity = a * (1 - swap);
+      const a = lerp(0.9, 1, f);    // the small one is beside it, not faded out
+      // The second still fades in OVER the first rather than the two
+      // cross-fading. Cross-fading put both at half opacity at the midpoint,
+      // which washed the panel out against a light ground.
+      p.faceA.material.opacity = a;
       p.faceB.material.opacity = a * swap;
       p.bezel.material.opacity = a;
-      p.mirror.material.opacity = 0.13 * f;
+      p.mirror.material.opacity = lerp(0.07, 0.14, f);
       const want = swap > 0.5 ? p.texB : p.texA;
       if (p.mirror.material.map !== want) {
         p.mirror.material.map = want;
@@ -296,7 +331,7 @@
       s.width = w + 'px';
       s.height = h + 'px';
       s.transform = `translate3d(${Math.round(x - w / 2)}px, ${Math.round(y - h / 2)}px, 0)`;
-      s.zIndex = p.cell.position.z > 0 ? 4 : 3;
+      s.zIndex = p.cell.position.z > -0.3 ? 4 : 3;
     });
   }
 
