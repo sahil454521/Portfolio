@@ -287,14 +287,18 @@ p { margin: 0; text-wrap: pretty; }
 .vitrine[data-ready] canvas { opacity: 1; }
 .vitrine[data-fallback] canvas { display: none; }
 
-/* The posters are the real fallback, not a placeholder: with no WebGL, or
-   with motion reduced, the two sites still sit here side by side as stills. */
+/* Each panel is a real link. Without WebGL it is a plain image of the site,
+   laid out in CSS. With WebGL the scene draws the panel and this element is
+   moved to sit exactly on top of it, invisible but clickable, focusable and
+   readable, so the 3D object behaves like the link it looks like. */
 .panel {
   position: absolute;
   top: 50%; width: 42%;
   margin: 0;
   transform: translateY(-50%);
-  transition: opacity 500ms var(--ease);
+  display: block;
+  text-decoration: none;
+  border-radius: 2px;
 }
 .panel:nth-of-type(1) { left: 3%; }
 .panel:nth-of-type(2) { right: 3%; }
@@ -303,7 +307,36 @@ p { margin: 0; text-wrap: pretty; }
   border: 1px solid var(--line);
   box-shadow: 0 26px 60px -32px rgb(14 21 25 / 0.45);
 }
-.vitrine[data-ready] .panel { opacity: 0; pointer-events: none; }
+.panel__go {
+  position: absolute;
+  left: 50%; bottom: var(--s-4);
+  transform: translateX(-50%) translateY(6px);
+  padding: var(--s-2) var(--s-4);
+  background: var(--ink);
+  color: var(--void-lift);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--base) var(--ease), transform var(--base) var(--ease);
+}
+.panel:hover .panel__go,
+.panel:focus-visible .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* once the scene is drawing, the link becomes an invisible hit area over it */
+.vitrine[data-ready] .panel {
+  top: 0; left: 0; right: auto;
+  width: auto;
+  transform: none;
+  cursor: pointer;
+}
+.vitrine[data-ready] .panel img { opacity: 0; }
+.vitrine[data-ready] .panel:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+}
 
 /* Names whichever site currently has the frame. It sits with the room, not
    with the headline, because it labels the object rather than the page. */
