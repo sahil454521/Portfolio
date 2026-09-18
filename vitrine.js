@@ -22,6 +22,12 @@
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const coarse = matchMedia('(max-width: 820px)');
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+  const lerp = (a, b, t) => a + (b - a) * t;
+  // smoothstep: the handover eases in and out instead of cutting
+  const smooth = (v, a, b) => {
+    const t = clamp((v - a) / (b - a), 0, 1);
+    return t * t * (3 - 2 * t);
+  };
 
   // No WebGL at all falls back to the posters, which are already in the markup.
   if (!window.THREE) { root.setAttribute('data-fallback', ''); return; }
@@ -38,9 +44,15 @@
   const PANELS = [...root.querySelectorAll('[data-panel]')].map((el) => ({
     el,
     src: coarse.matches && el.dataset.panelSrcMobile ? el.dataset.panelSrcMobile : el.dataset.panelSrc,
-    x: parseFloat(el.dataset.panelX) || 0,
     rot: parseFloat(el.dataset.panelRot) || 0,
+    name: el.dataset.panelName || '',
+    host: el.dataset.panelHost || '',
   }));
+
+  const showing = root.querySelector('[data-showing]');
+  const showN = root.querySelector('[data-showing-n]');
+  const showName = root.querySelector('[data-showing-name]');
+  const showHost = root.querySelector('[data-showing-host]');
   if (!PANELS.length) { root.setAttribute('data-fallback', ''); return; }
 
   /* ---- scene ---------------------------------------------------- */
@@ -57,8 +69,9 @@
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
   camera.position.set(0, 0.26, 6.9);
 
-  const PANEL_W = 2.55;
+  const PANEL_W = 3.15;
   const PANEL_H = PANEL_W * (640 / 1024);
+  const FOCUS_Z = 1.15;          // how far forward the focused panel sits
 
   const videos = [];
   const group = new THREE.Group();
@@ -82,14 +95,14 @@
     // stay true.
     const face = new THREE.Mesh(
       new THREE.PlaneGeometry(PANEL_W, PANEL_H),
-      new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }),
+      new THREE.MeshBasicMaterial({ map: tex, toneMapped: false, transparent: true }),
     );
 
     // A thin lit surround, which is where the room's light actually lands and
     // what makes the panel read as an object rather than an image.
     const bezel = new THREE.Mesh(
       new THREE.PlaneGeometry(PANEL_W + 0.075, PANEL_H + 0.075),
-      new THREE.MeshBasicMaterial({ color: 0x9aa7b0 }),
+      new THREE.MeshBasicMaterial({ color: 0x9aa7b0, transparent: true }),
     );
     bezel.position.z = -0.006;
 
@@ -108,6 +121,7 @@
 
     const cell = new THREE.Group();
     cell.add(bezel, face, mirror);
+    p.face = face; p.bezel = bezel;
     group.add(cell);
     p.cell = cell;
     p.mirror = mirror;
@@ -195,7 +209,7 @@
   root.addEventListener('pointercancel', release);
 
   /* ---- loop ------------------------------------------------------- */
-  let W = 0, H = 0, alive = false, pS = 0, pInit = false;
+  let W = 0, H = 0, alive = false, pS = 0, pInit = false, showLead = -1;
 
   function resize() {
     const r = canvas.getBoundingClientRect();
@@ -231,27 +245,20 @@
       }
     });
 
-    // where the group sits: centred on a phone, upper right on a wide frame so
-    // the headline keeps the lower left to itself
-    bx = stacked ? 0 : 0.55;
-    by = stacked ? 0.28 : 0.30;
+    bx = 0;
+    by = stacked ? 0.10 : -0.04;
 
-    // Size the panels against the frame's WIDTH, so they hold the same share
-    // of it whatever the window is. Fitting to height instead is what made
-    // them shrink into the middle of a big screen.
-    const cellX = stacked ? 0.30 : Math.abs(PANELS[0].x);
-    const cellY = stacked ? 0.88 : 0;
-    const halfW = cellX + PANEL_W / 2;
-    const halfH = Math.abs(by) + cellY + PANEL_H / 2;
-
+    // Solve the distance from the FOCUSED panel: it is the thing being read,
+    // so it is the thing that should hold a fixed share of the frame at any
+    // window size. Everything else is positioned relative to it.
     const vfov = (camera.fov * Math.PI) / 180;
     const t = Math.tan(vfov / 2);
-    const FILL = stacked ? 0.94 : 0.86;      // share of the frame they occupy
-
-    const forWidth = halfW / FILL / (t * camera.aspect);
-    const forHeight = (halfH + 0.18) / t;    // guard: never clip the top
-    camera.position.z = Math.max(forWidth, forHeight) + 0.6;
-    pool.position.set(bx * 0.8, by * 0.8, -3.2);
+    const FILL = stacked ? 0.94 : 0.72;
+    const need = (PANEL_W / 2) / FILL / (t * camera.aspect);
+    // guard so a tall panel in a short frame is not cropped either
+    const needH = (PANEL_H / 2 + Math.abs(by) + 0.12) / t;
+    camera.position.z = Math.max(need, needH) + FOCUS_Z;
+    pool.position.set(0, by, -3.2);
   }
 
   function frame() {
@@ -263,11 +270,19 @@
     if (!pInit) { pS = target; pInit = true; }
     pS += (target - pS) * 0.11;          // wheel events arrive in lumps
 
-    // scrub each site by the page's own progress
+    // Two acts, one per site. Each one holds the frame while it plays its own
+    // scroll end to end, then hands over. Running both at once against the
+    // same progress meant neither was ever actually being read.
+    const hand = smooth(pS, 0.44, 0.60);       // 0 = first site, 1 = second
+    const focus = [1 - hand, hand];
+
     if (armed) {
-      videos.forEach((s) => {
+      videos.forEach((s, i) => {
         if (!s.ready || !s.dur) return;
-        const want = pS * s.dur;
+        const local = i === 0
+          ? clamp(pS / 0.50, 0, 1)             // Desi Totes runs 0.00 to 0.50
+          : clamp((pS - 0.50) / 0.50, 0, 1);   // AMG runs 0.50 to 1.00
+        const want = local * s.dur;
         s.head += (want - s.head) * 0.2;
         if (!s.seeking && Math.abs(s.v.currentTime - s.head) > 0.01) {
           s.seeking = true;
@@ -276,19 +291,47 @@
       });
     }
 
+    // place each panel between resting and focused
+    PANELS.forEach((p, i) => {
+      const f = focus[i];
+      const side = i === 0 ? -1 : 1;
+      const restX = stacked ? side * 0.30 : side * 1.62;
+      const restY = stacked ? side * -1.05 : 0.02;
+      p.cell.position.set(
+        lerp(restX, 0, f),
+        by + lerp(restY, 0.06, f),
+        lerp(-1.5, FOCUS_Z, f),
+      );
+      p.cell.rotation.y = lerp(p.rot, -0.03 * side, f);
+      const sc = lerp(0.82, 1, f);
+      p.cell.scale.set(sc, sc, 1);
+      const a = lerp(0.34, 1, f);
+      p.face.material.opacity = a;
+      p.bezel.material.opacity = a;
+      p.mirror.material.opacity = 0.14 * f;
+    });
+
+    // name whichever one currently has the frame
+    const lead = hand < 0.5 ? 0 : 1;
+    if (showing && lead !== showLead) {
+      showLead = lead;
+      showN.textContent = lead === 0 ? '01' : '02';
+      showName.textContent = PANELS[lead].name;
+      showHost.textContent = PANELS[lead].host;
+    }
+
     if (still) {
-      // held: the sites still run, the camera does not
-      group.rotation.set(0.02, stacked ? -0.06 : -0.14, 0);
-      group.position.set(bx, by, -0.35);
+      // held: the sites still run and still hand over, the camera does not
+      group.rotation.set(0.02, 0, 0);
+      group.position.set(0, 0, 0);
     } else {
       px += (tx - px) * 0.055;
       py += (ty - py) * 0.055;
       // the case turns a little as you travel, and a little more as you point
-      group.rotation.y = (stacked ? -0.06 : -0.14) + pS * (stacked ? 0.14 : 0.30) + px * 0.16;
-      group.rotation.x = 0.02 + py * 0.05;
-      group.position.x = bx;
-      group.position.z = -0.55 + pS * 0.55;
-      group.position.y = by - py * 0.06;
+      // the room itself barely moves now: the panels carry the sequence
+      group.rotation.y = px * 0.10;
+      group.rotation.x = 0.02 + py * 0.04;
+      group.position.set(0, -py * 0.05, 0);
     }
 
     camera.lookAt(0, -0.05, 0);
