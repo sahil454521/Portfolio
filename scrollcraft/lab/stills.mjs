@@ -7,7 +7,11 @@ import { execFileSync } from 'node:child_process';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const FF = 'C:/Users/sahil/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0.1-full_build/bin/ffmpeg.exe';
 
-const W = 1280, H = 800;
+// Captured narrower than a full desktop window on purpose. Each still holds a
+// whole page inside a panel roughly 670 CSS px wide, so the narrower the
+// capture, the larger that page renders in the frame. 1120 is still wide
+// enough that both sites keep their desktop layout.
+const W = 1120, H = 720;
 mkdirSync('assets/work', { recursive: true });
 
 const jobs = [
@@ -43,7 +47,7 @@ for (const j of jobs) {
     const tmp = `scrollcraft/lab/_${shot.as}.png`;
     await page.screenshot({ path: tmp });
     execFileSync(FF, ['-hide_banner', '-loglevel', 'error', '-i', tmp,
-      '-vf', 'scale=1600:-2', '-q:v', '3', '-y', `assets/work/${shot.as}.jpg`]);
+      '-vf', 'scale=1680:-2', '-q:v', '2', '-y', `assets/work/${shot.as}.jpg`]);
     execFileSync(process.platform === 'win32' ? 'cmd' : 'rm',
       process.platform === 'win32' ? ['/c', 'del', tmp.split('/').join('\\')] : ['-f', tmp]);
     console.log('captured', shot.as);
