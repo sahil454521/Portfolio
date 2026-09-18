@@ -26,10 +26,12 @@
   // No WebGL at all falls back to the posters, which are already in the markup.
   if (!window.THREE) { root.setAttribute('data-fallback', ''); return; }
 
-  // Reduced motion keeps the room and drops the movement. Falling back to two
-  // flat images here was wrong: the depth is the design, not decoration, and
-  // "reduce motion" is a common OS setting rather than a rare one. The scene
-  // still builds, renders once, and holds.
+  // Reduced motion drops the camera, not the content. Scrolling still runs
+  // both sites, because that is the page working rather than an effect; what
+  // goes is the orbit, the push in and the pointer, which are the parts that
+  // actually trigger anyone. Hiding the whole scene, or freezing it so scroll
+  // does nothing, both made the page worse for a setting a lot of people have
+  // switched on.
   const still = reduced.matches;
 
   const THREE = window.THREE;
@@ -50,12 +52,12 @@
   const scene = new THREE.Scene();
   // Fog is doing the depth here rather than a postprocess pass: it costs
   // nothing and it is what stops the far panel reading as a sticker.
-  scene.fog = new THREE.Fog(0x080b0e, 6.4, 15.5);
+  scene.fog = new THREE.Fog(0xeaedef, 7.2, 17);
 
   const camera = new THREE.PerspectiveCamera(34, 1, 0.1, 100);
   camera.position.set(0, 0.26, 6.9);
 
-  const PANEL_W = 3.6;
+  const PANEL_W = 2.55;
   const PANEL_H = PANEL_W * (640 / 1024);
 
   const videos = [];
@@ -87,7 +89,7 @@
     // what makes the panel read as an object rather than an image.
     const bezel = new THREE.Mesh(
       new THREE.PlaneGeometry(PANEL_W + 0.075, PANEL_H + 0.075),
-      new THREE.MeshBasicMaterial({ color: 0x2a343d }),
+      new THREE.MeshBasicMaterial({ color: 0x9aa7b0 }),
     );
     bezel.position.z = -0.006;
 
@@ -97,12 +99,12 @@
     const mirror = new THREE.Mesh(
       new THREE.PlaneGeometry(PANEL_W, PANEL_H),
       new THREE.MeshBasicMaterial({
-        map: tex, toneMapped: false, transparent: true, opacity: 0.13,
+        map: tex, toneMapped: false, transparent: true, opacity: 0.14,
         depthWrite: false,
       }),
     );
-    mirror.scale.y = -1;
-    mirror.position.y = -PANEL_H - 0.12;
+    mirror.scale.y = -0.5;
+    mirror.position.y = -(PANEL_H / 2) - (PANEL_H * 0.5 / 2) - 0.04;
 
     const cell = new THREE.Group();
     cell.add(bezel, face, mirror);
@@ -120,9 +122,9 @@
   glowCanvas.width = glowCanvas.height = 256;
   const gctx = glowCanvas.getContext('2d');
   const grad = gctx.createRadialGradient(128, 128, 0, 128, 128, 128);
-  grad.addColorStop(0, 'rgba(46,70,92,0.95)');
-  grad.addColorStop(0.45, 'rgba(26,40,54,0.45)');
-  grad.addColorStop(1, 'rgba(8,11,14,0)');
+  grad.addColorStop(0, 'rgba(255,255,255,0.95)');
+  grad.addColorStop(0.45, 'rgba(226,232,236,0.5)');
+  grad.addColorStop(1, 'rgba(234,237,239,0)');
   gctx.fillStyle = grad;
   gctx.fillRect(0, 0, 256, 256);
 
@@ -133,7 +135,7 @@
       transparent: true, depthWrite: false, opacity: 0.85,
     }),
   );
-  pool.position.set(0, -0.25, -3.2);
+  pool.position.set(0, 0, -3.2);
   scene.add(pool);
 
   /* ---- load the footage ------------------------------------------
@@ -156,12 +158,6 @@
     .then(() => {
       armed = true;
       root.setAttribute('data-ready', '');
-      // With motion reduced there is no loop, so park both clips on a frame
-      // that shows something worth seeing and draw the scene once.
-      if (still) {
-        videos.forEach((s2) => { if (s2.dur) s2.v.currentTime = s2.dur * 0.34; });
-        setTimeout(() => { resize(); draw(); }, 400);
-      }
     })
     .catch(() => { root.setAttribute('data-fallback', ''); });
 
@@ -216,12 +212,16 @@
   // Art-directed per frame shape rather than scaled down. Side by side in a
   // landscape frame; stacked and overlapping in a portrait one, because two
   // panels side by side on a phone are two postage stamps.
-  let stacked = false;
+  //
+  // The camera distance is then SOLVED rather than guessed, so the whole
+  // arrangement fits whatever window it lands in. Hand-picked distances fit
+  // the one window they were picked in and clip in every other.
+  let stacked = false, bx = 0, by = 0;
   function layout() {
-    stacked = W / H < 1.05;
+    stacked = innerWidth <= 900;
     PANELS.forEach((p) => {
       if (stacked) {
-        p.cell.position.set(p.i === 0 ? -0.42 : 0.42, p.i === 0 ? 1.28 : -1.28, p.i === 0 ? 0 : 0.35);
+        p.cell.position.set(p.i === 0 ? -0.30 : 0.30, p.i === 0 ? 0.88 : -0.88, p.i === 0 ? 0 : 0.35);
         p.cell.rotation.y = p.rot * 0.55;
         p.mirror.visible = p.i === 1;
       } else {
@@ -230,17 +230,28 @@
         p.mirror.visible = true;
       }
     });
-    camera.position.z = stacked ? 7.4 : 6.9;
-    pool.position.y = stacked ? -0.1 : -0.25;
-  }
 
-  function draw() {
-    if (!W) { resize(); if (!W) return; }
-    group.rotation.y = stacked ? -0.06 : -0.14;
-    group.rotation.x = 0.02;
-    group.position.set(0, 0.02, -0.4);
-    camera.lookAt(0, -0.05, 0);
-    renderer.render(scene, camera);
+    // where the group sits: centred on a phone, upper right on a wide frame so
+    // the headline keeps the lower left to itself
+    bx = stacked ? 0 : 0.55;
+    by = stacked ? 0.28 : 0.30;
+
+    // Size the panels against the frame's WIDTH, so they hold the same share
+    // of it whatever the window is. Fitting to height instead is what made
+    // them shrink into the middle of a big screen.
+    const cellX = stacked ? 0.30 : Math.abs(PANELS[0].x);
+    const cellY = stacked ? 0.88 : 0;
+    const halfW = cellX + PANEL_W / 2;
+    const halfH = Math.abs(by) + cellY + PANEL_H / 2;
+
+    const vfov = (camera.fov * Math.PI) / 180;
+    const t = Math.tan(vfov / 2);
+    const FILL = stacked ? 0.94 : 0.86;      // share of the frame they occupy
+
+    const forWidth = halfW / FILL / (t * camera.aspect);
+    const forHeight = (halfH + 0.18) / t;    // guard: never clip the top
+    camera.position.z = Math.max(forWidth, forHeight) + 0.6;
+    pool.position.set(bx * 0.8, by * 0.8, -3.2);
   }
 
   function frame() {
@@ -265,14 +276,20 @@
       });
     }
 
-    px += (tx - px) * 0.055;
-    py += (ty - py) * 0.055;
-
-    // the case turns a little as you travel, and a little more as you point
-    group.rotation.y = (stacked ? -0.06 : -0.14) + pS * (stacked ? 0.14 : 0.30) + px * 0.16;
-    group.rotation.x = 0.02 + py * 0.05;
-    group.position.z = -0.9 + pS * (stacked ? 0.7 : 1.15);
-    group.position.y = 0.02 - py * 0.06;
+    if (still) {
+      // held: the sites still run, the camera does not
+      group.rotation.set(0.02, stacked ? -0.06 : -0.14, 0);
+      group.position.set(bx, by, -0.35);
+    } else {
+      px += (tx - px) * 0.055;
+      py += (ty - py) * 0.055;
+      // the case turns a little as you travel, and a little more as you point
+      group.rotation.y = (stacked ? -0.06 : -0.14) + pS * (stacked ? 0.14 : 0.30) + px * 0.16;
+      group.rotation.x = 0.02 + py * 0.05;
+      group.position.x = bx;
+      group.position.z = -0.55 + pS * 0.55;
+      group.position.y = by - py * 0.06;
+    }
 
     camera.lookAt(0, -0.05, 0);
     renderer.render(scene, camera);
@@ -280,10 +297,9 @@
 
   videos.forEach((s) => s.v.addEventListener('seeked', () => { s.seeking = false; }));
 
-  addEventListener('resize', () => { resize(); if (still) draw(); }, { passive: true });
+  addEventListener('resize', resize, { passive: true });
   new IntersectionObserver((es) => {
     const vis = es.some((e) => e.isIntersecting);
-    if (still) { if (vis) { resize(); draw(); } return; }
     if (vis && !alive) { alive = true; resize(); requestAnimationFrame(frame); }
     else if (!vis) alive = false;      // nothing renders offscreen
   }, { rootMargin: '25% 0px' }).observe(root);
