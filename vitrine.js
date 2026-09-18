@@ -67,22 +67,29 @@
   camera.position.set(0, 0, 8);
 
   const PANEL_W = 3.15;
-  const PANEL_H = PANEL_W * (1000 / 1600);
+  const PANEL_H = PANEL_W * (1080 / 1680);
 
   // Two slots, both always in shot. The big one holds the front of the room,
   // the small one stands beside it. Scroll trades the two sites between them.
-  const SMALL = 0.60;
-  const BOW_X = 0.62;          // how far apart they pass during the swap
+  const SMALL = 0.46;
+  const BOW_X = 0.55;          // how far apart they pass during the swap
   const SLOT = {
     wide: {
-      big:   { x: -0.92, y: 0.02, z: 0.55, s: 1,     rot: 0.05 },
-      small: { x: 1.42,  y: -0.10, z: -1.05, s: SMALL, rot: -0.30 },
+      big:   { x: -0.58, y: 0.02,  z: 0.55,  s: 1,     rot: 0.05 },
+      small: { x: 1.86,  y: -0.16, z: -1.05, s: SMALL, rot: -0.30 },
     },
     stacked: {
-      big:   { x: 0,    y: 0.66,  z: 0.55, s: 1,     rot: 0.03 },
-      small: { x: 0.30, y: -1.12, z: -1.05, s: SMALL, rot: -0.22 },
+      big:   { x: 0,    y: 0.58,  z: 0.55,  s: 1,     rot: 0.03 },
+      small: { x: 0.42, y: -1.28, z: -1.05, s: SMALL, rot: -0.22 },
     },
   };
+
+  // The share of the frame the BIG panel takes. This is the number that
+  // decides whether the site on it is legible: each still holds a whole
+  // 1280px page, so a small panel shows that page at well under half size and
+  // no amount of source resolution rescues it.
+  const BIG_FILL_WIDE = 0.62;
+  const BIG_FILL_STACKED = 0.94;
 
   const loader = new THREE.TextureLoader();
   const load = (url) => new Promise((res, rej) => loader.load(url, res, undefined, rej));
@@ -152,7 +159,15 @@
     PANELS.forEach((p) => {
       [[p.texA, p.faceA], [p.texB, p.faceB]].forEach(([t, m]) => {
         t.colorSpace = THREE.SRGBColorSpace;
+        // The stills are 1600px and land around 1000 device pixels, so they
+        // are minified. Without mipmaps that undersamples the source and the
+        // result reads as soft and noisy however sharp the original is.
+        // Trilinear plus anisotropy is what makes a shrunk texture stay crisp.
+        t.generateMipmaps = true;
+        t.minFilter = THREE.LinearMipmapLinearFilter;
+        t.magFilter = THREE.LinearFilter;
         t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+        t.needsUpdate = true;
         m.material.map = t;
         m.material.needsUpdate = true;
       });
@@ -205,26 +220,25 @@
     camera.aspect = W / H;
     stacked = innerWidth <= 900;
 
-    // Solve the distance so BOTH slots stay in shot, since the whole point is
-    // that you can see the two sites at once. Fitting only the focused one is
-    // what left the smaller site hiding behind the bigger one.
+    // Solve the distance from the BIG panel, so it holds a fixed and generous
+    // share of the frame whatever the window is. Fitting the whole
+    // arrangement instead made the primary panel small enough that the site on
+    // it stopped being readable, which is what reads as blur.
     const S = stacked ? SLOT.stacked : SLOT.wide;
     const t = Math.tan((camera.fov * Math.PI) / 180 / 2);
-    const FILL = stacked ? 0.94 : 0.90;
+    const FILL = stacked ? BIG_FILL_STACKED : BIG_FILL_WIDE;
 
-    const halfW = Math.max(
-      Math.abs(S.big.x) + (PANEL_W * S.big.s) / 2,
-      Math.abs(S.small.x) + (PANEL_W * S.small.s) / 2,
-      // the widest point of the swap, or they clip as they pass
-      Math.abs(S.small.x) + BOW_X + (PANEL_W * 0.8) / 2,
-    );
+    const forW = (PANEL_W / 2) / FILL / (t * camera.aspect);
+    // guards, so nothing is cropped vertically or lost off the right edge
     const halfH = Math.max(
       Math.abs(S.big.y) + (PANEL_H * S.big.s) / 2,
       Math.abs(S.small.y) + (PANEL_H * S.small.s) / 2,
     );
-    const forW = halfW / FILL / (t * camera.aspect);
-    const forH = (halfH + 0.14) / FILL / t;
-    camera.position.z = Math.max(forW, forH) + S.big.z;
+    const forH = (halfH + 0.14) / t;
+    const edge = Math.abs(S.small.x) + (PANEL_W * S.small.s) / 2;
+    const forEdge = edge / 0.99 / (t * camera.aspect);
+
+    camera.position.z = Math.max(forW, forH, forEdge) + S.big.z;
     camera.updateProjectionMatrix();
   }
 
