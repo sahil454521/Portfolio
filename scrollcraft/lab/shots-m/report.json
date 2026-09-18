@@ -1,0 +1,377 @@
+{
+  "doc": {
+    "height": 13013,
+    "vh": 844,
+    "acts": [
+      "pin"
+    ],
+    "world": null
+  },
+  "report": [
+    {
+      "i": 0,
+      "y": 4984,
+      "pct": 41,
+      "settled": true,
+      "contrast": [],
+      "cues": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "o": 0.21
+        }
+      ],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "pin",
+      "stages": [
+        0
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    },
+    {
+      "i": 1,
+      "y": 5567,
+      "pct": 46,
+      "settled": true,
+      "contrast": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        }
+      ],
+      "cues": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "o": 1
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "o": 0.52
+        }
+      ],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "pin",
+      "stages": [
+        0
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    },
+    {
+      "i": 2,
+      "y": 6151,
+      "pct": 51,
+      "settled": true,
+      "contrast": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        }
+      ],
+      "cues": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "o": 1
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "o": 1
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "o": 0.62
+        }
+      ],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "pin",
+      "stages": [
+        0
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    },
+    {
+      "i": 3,
+      "y": 6734,
+      "pct": 55,
+      "settled": true,
+      "contrast": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        }
+      ],
+      "cues": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "o": 1
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "o": 1
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "o": 1
+        },
+        {
+          "t": "04 Purlins, sheeting and cladding.",
+          "o": 0.55
+        }
+      ],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "pin",
+      "stages": [
+        0
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    },
+    {
+      "i": 4,
+      "y": 7317,
+      "pct": 60,
+      "settled": true,
+      "contrast": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "04 Purlins, sheeting and cladding.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        }
+      ],
+      "cues": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "o": 1
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "o": 1
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "o": 1
+        },
+        {
+          "t": "04 Purlins, sheeting and cladding.",
+          "o": 1
+        },
+        {
+          "t": "05 MEP and HVAC run below the roof.",
+          "o": 0.17
+        }
+      ],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "pin",
+      "stages": [
+        0
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    },
+    {
+      "i": 5,
+      "y": 7901,
+      "pct": 65,
+      "settled": true,
+      "contrast": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "04 Purlins, sheeting and cladding.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        },
+        {
+          "t": "05 MEP and HVAC run below the roof.",
+          "dir": "light-on-dark",
+          "worst": 6.73,
+          "mean": 6.73
+        }
+      ],
+      "cues": [
+        {
+          "t": "01 Foundation pads set out, four bays.",
+          "o": 1
+        },
+        {
+          "t": "02 Columns raised and plumbed.",
+          "o": 1
+        },
+        {
+          "t": "03 Rafters landed, portal closed.",
+          "o": 1
+        },
+        {
+          "t": "04 Purlins, sheeting and cladding.",
+          "o": 1
+        },
+        {
+          "t": "05 MEP and HVAC run below the roof.",
+          "o": 1
+        }
+      ],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "pin",
+      "stages": [
+        0
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    },
+    {
+      "i": 6,
+      "y": 12169,
+      "pct": 100,
+      "settled": true,
+      "contrast": [],
+      "cues": [],
+      "clips": [],
+      "rails": [],
+      "wipes": [
+        "none",
+        "none",
+        "none",
+        "none"
+      ],
+      "act": "-",
+      "stages": [
+        -4048
+      ],
+      "segs": [],
+      "custom": [],
+      "customHold": false,
+      "seg": null,
+      "segp": null,
+      "bg": "#E9EAEC"
+    }
+  ],
+  "consoleErrors": [],
+  "failed": []
+}

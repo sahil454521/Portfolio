@@ -1,45 +1,43 @@
-# Portfolio Website
+# Sahil Pathak
 
-My personal portfolio website showcasing my projects and skills.
+Portfolio. A scroll-driven editorial document about two live commercial sites.
 
-## Tech Stack
-- React 
-- Vite
-- Tailwind CSS
-- React Router DOM
-- React Icons
+**Live work**
+- [amgprojectsllp.com](https://amgprojectsllp.com) — AMG Turnkey Projects LLP, construction and interiors, Pune
+- [desitotes.com](https://desitotes.com) — Desi Totes, made-to-order cotton canvas totes
 
-## Features
-- Responsive Design
-- Dark Theme
-- Project Showcase
-- Skills Animation
-- Contact Information
+## Running it
 
-## Getting Started
+It is a static site. No build step, no framework, no bundler.
 
-1. Clone the repository:
 ```bash
-git clone https://github.com/sahil454521/portfolio.git
+npx serve .
 ```
 
-2. Install dependencies:
+Any static server works. Open the root and that is the site.
+
+## What is in here
+
+| Path | What it is |
+|---|---|
+| `index.html` | The page. Real markup; the engine reads `data-sc-*` off it |
+| `site.css` | The design system: three grounds, two families, one accent hue |
+| `site.js` | The two bespoke pieces: the load-path folio, and the portal frame renderer |
+| `scrollcraft.css` / `scrollcraft.js` | The scroll engine. Not edited. Themed by tokens only |
+| `assets/` | Real photography. Nothing on this page is AI generated |
+| `scrollcraft/BRIEF.md` | Why the page is shaped the way it is |
+| `scrollcraft/lab/` | Verification scripts: contact sheets, accessibility audit, image tooling |
+| `legacy/` | The previous React and Vite portfolio, kept intact |
+
+## Verifying a change
+
 ```bash
-cd portfolio
-npm install
+npx serve . -l 4500
+node scrollcraft/lab/sheet.mjs http://localhost:4500
+node scrollcraft/lab/sheet.mjs http://localhost:4500 --mobile
+node scrollcraft/lab/a11y.mjs http://localhost:4500
 ```
 
-3. Run development server:
-```bash
-npm run dev
-```
-
-## Project Structure
-```
-src/
-├── components/
-├── pages/
-├── projects/
-├── assets/
-└── App.jsx
-```
+`sheet.mjs` walks the whole page and tiles the frames into one contact sheet, so
+the composition can be read rather than guessed at. `a11y.mjs` checks tab order,
+focus visibility, the heading outline and alt text.
