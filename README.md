@@ -9,10 +9,12 @@ Portfolio. A dark, lit room holding two live commercial sites, in motion.
 ## The idea
 
 Both clients send `X-Frame-Options`, so neither can be embedded live, which is
-correct of them. The next most honest thing is real footage of the real pages,
-captured from production and mapped onto planes in a WebGL scene. Scrolling
-this page scrubs that footage, so **scrolling the portfolio scrolls the sites
-it is about.** It only works because they exist.
+correct of them. The next most honest thing is stills of the real pages,
+captured from production and standing as planes in a WebGL scene. Scroll
+interchanges them: whichever is forward comes to the front of the room and
+changes what it is showing, and the other falls back. **Clicking either one
+opens that site**, because each panel has a real anchor tracking it, so a
+click, a tap and a Tab all land on a real link.
 
 ## Running it
 
@@ -31,7 +33,7 @@ npx serve . -l 4500
 | `site.js` | The rail, the closing clip, and the state the harness verifies |
 | `vitrine.js` | The WebGL scene: two live sites as objects, scrubbed by scroll |
 | `scrollcraft.css` / `scrollcraft.js` | Scroll engine. Not edited, themed by tokens |
-| `assets/work/` | Footage of both client sites, recorded from production |
+| `assets/work/` | Stills of both client sites, captured from production |
 | `assets/amg`, `assets/desi` | Real client photography |
 | `scrollcraft/BRIEF.md` | Why the page is shaped this way |
 | `scrollcraft/lab/` | Recording, verification and audit scripts |
@@ -50,5 +52,6 @@ node scrollcraft/lab/a11y.mjs http://localhost:4500
 composition can be read rather than guessed at. `a11y.mjs` checks tab order,
 focus visibility, the heading outline and alt text.
 
-Re-record the client footage with `node scrollcraft/lab/record.mjs` (needs
-`ffmpeg` on the machine).
+Re-capture the client stills with `node scrollcraft/lab/stills.mjs` (needs
+`ffmpeg` on the machine). `links.mjs` checks the panels are genuinely
+clickable, and `fps.mjs` measures the frame rate while scrolling the hero.

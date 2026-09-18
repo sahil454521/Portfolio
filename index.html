@@ -47,19 +47,28 @@
         <div class="vitrine" data-vitrine>
           <canvas aria-hidden="true"></canvas>
 
-          <figure class="panel" data-panel
-                  data-panel-src="assets/work/desi.mp4"
-                  data-panel-src-mobile="assets/work/desi-m.mp4"
-                  data-panel-name="Desi Totes" data-panel-host="desitotes.com" data-panel-rot="-0.26">
-            <img src="assets/work/desi-poster.jpg" alt="The Desi Totes shop, scrolling from its hero through a product page and the printed range" width="1024" height="640">
-          </figure>
+          <!-- Real links, not decoration. They sit over the canvas and are
+               moved to wherever their panel currently is, so a click or a
+               keyboard focus lands on an actual anchor to an actual site. -->
+          <a class="panel" data-panel
+             href="https://desitotes.com" target="_blank" rel="noopener"
+             data-panel-a="assets/work/desi-1.jpg"
+             data-panel-b="assets/work/desi-2.jpg"
+             data-panel-name="Desi Totes" data-panel-host="desitotes.com"
+             data-panel-rot="-0.26">
+            <img src="assets/work/desi-1.jpg" alt="The Desi Totes shop: the Carry It Desi Style hero, with a black canvas hobo tote" width="1600" height="1000">
+            <span class="panel__go">Open desitotes.com</span>
+          </a>
 
-          <figure class="panel" data-panel
-                  data-panel-src="assets/work/amg.mp4"
-                  data-panel-src-mobile="assets/work/amg-m.mp4"
-                  data-panel-name="AMG Turnkey Projects" data-panel-host="amgprojectsllp.com" data-panel-rot="0.26">
-            <img src="assets/work/amg-poster.jpg" alt="The AMG Turnkey Projects site, scrolling from its hero through services, projects and clients" width="1024" height="640">
-          </figure>
+          <a class="panel" data-panel
+             href="https://amgprojectsllp.com" target="_blank" rel="noopener"
+             data-panel-a="assets/work/amg-1.jpg"
+             data-panel-b="assets/work/amg-2.jpg"
+             data-panel-name="AMG Turnkey Projects" data-panel-host="amgprojectsllp.com"
+             data-panel-rot="0.26">
+            <img src="assets/work/amg-1.jpg" alt="The AMG Turnkey Projects site: the Where Quality Meets Swiftness hero" width="1600" height="1000">
+            <span class="panel__go">Open amgprojectsllp.com</span>
+          </a>
 
           <p class="showing" data-showing aria-live="polite">
             <i class="dot dot--live"></i>
@@ -77,7 +86,7 @@
             label that takes real payments, and the public face of a
             construction firm. You are watching them run.
           </p>
-          <p class="lede__hint" aria-hidden="true">Scroll to run each one. Drag to look.</p>
+          <p class="lede__hint" aria-hidden="true">Scroll to swap. Click either one to open it.</p>
         </header>
 
       </div>
