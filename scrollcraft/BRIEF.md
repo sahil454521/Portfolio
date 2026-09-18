@@ -186,3 +186,90 @@ user rather than guessed at, and these are the answers.
 - Email `sahilpathak2005@gmail.com`, GitHub `github.com/sahil454521`.
 
 **No invented statistics. No counter without a real number behind it.**
+
+---
+
+## Feel check (run cold against the contact sheet, then diffed)
+
+| Chapter | Intended | Felt | Verdict |
+|---|---|---|---|
+| Title page | Composure | Composed, quiet | matches |
+| 01 The brief | Recognition | Recognition | matches, once the portrait went in |
+| 02 Cloth | Warmth | Warm, tactile | matches |
+| 03 Structure | Weight (peak) | Weight, then arrival | matches, and it is the peak |
+| 04 Workbench | Curiosity | Cold, short, factual | matches |
+| Colophon | Resolve | Resolved, stops | matches |
+
+Chapter one drifted towards "credentials" in the first build, because a title
+block on its own is a credential object. The portrait fixed it rather than any
+change to the words.
+
+**Peak confirmed on the sheet.** Chapter three is the largest visual change on
+the page and holds the most scroll room by a wide margin. It is the only 3D on
+the page: the asset budget goes to the peak and nowhere else.
+
+**The close resolves.** The last screen is the colophon plate ending on
+"End of document." It does not fade out and does not become a link farm.
+
+## The portrait, resolved
+
+The first two candidates (`profile.jpg`, `profile2.jpg`) were soft low-light
+candids with other identifiable people in frame. A tight crop of either was
+tried and rejected: at the size the layout needs, the softness was obvious and
+a third party stayed partly in shot.
+
+The user then supplied `IMG_9114.jpg`, which is the portrait on the page. Sharp,
+3:4 already, lit warm against terracotta and brass, and the only other person in
+it is turned away and out of focus. It sits above the title block in chapter
+one, so the portrait and the credit panel read as one object.
+
+**A video was also offered** (`IMG_3480.MP4`, 8 seconds, 1080x1920, 8.1 MB) with
+the choice left to me. The still was chosen, for four reasons:
+
+1. **Weight.** 8.1 MB against 196 KB, for something decorative. On mobile data
+   that is a real cost paid by every visitor for no argument.
+2. **No encoder.** `ffmpeg` is not installed here, so the clip cannot be cut
+   down, stripped of its audio track, or given a separate phone encode.
+   Shipping a raw camera export is exactly what assets.md warns produces a page
+   that plays fine on a desktop and stutters on a phone.
+3. **Register.** The grammar is a printed feature. A looping video portrait
+   belongs to a creator-brand page, not to a document.
+4. **Peak discipline.** The page already has one thing that moves and means
+   something. A second competes with it, and feel.md is explicit that a page
+   with two peaks has none.
+
+The video is not deleted and the swap is small: install `ffmpeg` and the slot
+takes a muted looping clip with a poster frame.
+
+## Revisions after the first review
+
+The user scrolled the built page and reported two things. Both were real.
+
+**"The page gets stuck here."** Correct, and the screenshots showed exactly
+where. The peak ran 4.6 viewport-heights but the assembly finished at p=0.94,
+and the frame was complete and motionless well before that. A pinned act whose
+content stops changing reads as a frozen page, which is the worst possible
+impression at the moment the page is trying hardest.
+
+Three changes:
+- Assembly now finishes at **p=0.60** instead of 0.94; span 4.6 down to 4.2.
+- The last 40% is a **resolve**: the drawing dissolves into `assets/amg/eka.jpg`,
+  the inside of a completed portal frame building showing the columns, rafters,
+  purlins and service runs the drawing just built, with buses being assembled
+  under it. A sixth callout lands with it. This is the tell-someone sentence
+  finally happening inside the act instead of being explained after it.
+- A slow **breath** on the camera, so the frame is never frozen even when
+  complete.
+
+**"It looks empty or it doesn't define myself."** Also correct. The title page
+was left-aligned text in a wide frame, which leaves a void rather than air. It
+is now two columns: the statement left, the credits as a masthead sidebar
+against a hairline on the right. And the portrait went in.
+
+**One defect found while fixing those.** The folio stamped nodes and never
+un-stamped them, so scrolling back to the title page showed all five chapters
+marked visited. Stamps now track position in both directions.
+
+**One bookkeeping error, recorded because the file is the record.** An earlier
+edit to this brief rewrote everything from the facts section down, which
+silently dropped the feel check and the portrait note. Both are restored above.
