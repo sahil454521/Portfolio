@@ -267,15 +267,19 @@ p { margin: 0; text-wrap: pretty; }
    composition, but the reflection never reaches the type. */
 .vitrine {
   position: absolute;
-  top: 0; bottom: 31%;
+  top: 0; bottom: 43%;
   left: calc(var(--rail-w) + var(--gutter));
   right: var(--gutter);
 }
+/* Fade the lower edge so the reflection runs out instead of being cut off by
+   the canvas boundary, which left a hard line across the frame. */
 .vitrine canvas {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   display: block;
   cursor: grab;
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
   opacity: 0;
   transition: opacity 700ms var(--ease);
 }
@@ -300,6 +304,28 @@ p { margin: 0; text-wrap: pretty; }
   box-shadow: 0 26px 60px -32px rgb(14 21 25 / 0.45);
 }
 .vitrine[data-ready] .panel { opacity: 0; pointer-events: none; }
+
+/* Names whichever site currently has the frame. It sits with the room, not
+   with the headline, because it labels the object rather than the page. */
+.showing {
+  position: absolute;
+  top: 0; right: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.showing .dot { align-self: center; }
+.showing span { font-variant-numeric: tabular-nums; }
+.showing b { color: var(--ink); font-weight: 600; letter-spacing: 0.1em; }
+.showing em { font-style: normal; color: var(--signal); letter-spacing: 0.06em; text-transform: none; }
+@media (max-width: 900px) {
+  .showing { top: auto; bottom: -2.2rem; right: auto; left: 0; gap: var(--s-2); flex-wrap: wrap; }
+  .showing em { flex-basis: 100%; }
+}
 
 .lede {
   position: absolute;
@@ -600,7 +626,7 @@ figcaption {
   .spec { grid-template-columns: 1fr; }
   .lede h1 { font-size: var(--t-2xl); }
   .lede { bottom: clamp(1.5rem, 4vh, 3rem); left: var(--gutter); right: var(--gutter); }
-  .vitrine { left: var(--gutter); right: var(--gutter); bottom: 42%; }
+  .vitrine { left: var(--gutter); right: var(--gutter); bottom: 46%; }
   /* the posters stack rather than sitting side by side at postage stamp size */
   .panel { width: 78%; top: auto; transform: none; }
   .panel:nth-of-type(1) { left: 0; top: 2%; }
