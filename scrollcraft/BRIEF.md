@@ -318,3 +318,44 @@ That placement keeps it away from the peak. A moving thing in chapter one would
 have competed with the only other moving thing on the page; at the close there
 is nothing left to compete with, and ending a feature on the author's own frame
 is what a magazine does anyway.
+
+## Third revision: the render went, the photographs took over
+
+**"Make sure the AMG 3D diagram look boring, change it completely."** Right, and
+the reason is worth writing down: the shaded portal frame was technically good
+and still wrong. Grey solids on a dark ground read as CAD, and a CAD viewport is
+exactly the machine-made look the whole brief is against. Making a render more
+beautiful does not stop it being a render.
+
+Replaced, not tuned. The peak is now a **photographic figure that annotates
+itself**:
+
+- **Two real photographs on independent depth planes.** The far plate (a
+  delivered EKA assembly hall) pushes in across the act, from 1.20 scale to 1.0
+  and 104px of rise. The near plate (an interior fit out) **arrives**, travelling
+  210px up and 120px across from 0.88 scale, and lands in front of the far one.
+  The occlusion is the depth cue, and an arrival is the largest single change
+  the act contains.
+- **A survey drawn by scroll.** Lettered markers land on the photographs with
+  short leader stubs pointing at the thing each names, then a datum line with
+  ticks draws itself across the bottom. All of it from `stroke-dashoffset`
+  against `--sc-p`, with no JavaScript touching the peak at all.
+- **A key that lights line by line** as its marker lands.
+
+Three things this fixed beyond the brief:
+
+1. **The key used to fade from 25% opacity.** That is unreadable *and* fails
+   contrast on the graphite ground. The lines are now legible throughout and
+   only the letter changes colour, which is emphasis rather than concealment.
+2. **The harness reported dead scroll through the whole act, twice.** It compares
+   engine state, not pixels, and this act uses none of the engine's devices, so
+   it was invisible. `shoot.mjs` reads `[data-sc-verify-state]` for exactly this
+   case; the page now publishes its real visual state and the check sees it.
+   Worth stating plainly: the first dead-scroll report was also *correct* on its
+   own terms, because the plates were moving 30px across a whole act.
+3. **The phone needed its own composition.** The near plate overran the key at
+   390px. The figure goes portrait there, the plates stack down it, and the
+   entrance travel is cut from 210px to 92px.
+
+473 lines of renderer were deleted. `site.js` is now 250 lines and the peak is
+CSS.
