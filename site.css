@@ -709,6 +709,33 @@ figcaption, .plate__cap {
   max-width: var(--sc-maxw);
 }
 .colophon__rule { height: 1px; background: var(--sc-ink); margin: 0 0 var(--sc-7); opacity: 0.8; }
+
+/* the author's plate: a film frame, scrubbed by the last of the scroll */
+.plate-me {
+  position: relative;
+  margin: 0 0 var(--sc-8);
+  max-width: 44rem;
+  aspect-ratio: 1024 / 577;
+  overflow: hidden;
+  border: var(--rule-soft);
+  box-shadow: var(--sc-e2);
+  background: var(--sc-surface);
+}
+.plate-me__poster,
+.plate-me__clip {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.plate-me__clip { opacity: 0; transition: opacity 420ms var(--sc-ease-out); }
+/* the poster holds the frame until a real video frame has actually painted:
+   iOS keeps a seeked-but-never-played muted video blank, and swapping on
+   metadata alone flashes an empty box */
+.plate-me[data-ready] .plate-me__clip { opacity: 1; }
+.plate-me[data-ready] .plate-me__poster { opacity: 0; transition: opacity 420ms var(--sc-ease-out); }
 .colophon__say {
   margin: 0;
   max-width: 54ch;

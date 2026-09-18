@@ -28,7 +28,7 @@ changes only grammar and world will fail it.
 
 | Build | Grammar | Nav treatment | Hero device | Act-sequence shape | Close pattern | Signature move | World | Port |
 |---|---|---|---|---|---|---|---|---|
-| sahil-portfolio | Chaptered editorial | Load-path folio in the left margin, no bar, clickable, stamps as chapters pass | Title page, type on paper, no media above the fold | Title page > flow > reveal+parallax > ONE pin (4.6vh peak) > flow > colophon; 13.9vh total, 1 act | Colophon plate, smallest type on the site, ask set as running text, ends on "End of document." | The load-path folio: a 56 node mass-spring member solved per frame and loaded by scroll velocity, which is also the nav | Drafting sheet, three hard-cut grounds (cool white, quoted cream, graphite), live-projected 3D portal frame, no generated imagery | 2026-09-18 |
+| sahil-portfolio | Chaptered editorial | Load-path folio in the left margin, no bar, clickable, stamps as chapters pass | Title page, type on paper, no media above the fold | Title page > flow > reveal+parallax > ONE pin (4.6vh peak) > flow > colophon; 13.9vh total, 1 act | Colophon plate, smallest type on the site, ask set as running text, ends on "End of document." | The load-path folio: a 56 node mass-spring member solved per frame and loaded by scroll velocity, which is also the nav | Drafting sheet, three hard-cut grounds (cool white, quoted cream, graphite), live-projected 3D portal frame in shaded solids with a world-space light and ground shadow, resolving into real site photography; one scroll-scrubbed clip at the close; no generated imagery | 2026-09-18 |
 
 *(first build: nothing to clear. From the second onwards, this table is the
 constraint.)*
@@ -53,9 +53,15 @@ as a constraint, so writing them down is the whole point.
   one 4.6vh pin and ordinary flow sections. A second build that reaches for a
   single-pin shape is colliding on dimension 4.
 - **A colophon close** ending on a full stop rather than a CTA island.
-- **Live-projected 3D drawn on canvas 2D with a hand written projector.** The
-  technique is taken, not just the portal frame: another build rendering
-  wireframe geometry this way is reusing the hero device.
+- **Live-projected 3D drawn on canvas 2D with a hand written projector**, in
+  shaded solids against a world-space light, with painter's-algorithm depth
+  sorting and a projected ground shadow. The technique is taken, not just the
+  portal frame: another build rendering geometry this way is reusing the hero
+  device.
+- **A drawing that resolves into a photograph of the same thing built.** The
+  act ends by dissolving the render into real evidence of it.
+- **The author's plate**: a closing clip scrubbed against the page's remaining
+  scroll, so the footage lands on its last frame exactly at the document's end.
 
 ---
 
