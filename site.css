@@ -394,6 +394,16 @@ figcaption, .plate__cap {
   line-height: 1.1;
   letter-spacing: var(--sc-track-snug);
 }
+/* the second line of a two-line block value: the institution under the degree */
+.block__sub {
+  display: inline-block;
+  margin-top: 2px;
+  font-family: var(--sc-font-mono);
+  font-size: 0.66rem;
+  line-height: 1.45;
+  letter-spacing: 0.03em;
+  color: var(--sc-ink-soft);
+}
 .block__row--name .block__k { padding-top: var(--sc-4); }
 .block__cap {
   margin: var(--sc-3) 0 0;
