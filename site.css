@@ -575,7 +575,8 @@ figcaption {
    Reduced motion: the room stays, the travel goes.
    ============================================================= */
 @media (prefers-reduced-motion: reduce) {
-  .vitrine canvas { display: none; }
-  .vitrine .panel { opacity: 1 !important; }
+  /* The room stays. Only the travel goes: no orbit, no scrub, one static
+     frame. Hiding the scene here meant everyone with the OS setting on saw a
+     different, plainer page, which is not what reducing motion should cost. */
   .go span, .end__cta, .rail__list i { transition: none; }
 }
