@@ -9,7 +9,10 @@ import { execFileSync } from 'node:child_process';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const FF = 'C:/Users/sahil/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0.1-full_build/bin/ffmpeg.exe';
 
-const W = 1024, H = 640, FRAMES = 96;
+// Captured at 2x and delivered at 1360, so the text on each site is genuinely
+// resolved rather than upscaled. At 1024 the focused panel was being blown up
+// about 1.6x on screen, which is what made it look soft.
+const W = 1280, H = 800, SCALE = 2, FRAMES = 80;
 
 const jobs = [
   { name: 'amg', url: 'https://amgprojectsllp.com/', settle: 6500, to: 7200 },
@@ -25,7 +28,7 @@ for (const j of jobs) {
 
   const ctx = await browser.newContext({
     viewport: { width: W, height: H },
-    deviceScaleFactor: 1,
+    deviceScaleFactor: SCALE,
     reducedMotion: 'no-preference',
   });
   const page = await ctx.newPage();
@@ -63,10 +66,10 @@ for (const j of jobs) {
     '-crf', String(crf), '-preset', 'slow', '-movflags', '+faststart',
     '-y', out,
   ]);
-  enc(`assets/work/${j.name}.mp4`, 1024, 6, 27);
-  enc(`assets/work/${j.name}-m.mp4`, 640, 4, 30);
+  enc(`assets/work/${j.name}.mp4`, 1360, 6, 29);
+  enc(`assets/work/${j.name}-m.mp4`, 760, 4, 31);
   execFileSync(FF, ['-hide_banner', '-loglevel', 'error', '-i', `${dir}/000.png`,
-    '-vf', 'scale=1024:-2', '-q:v', '4', '-y', `assets/work/${j.name}-poster.jpg`]);
+    '-vf', 'scale=1360:-2', '-q:v', '4', '-y', `assets/work/${j.name}-poster.jpg`]);
   rmSync(dir, { recursive: true, force: true });
   console.log('recorded', j.name);
 }
