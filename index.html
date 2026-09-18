@@ -1,14 +1,397 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Portfolio of Sahil Pathak — AI &amp; full-stack developer building intelligent developer tools." />
-    <title>Sahil Pathak — AI / Full-Stack Developer</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sahil Pathak · Front end developer, Pune</title>
+<meta name="description" content="Front end developer in Pune. Two live commercial sites: AMG Turnkey Projects LLP and Desi Totes.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23E8E9EA'/><path d='M8 24V8h3l5 9 5-9h3v16h-3V14l-4 7h-2l-4-7v10z' fill='%2316181A'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300..700;1,6..72,300..600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="scrollcraft.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<span data-sc-progress></span>
+<div class="sc-grain" aria-hidden="true"></div>
+
+<a class="skip" href="#ch01">Skip to the first chapter</a>
+
+<!-- ============================================================
+     SIGNATURE MOVE: the load-path folio.
+     A structural elevation in the margin. Real 1D mass-spring chain,
+     solved per frame, loaded by scroll velocity. Chapters stamp nodes
+     as they pass. Doubles as the navigation, which is what this
+     grammar asks the folio to be. Drawn in site.js.
+     ============================================================ -->
+<nav class="folio" aria-label="Chapters">
+  <svg class="folio__draw" viewBox="0 0 120 1000" preserveAspectRatio="none" aria-hidden="true">
+    <path class="folio__datum" d="M60 0 V1000"></path>
+    <path class="folio__member"></path>
+  </svg>
+  <ol class="folio__list">
+    <li><a href="#ch01" data-folio-node><span class="folio__n">01</span><span class="folio__t">The brief</span></a></li>
+    <li><a href="#ch02" data-folio-node><span class="folio__n">02</span><span class="folio__t">Cloth</span></a></li>
+    <li><a href="#ch03" data-folio-node><span class="folio__n">03</span><span class="folio__t">Structure</span></a></li>
+    <li><a href="#ch04" data-folio-node><span class="folio__n">04</span><span class="folio__t">Workbench</span></a></li>
+    <li><a href="#colophon" data-folio-node><span class="folio__n">05</span><span class="folio__t">Colophon</span></a></li>
+  </ol>
+</nav>
+
+<main id="top">
+
+  <!-- ==========================================================
+       TITLE PAGE · Composure. Type on the paper ground.
+       No media above the fold: this grammar starts the media in
+       chapter one, and the silence here is what makes the first
+       hard cut land.
+       ========================================================== -->
+  <header class="title" data-sc-in data-sc-stagger="80">
+    <p class="title__mark">Sahil Pathak</p>
+    <h1 class="title__h">Everything here is live.</h1>
+    <p class="title__deck">
+      A construction and interiors firm in Pune. A cotton canvas label that
+      makes every bag to order. Two real businesses with real customers, and
+      both are one click away from this sentence.
+    </p>
+    <dl class="title__meta">
+      <div><dt>Discipline</dt><dd>Front end</dd></div>
+      <div><dt>Based</dt><dd>Pune, India</dd></div>
+      <div><dt>Sites live</dt><dd>Two</dd></div>
+    </dl>
+  </header>
+
+  <!-- ==========================================================
+       CHAPTER 01 · The brief. Recognition.
+       flow + in. Media in its own column, captioned.
+       ========================================================== -->
+  <section class="ch ch--paper" id="ch01">
+    <div class="ch__head" data-sc-in data-sc-stagger="70">
+      <p class="ch__folio">Chapter one</p>
+      <h2 class="ch__title">The brief</h2>
+    </div>
+
+    <div class="ch__body">
+      <div class="ch__text" data-sc-in data-sc-stagger="70">
+        <p class="lede">
+          I build the front of websites, and then I keep working on them after
+          they go up, which is the part that decides whether they are any good.
+        </p>
+        <p>
+          The two projects in this document are not exercises. One is the public
+          face of a construction company that people call to build a factory.
+          The other takes card payments for a tote bag and has to be right about
+          the price, the size and the shipping. Neither of them gets to be
+          approximately finished.
+        </p>
+        <p>
+          The work is React and Vite, with Tailwind for the system and GSAP
+          where scroll has to carry meaning. Node, Express and MongoDB behind it
+          when the page needs to remember something.
+        </p>
+      </div>
+
+      <!-- The title block: the panel every technical drawing carries in its
+           corner. It holds the identity here because the two photographs
+           available are soft candids with other people in frame. Swap in a
+           real portrait and this slot takes one without any other change. -->
+      <div class="ch__media" data-sc-reveal="up" data-sc-reveal-at="0.08 0.5">
+        <div class="block">
+          <div class="block__row block__row--name">
+            <span class="block__k">Drawn by</span>
+            <span class="block__v block__v--big">Sahil Pathak</span>
+          </div>
+          <div class="block__row">
+            <span class="block__k">Discipline</span>
+            <span class="block__v">Front end</span>
+          </div>
+          <div class="block__row">
+            <span class="block__k">Location</span>
+            <span class="block__v">Pune, India</span>
+          </div>
+          <div class="block__row">
+            <span class="block__k">Live</span>
+            <span class="block__v">
+              <a class="lnk" href="https://amgprojectsllp.com" target="_blank" rel="noopener">amgprojectsllp.com</a><br>
+              <a class="lnk" href="https://desitotes.com" target="_blank" rel="noopener">desitotes.com</a>
+            </span>
+          </div>
+          <div class="block__row">
+            <span class="block__k">Sheet</span>
+            <span class="block__v">01 of 05</span>
+          </div>
+        </div>
+        <p class="block__cap">
+          <span class="cap__n">Fig. 1</span>
+          Title block.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       CHAPTER 02 · Cloth. Warmth.
+       Hard cut to the client's own ground. reveal at the boundary,
+       parallax inside the media column. Real product photography.
+       The cream palette is quoted from the client, once, and the
+       page's own identity is never cream. See BRIEF.md.
+       ========================================================== -->
+  <section class="ch ch--cloth" id="ch02">
+    <div class="ch__head" data-sc-in data-sc-stagger="70">
+      <p class="ch__folio">Chapter two</p>
+      <h2 class="ch__title">Cloth</h2>
+      <p class="ch__deck">
+        Desi Totes. A canvas tote label that cuts, prints and finishes every
+        bag after the order comes in.
+      </p>
+    </div>
+
+    <div class="ch__body ch__body--wide">
+      <figure class="ch__media ch__media--tall" data-sc-reveal="up" data-sc-reveal-at="0.02 0.42">
+        <img src="assets/desi/plain_pocket_tote_natural.jpg"
+             alt="A natural cotton canvas tote with a front pocket, standing on a wooden table"
+             width="686" height="1024">
+        <figcaption>
+          <span class="cap__n">Fig. 2</span>
+          Plain pocket tote, natural. 320 GSM cotton canvas, hand finished.
+        </figcaption>
+      </figure>
+
+      <div class="ch__text" data-sc-in data-sc-stagger="70">
+        <p>
+          The brief for a made to order shop is different from a catalogue. There
+          is no warehouse behind it, so the page has to be precise about what a
+          customer is actually buying and honest about what happens next. Fabric
+          weight, finished size, zip or no zip, and the price difference between
+          them, all stated before anyone reaches a cart.
+        </p>
+        <p>
+          It runs a live currency switch, a persistent bag, and a quick add strip
+          that follows you down the page without ever covering the thing you are
+          reading.
+        </p>
+
+        <dl class="spec">
+          <div><dt>Fabric</dt><dd>320 GSM cotton canvas</dd></div>
+          <div><dt>Printed size</dt><dd>14 × 16 in</dd></div>
+          <div><dt>Colours</dt><dd>Black, Off White</dd></div>
+          <div><dt>With zip</dt><dd>₹299</dd></div>
+          <div><dt>Without zip</dt><dd>₹249</dd></div>
+          <div><dt>Free shipping</dt><dd>Over ₹999</dd></div>
+          <div><dt>Currencies</dt><dd>INR, USD</dd></div>
+          <div><dt>Made</dt><dd>To order, in India</dd></div>
+        </dl>
+      </div>
+    </div>
+
+    <div class="plate" aria-label="Desi Totes, printed range">
+      <div class="plate__rail">
+        <figure data-sc-parallax="0.5">
+          <img src="assets/desi/print_emotionalbaggage_natural.jpg" alt="Printed tote, natural canvas" width="600" height="600" loading="lazy">
+        </figure>
+        <figure data-sc-parallax="-0.8">
+          <img src="assets/desi/print_evil_eye_natural.jpg" alt="Printed tote, natural canvas" width="600" height="600" loading="lazy">
+        </figure>
+        <figure data-sc-parallax="0.35">
+          <img src="assets/desi/hobo_black.jpg" alt="Black canvas hobo tote" width="600" height="600" loading="lazy">
+        </figure>
+        <figure data-sc-parallax="-0.55">
+          <img src="assets/desi/print_daisy_black.jpg" alt="Printed tote, black canvas" width="600" height="600" loading="lazy">
+        </figure>
+      </div>
+      <p class="plate__cap">
+        <span class="cap__n">Fig. 3</span>
+        Four of the printed range. Screen printed by hand, zip optional on every design.
+      </p>
+    </div>
+
+    <figure class="ch__shot" data-sc-reveal="up" data-sc-reveal-at="0.1 0.6">
+      <img src="assets/shots/desi-work.jpg" alt="The Desi Totes product page, showing size, zip options and price" width="1800" height="1125" loading="lazy">
+      <figcaption>
+        <span class="cap__n">Fig. 4</span>
+        desitotes.com, product surface. Captured from the live site.
+      </figcaption>
+    </figure>
+
+    <p class="ch__out">
+      Live at <a class="lnk" href="https://desitotes.com" target="_blank" rel="noopener">desitotes.com</a>.
+    </p>
+  </section>
+
+  <!-- ==========================================================
+       CHAPTER 03 · Structure. Weight. THE PEAK.
+       Hard cut to graphite. The frame assembles under the reader's
+       own hand, then resolves into the real site.
+
+       This is the one pinned act on the page. The grammar forbids
+       pinned crossfade TYPE acts; the copy here is fixed technical
+       callouts against a building drawing, which is an editorial
+       form, not a filmic one. See BRIEF.md.
+       ========================================================== -->
+  <section class="ch ch--structure" id="ch03">
+    <div class="ch__head ch__head--invert" data-sc-in data-sc-stagger="70">
+      <p class="ch__folio">Chapter three</p>
+      <h2 class="ch__title">Structure</h2>
+      <p class="ch__deck">
+        AMG Turnkey Projects LLP. An ISO certified construction and interiors
+        firm in Pune that builds the shed, fits it out, and runs the services
+        through it.
+      </p>
+    </div>
+
+    <div class="peak" data-sc-act="pin" data-sc-span="4.6">
+      <div data-sc-stage>
+       <div class="peak__stage">
+        <div class="peak__frame">
+          <canvas class="peak__canvas" width="1200" height="820"
+                  role="img"
+                  aria-label="A pre engineered steel portal frame assembling: foundation pads, columns, rafters, purlins, cladding, then the services run."></canvas>
+          <p class="peak__reduced">
+            A pre engineered steel portal frame, drawn complete: four bays of
+            foundation pads, columns, rafters, purlins, cladding, and the
+            service runs below the roof.
+          </p>
+        </div>
+
+        <ol class="peak__callouts">
+          <!-- Single-value cues: each callout enters and holds, so the key
+               fills in beside the building and is complete and readable by
+               the end of the act. A crossfading pair never reaches full
+               opacity inside a window this tight, and the reader has to stop
+               on the right pixel to read it. -->
+          <li data-sc-cue="0.02"><span class="cap__n">01</span> Foundation pads set out, four bays.</li>
+          <li data-sc-cue="0.12"><span class="cap__n">02</span> Columns raised and plumbed.</li>
+          <li data-sc-cue="0.30"><span class="cap__n">03</span> Rafters landed, portal closed.</li>
+          <li data-sc-cue="0.50"><span class="cap__n">04</span> Purlins, sheeting and cladding.</li>
+          <li data-sc-cue="0.74"><span class="cap__n">05</span> MEP and HVAC run below the roof.</li>
+        </ol>
+
+        <p class="peak__hint">Drag to look around.</p>
+       </div>
+      </div>
+    </div>
+
+    <div class="ch__body ch__body--invert">
+      <div class="ch__text" data-sc-in data-sc-stagger="70">
+        <p class="lede">
+          That is the shape AMG manufactures, and the site had to carry all of
+          it: six service lines, three project categories, a corporate profile
+          request, and offices in three states.
+        </p>
+        <p>
+          The figures below belong to AMG and are published on their own site.
+          They are their record, not mine. My part of it was the front end.
+        </p>
+      </div>
+
+      <dl class="spec spec--invert">
+        <div><dt>Founded</dt><dd><span class="sc-nums" data-sc-count="0 25">0</span>+ years</dd></div>
+        <div><dt>Projects finished</dt><dd><span class="sc-nums" data-sc-count="0 50">0</span>+</dd></div>
+        <div><dt>Repeat orders</dt><dd><span class="sc-nums" data-sc-count="0 90">0</span>%</dd></div>
+        <div><dt>Certification</dt><dd>ISO certified</dd></div>
+        <div class="spec__wide"><dt>Offices</dt><dd>Maharashtra, Odisha, Chhattisgarh</dd></div>
+        <div class="spec__wide"><dt>Scope</dt><dd>Civil, PEB, interiors, modular furniture, MEP, HVAC</dd></div>
+      </dl>
+    </div>
+
+    <figure class="ch__shot ch__shot--invert" data-sc-reveal="up" data-sc-reveal-at="0.1 0.6">
+      <img src="assets/shots/amg-work.jpg" alt="The AMG Projects site, projects section, showing construction, interior and MEP categories" width="1800" height="1125" loading="lazy">
+      <figcaption>
+        <span class="cap__n">Fig. 5</span>
+        amgprojectsllp.com, projects index. Captured from the live site.
+      </figcaption>
+    </figure>
+
+    <div class="built" aria-label="Delivered projects">
+      <figure><img src="assets/amg/acl7.jpg" alt="A completed open plan office fit out with planted desk dividers and exposed red service lines" width="1600" height="1204" loading="lazy"><figcaption>Interior fit out, delivered.</figcaption></figure>
+      <figure><img src="assets/amg/eka.jpg" alt="An industrial assembly building delivered for Pinnacle Mobility Solutions" width="1280" height="578" loading="lazy"><figcaption>Pinnacle Mobility Solutions (EKA).</figcaption></figure>
+      <figure><img src="assets/amg/po22.jpg" alt="An industrial facility delivered for Plastic Omnium Auto Exteriors" width="1280" height="960" loading="lazy"><figcaption>Plastic Omnium Auto Exteriors.</figcaption></figure>
+    </div>
+
+    <p class="ch__out ch__out--invert">
+      Live at <a class="lnk" href="https://amgprojectsllp.com" target="_blank" rel="noopener">amgprojectsllp.com</a>.
+    </p>
+  </section>
+
+  <!-- ==========================================================
+       CHAPTER 04 · Workbench. Curiosity.
+       Deliberately the shortest chapter. Label schema, not pitch:
+       lab work has not earned the room client work gets, and
+       pretending otherwise is what makes a portfolio read thin.
+       ========================================================== -->
+  <section class="ch ch--paper" id="ch04">
+    <div class="ch__head" data-sc-in data-sc-stagger="70">
+      <p class="ch__folio">Chapter four</p>
+      <h2 class="ch__title">Workbench</h2>
+      <p class="ch__deck">
+        Things built to find out whether they could be. No clients, no traffic,
+        and listed here as what they are.
+      </p>
+    </div>
+
+    <ol class="bench" data-sc-in data-sc-stagger="60">
+      <li>
+        <h3>AiCompiler</h3>
+        <dl>
+          <div><dt>What</dt><dd>An editor in the shape of VS Code that suggests machine learning snippets from a trained model as you type.</dd></div>
+          <div><dt>Stack</dt><dd>React, Vite, Node</dd></div>
+          <div><dt>Status</dt><dd>Personal project</dd></div>
+        </dl>
+      </li>
+      <li>
+        <h3>AI Terminal</h3>
+        <dl>
+          <div><dt>What</dt><dd>A terminal surface for chatting against a model and pulling a URL apart in the same session.</dd></div>
+          <div><dt>Stack</dt><dd>React, Node, Express</dd></div>
+          <div><dt>Status</dt><dd>Personal project</dd></div>
+        </dl>
+      </li>
+      <li>
+        <h3>AI Ecommerce</h3>
+        <dl>
+          <div><dt>What</dt><dd>A storefront used to work out how far a model can go in a buying flow before it stops being useful.</dd></div>
+          <div><dt>Stack</dt><dd>React, MongoDB</dd></div>
+          <div><dt>Status</dt><dd>Personal project</dd></div>
+        </dl>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ==========================================================
+       COLOPHON · Resolve. The masthead plate.
+       Smallest type on the site. The ask is set as a line of
+       running text, not a button island. The page stops.
+       ========================================================== -->
+  <footer class="colophon" id="colophon">
+    <div class="colophon__inner" data-sc-in data-sc-stagger="60">
+      <p class="colophon__rule" aria-hidden="true"></p>
+
+      <p class="colophon__say">
+        If you have something that has to go live and stay live, write to me at
+        <a class="lnk" href="mailto:sahilpathak2005@gmail.com">sahilpathak2005@gmail.com</a>
+        and tell me what it has to do. The code is at
+        <a class="lnk" href="https://github.com/sahil454521" target="_blank" rel="noopener">github.com/sahil454521</a>.
+      </p>
+
+      <dl class="colophon__meta">
+        <div><dt>Set in</dt><dd>Newsreader and IBM Plex Mono</dd></div>
+        <div><dt>Photography</dt><dd>Desi Totes and AMG Projects, used with permission</dd></div>
+        <div><dt>Drawing</dt><dd>Portal frame, projected and rendered in the page</dd></div>
+        <div><dt>Built with</dt><dd>Plain HTML, one stylesheet, no framework</dd></div>
+      </dl>
+
+      <p class="colophon__end">Sahil Pathak, Pune. <span>End of document.</span></p>
+    </div>
+  </footer>
+
+</main>
+
+<script src="scrollcraft.js"></script>
+<script src="site.js"></script>
+<script>ScrollCraft.mount(document.body);</script>
+</body>
 </html>
