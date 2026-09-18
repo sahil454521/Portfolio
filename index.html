@@ -96,11 +96,11 @@
         </p>
       </div>
 
-      <!-- The title block: the panel every technical drawing carries in its
-           corner. It holds the identity here because the two photographs
-           available are soft candids with other people in frame. Swap in a
-           real portrait and this slot takes one without any other change. -->
+      <!-- Portrait over the title block: the panel every technical drawing
+           carries in its corner, with the person who drew it above it. -->
       <div class="ch__media" data-sc-reveal="up" data-sc-reveal-at="0.08 0.5">
+        <img class="block__portrait" src="assets/me/portrait.jpg"
+             alt="Sahil Pathak" width="1000" height="1333">
         <div class="block">
           <div class="block__row block__row--name">
             <span class="block__k">Drawn by</span>
@@ -135,7 +135,7 @@
         </div>
         <p class="block__cap">
           <span class="cap__n">Fig. 1</span>
-          Title block.
+          Sahil Pathak, and the title block.
         </p>
       </div>
     </div>
@@ -251,10 +251,18 @@
       </p>
     </div>
 
-    <div class="peak" data-sc-act="pin" data-sc-span="4.6">
+    <div class="peak" data-sc-act="pin" data-sc-span="4.2">
       <div data-sc-stage>
        <div class="peak__stage">
         <div class="peak__frame">
+          <!-- The resolve. The drawing dissolves into a photograph of the same
+               frame, built and working: columns, rafters, purlins and the
+               services running under the roof, with buses being assembled
+               under it. Opacity is driven off the act's own --sc-p, so the
+               cross-fade is scroll, not a timer. -->
+          <img class="peak__photo" src="assets/amg/eka.jpg"
+               alt="Inside a completed steel portal frame building: columns, rafters, purlins and service runs overhead, with electric buses on the assembly line below"
+               width="1280" height="578" fetchpriority="high">
           <canvas class="peak__canvas" width="1200" height="820"
                   role="img"
                   aria-label="A pre engineered steel portal frame assembling: foundation pads, columns, rafters, purlins, cladding, then the services run."></canvas>
@@ -271,11 +279,12 @@
                the end of the act. A crossfading pair never reaches full
                opacity inside a window this tight, and the reader has to stop
                on the right pixel to read it. -->
-          <li data-sc-cue="0.02"><span class="cap__n">01</span> Foundation pads set out, four bays.</li>
-          <li data-sc-cue="0.12"><span class="cap__n">02</span> Columns raised and plumbed.</li>
-          <li data-sc-cue="0.30"><span class="cap__n">03</span> Rafters landed, portal closed.</li>
-          <li data-sc-cue="0.50"><span class="cap__n">04</span> Purlins, sheeting and cladding.</li>
-          <li data-sc-cue="0.74"><span class="cap__n">05</span> MEP and HVAC run below the roof.</li>
+          <li data-sc-cue="0.01"><span class="cap__n">01</span> Foundation pads set out, four bays.</li>
+          <li data-sc-cue="0.07"><span class="cap__n">02</span> Columns raised and plumbed.</li>
+          <li data-sc-cue="0.19"><span class="cap__n">03</span> Rafters landed, portal closed.</li>
+          <li data-sc-cue="0.33"><span class="cap__n">04</span> Purlins, sheeting and cladding.</li>
+          <li data-sc-cue="0.47"><span class="cap__n">05</span> MEP and HVAC run below the roof.</li>
+          <li class="peak__built" data-sc-cue="0.68"><span class="cap__n">06</span> Built. Pinnacle Mobility Solutions, Pune.</li>
         </ol>
 
         <p class="peak__hint">Drag to look around.</p>
@@ -316,7 +325,7 @@
 
     <div class="built" aria-label="Delivered projects">
       <figure><img src="assets/amg/acl7.jpg" alt="A completed open plan office fit out with planted desk dividers and exposed red service lines" width="1600" height="1204" loading="lazy"><figcaption>Interior fit out, delivered.</figcaption></figure>
-      <figure><img src="assets/amg/eka.jpg" alt="An industrial assembly building delivered for Pinnacle Mobility Solutions" width="1280" height="578" loading="lazy"><figcaption>Pinnacle Mobility Solutions (EKA).</figcaption></figure>
+      <figure><img src="assets/amg/hdfc.jpg" alt="A completed open plan office floor, workstations and screens installed" width="1600" height="1200" loading="lazy"><figcaption>Corporate office fit out, HDFC.</figcaption></figure>
       <figure><img src="assets/amg/po22.jpg" alt="An industrial facility delivered for Plastic Omnium Auto Exteriors" width="1280" height="960" loading="lazy"><figcaption>Plastic Omnium Auto Exteriors.</figcaption></figure>
     </div>
 
