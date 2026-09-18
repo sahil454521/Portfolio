@@ -116,9 +116,14 @@
       targets.forEach((el, i) => {
         if (!el) return;
         const top = el.getBoundingClientRect().top;
+        // Stamps track position rather than accumulating forever. A folio that
+        // shows every chapter stamped while you are still on the title page is
+        // telling you something untrue about where you are.
         if (top <= line) {
           links[i].setAttribute('data-stamped', '');
           here = i;
+        } else {
+          links[i].removeAttribute('data-stamped');
         }
       });
       links.forEach((a, i) => a.toggleAttribute('data-here', i === here));
@@ -246,12 +251,15 @@
     // Front loaded: p is 0 for the whole viewport the stage spends sliding in,
     // so a slow first phase means a screen of almost nothing. The pads are
     // quick and the two rich phases get the room.
+    // The assembly finishes at 0.60 and the last 40% belongs to the resolve,
+    // where the drawing dissolves into the photograph. Nothing holds on an
+    // unchanging frame: that is what made the act feel stuck.
     const PHASE = [
-      [0.00, 0.12],  // 0 pads
-      [0.08, 0.30],  // 1 columns
-      [0.26, 0.52],  // 2 rafters
-      [0.46, 0.76],  // 3 purlins, sheeting, cladding
-      [0.70, 0.94],  // 4 services
+      [0.00, 0.07],  // 0 pads
+      [0.05, 0.19],  // 1 columns
+      [0.16, 0.33],  // 2 rafters
+      [0.29, 0.48],  // 3 purlins, sheeting, cladding
+      [0.44, 0.60],  // 4 services
     ];
     const maxOrder = (arr) => arr.reduce((m, o) => Math.max(m, o.order), 0);
     const oPads = maxOrder(pads);
@@ -425,12 +433,15 @@
       if (!W) return;
       const p = progress();
 
-      // the camera orbits a little across the act, so the building is read
-      // from more than one side without the reader doing anything
-      yawT = -0.86 + p * 0.52;
-      if (still) { yaw = yawT; pitch = pitchT; }
+      // The camera orbits across the act, so the building is read from more
+      // than one side without the reader doing anything. A slow breath is
+      // added on top: a frozen render reads as a broken page even when it is
+      // correct, and this is what keeps the frame alive once it is complete.
+      const breath = still ? 0 : Math.sin(performance.now() / 4200) * 0.045;
+      yawT = -0.86 + p * 0.52 + breath;
+      if (still) { yaw = -0.86 + p * 0.52; pitch = pitchT; }
       else {
-        pitch += (pitchT - pitch) * 0.08;
+        pitch += (pitchT + Math.sin(performance.now() / 5600) * 0.012 - pitch) * 0.06;
         yaw += (yawT + dragYaw - yaw) * 0.08;
       }
 

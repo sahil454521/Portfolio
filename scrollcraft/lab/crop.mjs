@@ -5,12 +5,12 @@ import { chromium } from 'playwright-core';
 import { readFileSync, writeFileSync } from 'node:fs';
 
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
-const src = 'assets/me/profile2.jpg';
+const src = process.argv[2] || 'legacy/src/assets/profile.jpg';
 const dst = 'assets/me/portrait.jpg';
 
 // source is 2200x2200; this window holds the subject and excludes the others
-const CROP = { x: 770, y: 530, w: 700, h: 875 };
-const OUT = { w: 900, h: 1125 };
+const CROP = { x: 0, y: 0, w: 3024, h: 4032 };
+const OUT = { w: 1000, h: 1333 };
 
 const b64 = readFileSync(src).toString('base64');
 const browser = await chromium.launch({ executablePath: CHROME });

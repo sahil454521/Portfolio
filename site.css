@@ -182,15 +182,22 @@ body {
 /* =============================================================
    TITLE PAGE · type on paper. No media above the fold.
    ============================================================= */
+/* Two columns: the statement on the left, the credits set as a masthead
+   sidebar on the right. Left-aligned text in a wide frame leaves a void on
+   the right that reads as unfinished rather than as air. */
 .title {
   min-height: 100svh;
   display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
+  column-gap: var(--sc-9);
   align-content: center;
   padding-block: var(--sc-9);
   padding-inline: var(--sc-gutter);
   padding-left: calc(var(--folio-w) + var(--sc-gutter));
   max-width: calc(var(--sc-maxw) + var(--folio-w));
 }
+.title__mark, .title__h { grid-column: 1 / -1; }
+.title__deck { grid-column: 1; }
 .title__mark {
   font-family: var(--sc-font-mono);
   font-size: var(--sc-t-xs);
@@ -218,13 +225,13 @@ body {
   text-wrap: pretty;
 }
 .title__meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--sc-4) var(--sc-7);
-  margin: var(--sc-9) 0 0;
-  padding-top: var(--sc-4);
-  border-top: var(--rule);
-  max-width: 46ch;
+  grid-column: 2;
+  align-self: end;
+  display: grid;
+  gap: var(--sc-4);
+  margin: var(--sc-6) 0 0;
+  padding-left: var(--sc-5);
+  border-left: var(--rule);
 }
 .title__meta div { display: grid; gap: 2px; }
 .title__meta dt { color: var(--sc-ink-soft); }
@@ -234,9 +241,25 @@ body {
   font-size: var(--sc-t-base);
 }
 
+@media (max-width: 900px) {
+  /* the sidebar has nowhere to go on a narrow frame, so it returns to a
+     row under the deck rather than squeezing into a column two words wide */
+  .title { grid-template-columns: 1fr; }
+  .title__deck, .title__meta { grid-column: 1; }
+  .title__meta {
+    grid-auto-flow: column;
+    justify-content: start;
+    gap: var(--sc-6);
+    margin-top: var(--sc-8);
+    padding: var(--sc-4) 0 0;
+    border-left: 0;
+    border-top: var(--rule);
+  }
+}
 @media (max-width: 700px) {
   .title__h { font-size: var(--sc-t-2xl); max-width: 16ch; }
   .title__deck { font-size: var(--sc-t-base); }
+  .title__meta { gap: var(--sc-5); }
 }
 
 /* =============================================================
@@ -359,6 +382,20 @@ figcaption, .plate__cap {
   box-shadow: var(--sc-e2);
 }
 .ch__media--portrait { max-width: 30rem; }
+
+/* the portrait sits directly on the title block, one object, sharing a border */
+.block__portrait {
+  display: block;
+  width: 100%;
+  max-width: 26rem;
+  height: auto;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: 56% 42%;
+  border: 1px solid var(--sc-ink);
+  border-bottom: 0;
+  box-shadow: var(--sc-e2);
+}
 
 /* the drawing title block */
 .block {
@@ -521,17 +558,33 @@ figcaption, .plate__cap {
 }
 .peak__frame {
   position: relative;
-  aspect-ratio: 5 / 4;
+  aspect-ratio: 3 / 2;
   max-height: 72svh;
   width: 100%;
 }
+/* The photograph the drawing resolves into. Both opacities are driven from
+   --sc-p, which the engine publishes on the act, so the dissolve is scroll
+   position and nothing else. They cross between 0.70 and 0.82. */
+.peak__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  opacity: clamp(0, calc((var(--sc-p, 0) - 0.62) * 5), 1);
+  border: 1px solid color-mix(in oklab, var(--sc-ink) 16%, transparent);
+}
 .peak__canvas {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%; height: 100%;
   touch-action: pan-y;
   cursor: grab;
+  opacity: clamp(0, calc((0.90 - var(--sc-p, 0)) * 5), 1);
 }
 .peak__canvas:active { cursor: grabbing; }
+/* the last callout belongs to the photograph, so it takes the accent rule */
+.peak__built { border-left-color: var(--sc-accent) !important; }
 /* Fallback for a page whose script never ran. Once site.js boots it stands
    down, because the drawing itself is then the description. */
 .peak__reduced {
