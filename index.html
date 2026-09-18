@@ -387,6 +387,19 @@
     <div class="colophon__inner" data-sc-in data-sc-stagger="60">
       <p class="colophon__rule" aria-hidden="true"></p>
 
+      <!-- The author's plate. The clip is scrubbed by the last stretch of
+           scroll on the page, so it finishes exactly as the document does.
+           It never plays on its own, carries no audio track, and falls back
+           to its poster frame under reduced motion. -->
+      <figure class="plate-me" data-scrub
+              data-scrub-src="assets/me/colophon.mp4"
+              data-scrub-src-mobile="assets/me/colophon-m.mp4">
+        <img class="plate-me__poster" src="assets/me/colophon-poster.jpg"
+             alt="Sahil Pathak" width="1024" height="577">
+        <video class="plate-me__clip" muted playsinline preload="none"
+               aria-hidden="true" tabindex="-1"></video>
+      </figure>
+
       <p class="colophon__say">
         If you have something that has to go live and stay live, write to me at
         <a class="lnk" href="mailto:sahilpathak2005@gmail.com">sahilpathak2005@gmail.com</a>

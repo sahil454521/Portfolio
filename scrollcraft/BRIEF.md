@@ -273,3 +273,48 @@ marked visited. Stamps now track position in both directions.
 **One bookkeeping error, recorded because the file is the record.** An earlier
 edit to this brief rewrote everything from the facts section down, which
 silently dropped the feel check and the portrait note. Both are restored above.
+
+## Second revision: the frame became an object, and the clip went in
+
+**"The scroll animation isn't looking that good, it should look 3D and smooth."**
+Fair. What was there was a wireframe: single-pixel lines and flat translucent
+quads. Every individual thing about it was correct and it still read as a
+diagram, because nothing in it obeyed light.
+
+Rewritten. Each member is now a **solid**: a six-faced box built around the
+member axis, with outward normals forced at construction so back-face culling
+is reliable, each face shaded against one light fixed in world space rather
+than to the camera. Turning the building therefore changes which faces are lit,
+which is the whole reason it reads as an object. Added with it:
+
+- **A ground shadow** under the footprint, offset along the light. Almost all of
+  what anchors a rendered thing to a surface is its shadow.
+- **Distance fog** on every face, so the far bays sit back.
+- **Real cladding**, lit by its own normal and kept translucent (0.55 roof,
+  0.28 walls). The first attempt was opaque and near-white and swallowed the
+  steel it was supposed to clad, which was worse than the wireframe.
+- **Stronger perspective**: camera distance 7.4 to 6.4, with the fit scale
+  pulled back so the near bay stays inside the frame.
+
+**"And smooth."** The judder was not the render, it was the input. `--sc-p` was
+being read raw, and wheel events arrive in lumps, so the frame stepped with
+them. Everything downstream now reads a lerped copy of it. Measured at 114 fps
+during the act, with about 380 shaded quads a frame.
+
+**The video, reconsidered.** It was previously turned down at 8.1 MB with no
+encoder available. `ffmpeg` was then installed, which changes the arithmetic
+entirely, and `cropdetect` showed the real content is **1080x608 at y=656**: a
+16:9 clip letterboxed inside a 9:16 file. So it was never a portrait, and
+cropping it to one would have thrown away the framing and upscaled the result.
+
+It is now **the author's plate at the close**, at its true 16:9, scrubbed by the
+last stretch of scroll on the page so it finishes exactly as the document does.
+530 KB desktop and 341 KB mobile, dense GOP so it seeks rather than wades, audio
+stripped, poster held until a real frame has painted, and the poster alone under
+reduced motion. `ffprobe` put the scene cut at about 5.4 s, so it is trimmed to
+0.3-5.15 and never crosses it.
+
+That placement keeps it away from the peak. A moving thing in chapter one would
+have competed with the only other moving thing on the page; at the close there
+is nothing left to compete with, and ending a feature on the author's own frame
+is what a magazine does anyway.

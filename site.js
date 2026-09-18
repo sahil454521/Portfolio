@@ -175,7 +175,7 @@
     const RIDGE = 1.95;     // ridge height, so the roof pitch lands near 14deg
     const FRAMES = 5;        // number of portals
     const GAP = 1.15;     // bay spacing
-    const DIST = 7.4;      // camera distance
+    const DIST = 6.4;      // camera distance. Closer reads as more perspective.
 
     const zAt = (i) => (i - (FRAMES - 1) / 2) * GAP;
 
@@ -230,11 +230,12 @@
     for (let i = 0; i < FRAMES - 1; i++) {
       const z1 = zAt(i), z2 = zAt(i + 1);
       // roof planes
-      panels.push({ q: [[-SPAN, HGT, z1], [0, RIDGE, z1], [0, RIDGE, z2], [-SPAN, HGT, z2]], order: i * 4 });
-      panels.push({ q: [[SPAN, HGT, z1], [0, RIDGE, z1], [0, RIDGE, z2], [SPAN, HGT, z2]], order: i * 4 + 1 });
-      // side wall sheeting, which is what stops it reading as a tent
-      panels.push({ q: [[-SPAN, 0, z1], [-SPAN, HGT, z1], [-SPAN, HGT, z2], [-SPAN, 0, z2]], order: i * 4 + 2 });
-      panels.push({ q: [[SPAN, 0, z1], [SPAN, HGT, z1], [SPAN, HGT, z2], [SPAN, 0, z2]], order: i * 4 + 3 });
+      panels.push({ q: [[-SPAN, HGT, z1], [0, RIDGE, z1], [0, RIDGE, z2], [-SPAN, HGT, z2]], order: i * 4, alpha: 0.55 });
+      panels.push({ q: [[SPAN, HGT, z1], [0, RIDGE, z1], [0, RIDGE, z2], [SPAN, HGT, z2]], order: i * 4 + 1, alpha: 0.55 });
+      // side wall sheeting, which is what stops it reading as a tent. Kept
+      // light enough to see the frame through, because the frame is the point.
+      panels.push({ q: [[-SPAN, 0, z1], [-SPAN, HGT, z1], [-SPAN, HGT, z2], [-SPAN, 0, z2]], order: i * 4 + 2, alpha: 0.28 });
+      panels.push({ q: [[SPAN, 0, z1], [SPAN, HGT, z1], [SPAN, HGT, z2], [SPAN, 0, z2]], order: i * 4 + 3, alpha: 0.28 });
     }
     // gable ends
     [0, FRAMES - 1].forEach((i, k) => {
@@ -242,6 +243,7 @@
       panels.push({
         q: [[-SPAN, 0, z], [-SPAN, HGT, z], [0, RIDGE, z], [SPAN, HGT, z], [SPAN, 0, z]],
         order: (FRAMES - 2) * 4 + k,
+        alpha: 0.3,
       });
     });
 
@@ -276,23 +278,28 @@
     }
 
     /* ---- camera ---------------------------------------------------- */
-    let yaw = -0.62, pitch = 0.16;
+    let yaw = -0.92, pitch = 0.21;
     let yawT = yaw, pitchT = pitch;
     let dragging = false, lastX = 0, lastY = 0;
 
-    function project(pt, w, h) {
+    // Rotation alone, with no perspective. Face normals go through this so a
+    // back face can be told from a front one.
+    function rot(pt) {
       const [px, py, pz] = pt;
       const cy = Math.cos(yaw), sy = Math.sin(yaw);
-      let X = px * cy - pz * sy;
-      let Z = px * sy + pz * cy;
+      const X = px * cy - pz * sy;
+      const Z0 = px * sy + pz * cy;
       const cp = Math.cos(pitch), sp = Math.sin(pitch);
-      let Y = py * cp - Z * sp;
-      Z = py * sp + Z * cp;
+      return [X, py * cp - Z0 * sp, py * sp + Z0 * cp];
+    }
+
+    function project(pt, w, h) {
+      const [X, Y, Z] = rot(pt);
 
       // Fit the building to the box rather than to a magic number: the
       // vertical term keeps the ridge off the top edge, the horizontal term
       // keeps the gable ends inside the gutters at any aspect ratio.
-      const s0 = Math.min(h * 0.27, w * 0.150);
+      const s0 = Math.min(h * 0.235, w * 0.128);
       const f = s0 * DIST;
       const d = Z + DIST;
       const s = f / d;
@@ -314,87 +321,160 @@
     }
 
     const css = getComputedStyle(document.querySelector('.ch--structure'));
-    const INK = css.getPropertyValue('--sc-ink').trim() || '#EDEEEF';
-    const ACCENT = css.getPropertyValue('--sc-accent').trim() || '#FF6A4D';
-    const SOFT = css.getPropertyValue('--sc-ink-soft').trim() || '#9AA1A8';
+    const hex = (v, fb) => {
+      const s = (v || '').trim() || fb;
+      const m = /^#?([0-9a-f]{6})$/i.exec(s);
+      if (!m) return [237, 238, 239];
+      const n = parseInt(m[1], 16);
+      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+    };
+    const INK_C = hex(css.getPropertyValue('--sc-ink'), '#EDEEEF');
+    const ACC_C = hex(css.getPropertyValue('--sc-accent'), '#FF6A4D');
+    const SOFT_C = hex(css.getPropertyValue('--sc-ink-soft'), '#9AA1A8');
+    const SOFT = 'rgb(' + SOFT_C.join(',') + ')';
 
-    // depth cue: further members are thinner and quieter. Without this it
-    // reads as a flat diagram rather than a thing standing in space.
-    const depthA = (z) => clamp(1.35 - (z - 5.2) * 0.30, 0.22, 1);
+    /* ---- small vector helpers -------------------------------------- */
+    const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+    const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]];
+    const mul = (a, k) => [a[0] * k, a[1] * k, a[2] * k];
+    const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+    const cross = (a, b) => [
+      a[1] * b[2] - a[2] * b[1],
+      a[2] * b[0] - a[0] * b[2],
+      a[0] * b[1] - a[1] * b[0],
+    ];
+    const nrm = (a) => {
+      const l = Math.hypot(a[0], a[1], a[2]) || 1;
+      return [a[0] / l, a[1] / l, a[2] / l];
+    };
 
-    function line(a, b, t, colour, weight) {
-      if (t <= 0) return;
-      const A = project(a, W, H);
-      const B = project(b, W, H);
-      const ex = lerp(A.x, B.x, t), ey = lerp(A.y, B.y, t);
-      const dim = depthA((A.z + B.z) / 2);
-      ctx.globalAlpha = dim * clamp(t * 2.2, 0, 1);
-      ctx.strokeStyle = colour;
-      ctx.lineWidth = weight * dim * (A.s / 90 + 0.55);
-      ctx.beginPath();
-      ctx.moveTo(A.x, A.y);
-      ctx.lineTo(ex, ey);
-      ctx.stroke();
+    // One fixed light in world space, from high front left. Fixed rather than
+    // camera-relative, so turning the building changes which faces are lit,
+    // which is the whole reason it reads as an object instead of a diagram.
+    const LIGHT = nrm([-0.42, 0.82, -0.39]);
+
+    // depth cue for the remaining line work
+    const depthA = (z) => clamp(1.35 - (z - 4.0) * 0.30, 0.22, 1);
+
+    /* ---- a member is a solid, not a line ----------------------------
+       Six quads with outward normals, shaded against the light and depth
+       sorted with everything else. This is the change that makes the frame
+       read as steel standing in space rather than as a wireframe.        */
+    function boxFaces(a, b, hw, hh) {
+      const d = nrm(sub(b, a));
+      const ref = Math.abs(d[1]) > 0.9 ? [1, 0, 0] : [0, 1, 0];
+      const u = nrm(cross(d, ref));
+      const v = nrm(cross(u, d));
+      const ends = [a, b];
+      const c = [];
+      for (const e of ends) {
+        for (const [su, sv] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+          c.push(add(e, add(mul(u, su * hw), mul(v, sv * hh))));
+        }
+      }
+      const centre = mul(add(a, b), 0.5);
+      const idx = [
+        [0, 1, 2, 3], [4, 5, 6, 7],
+        [0, 4, 5, 1], [1, 5, 6, 2], [2, 6, 7, 3], [3, 7, 4, 0],
+      ];
+      return idx.map((f) => {
+        let q = f.map((i) => c[i]);
+        let n = nrm(cross(sub(q[1], q[0]), sub(q[2], q[0])));
+        const mid = mul(q.reduce(add, [0, 0, 0]), 0.25);
+        // force the normal outward, so back-face culling is reliable
+        if (dot(sub(mid, centre), n) < 0) { q = [q[0], q[3], q[2], q[1]]; n = mul(n, -1); }
+        return { q, n };
+      });
     }
 
-    function node(p, t) {
-      if (t <= 0) return;
-      const P = project(p, W, H);
-      const dim = depthA(P.z);
-      ctx.globalAlpha = dim * t;
-      ctx.fillStyle = INK;
-      const r = 2.0 * dim;
+    function pushSolid(list, a, b, t, rgb, hw, hh) {
+      // members grow from their start point, so the eye follows the erection
+      const end = [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+      if (Math.hypot(...sub(end, a)) < 1e-4) return;
+      for (const f of boxFaces(a, end, hw, hh)) {
+        if (rot(f.n)[2] >= 0) continue;                     // facing away
+        const pr = f.q.map((v) => project(v, W, H));
+        const z = (pr[0].z + pr[1].z + pr[2].z + pr[3].z) / 4;
+        const k = 0.30 + 0.70 * Math.max(0, dot(f.n, LIGHT));
+        const fog = clamp(1.15 - (z - 4.2) * 0.13, 0.55, 1);
+        const col = 'rgb(' + rgb.map((c) => Math.round(c * k * fog)).join(',') + ')';
+        list.push({ z, fn: () => fillQuad(pr, col, clamp(t * 3, 0, 1)) });
+      }
+    }
+
+    function fillQuad(pr, col, alpha) {
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = col;
       ctx.beginPath();
-      ctx.arc(P.x, P.y, r, 0, Math.PI * 2);
+      ctx.moveTo(pr[0].x, pr[0].y);
+      for (let i = 1; i < pr.length; i++) ctx.lineTo(pr[i].x, pr[i].y);
+      ctx.closePath();
       ctx.fill();
     }
 
     function pad(p, t) {
       if (t <= 0) return;
-      const s = 0.26 * t;
+      const s = 0.30 * t;
       const q = [
-        [p[0] - s, 0, p[2] - s], [p[0] + s, 0, p[2] - s],
-        [p[0] + s, 0, p[2] + s], [p[0] - s, 0, p[2] + s],
+        [p[0] - s, 0.012, p[2] - s], [p[0] + s, 0.012, p[2] - s],
+        [p[0] + s, 0.012, p[2] + s], [p[0] - s, 0.012, p[2] + s],
       ].map((v) => project(v, W, H));
-      const dim = depthA(q[0].z);
-      ctx.globalAlpha = dim * 0.9 * t;
-      ctx.fillStyle = SOFT;
+      ctx.globalAlpha = 0.5 * t;
+      ctx.fillStyle = 'rgb(' + SOFT_C.map((c) => Math.round(c * 0.45)).join(',') + ')';
       ctx.beginPath();
       q.forEach((v, i) => (i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)));
       ctx.closePath();
-      ctx.globalAlpha = dim * 0.22 * t;
       ctx.fill();
-      ctx.globalAlpha = dim * 0.8 * t;
+      ctx.globalAlpha = 0.65 * t;
       ctx.strokeStyle = SOFT;
       ctx.lineWidth = 1;
       ctx.stroke();
     }
 
-    function panel(q, t) {
+    // cladding: a real surface, lit like one
+    function panel(q, t, rgb, alpha) {
       if (t <= 0) return;
       const pr = q.map((v) => project(v, W, H));
-      const dim = depthA(pr.reduce((s, v) => s + v.z, 0) / 4);
-      ctx.globalAlpha = dim * 0.13 * t;
-      ctx.fillStyle = INK;
+      const n = nrm(cross(sub(q[1], q[0]), sub(q[2], q[0])));
+      const facing = rot(n)[2] < 0 ? n : mul(n, -1);
+      const k = 0.10 + 0.26 * Math.max(0, dot(facing, LIGHT));
+      fillQuad(pr, 'rgb(' + rgb.map((c) => Math.round(c * k)).join(',') + ')', alpha * t);
+    }
+
+    // the building throws a shadow, which is most of what anchors it
+    function groundShadow(t) {
+      if (t <= 0) return;
+      const off = [LIGHT[0] * -0.55, 0, LIGHT[2] * -0.55];
+      const zext = ((FRAMES - 1) / 2) * GAP;
+      const q = [
+        [-SPAN * 1.04, 0.004, -zext], [SPAN * 1.04, 0.004, -zext],
+        [SPAN * 1.04, 0.004, zext], [-SPAN * 1.04, 0.004, zext],
+      ].map((v) => project(add(v, off), W, H));
+      ctx.globalAlpha = 0.34 * t;
+      ctx.fillStyle = '#000';
       ctx.beginPath();
-      pr.forEach((v, i) => (i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)));
+      q.forEach((v, i) => (i ? ctx.lineTo(v.x, v.y) : ctx.moveTo(v.x, v.y)));
       ctx.closePath();
+      ctx.filter = 'blur(14px)';
       ctx.fill();
+      ctx.filter = 'none';
     }
 
     // Setting out: the whole frame drawn faint and dashed from the first
     // frame, the way a drawing carries its setting-out lines before anything
     // is built. It also means the stage is never an empty screen while the
     // act slides in and p is still pinned at 0.
-    function settingOut() {
+    function settingOut(p) {
+      const fade = clamp(1 - (p - 0.45) * 2.2, 0, 1);
+      if (fade <= 0.01) return;
       ctx.save();
-      ctx.setLineDash([3, 5]);
+      ctx.setLineDash([4, 6]);
       ctx.strokeStyle = SOFT;
-      ctx.lineWidth = 1;
+      ctx.lineWidth = 1.3;
       members.forEach((m) => {
         if (m.kind === 'service') return;
         const A = project(m.a, W, H), B = project(m.b, W, H);
-        ctx.globalAlpha = depthA((A.z + B.z) / 2) * 0.30;
+        ctx.globalAlpha = depthA((A.z + B.z) / 2) * 0.9 * fade;
         ctx.beginPath();
         ctx.moveTo(A.x, A.y);
         ctx.lineTo(B.x, B.y);
@@ -404,11 +484,10 @@
     }
 
     function ground() {
-      // a setting-out grid, so the frame stands on something
       ctx.globalAlpha = 0.10;
       ctx.strokeStyle = SOFT;
       ctx.lineWidth = 1;
-      const ext = 3.4, zext = (FRAMES - 1) / 2 * GAP + 1.1;
+      const ext = 3.6, zext = ((FRAMES - 1) / 2) * GAP + 1.2;
       for (let gx = -3; gx <= 3; gx++) {
         const A = project([gx * (ext / 3), 0, -zext], W, H);
         const B = project([gx * (ext / 3), 0, zext], W, H);
@@ -421,12 +500,25 @@
       }
     }
 
+    // Scroll is not a smooth input: wheel events arrive in lumps, so a value
+    // read straight off --sc-p steps and the whole frame judders with it.
+    // Everything downstream reads this lerped value instead.
+    let pS = 0, pReady = false;
     function progress() {
       if (still) return 1;
       const raw = getComputedStyle(act).getPropertyValue('--sc-p');
       const n = parseFloat(raw);
-      return Number.isFinite(n) ? clamp(n, 0, 1) : 0;
+      const target = Number.isFinite(n) ? clamp(n, 0, 1) : 0;
+      if (!pReady) { pS = target; pReady = true; }
+      pS += (target - pS) * 0.12;
+      return pS;
     }
+
+    const SECTION = {
+      steel: [0.058, 0.115],
+      purlin: [0.026, 0.048],
+      service: [0.022, 0.022],
+    };
 
     function render() {
       if (!W) resize();
@@ -438,11 +530,11 @@
       // added on top: a frozen render reads as a broken page even when it is
       // correct, and this is what keeps the frame alive once it is complete.
       const breath = still ? 0 : Math.sin(performance.now() / 4200) * 0.045;
-      yawT = -0.86 + p * 0.52 + breath;
-      if (still) { yaw = -0.86 + p * 0.52; pitch = pitchT; }
+      yawT = -0.92 + p * 0.62 + breath;
+      if (still) { yaw = -0.92 + p * 0.62; pitch = pitchT; }
       else {
         pitch += (pitchT + Math.sin(performance.now() / 5600) * 0.012 - pitch) * 0.06;
-        yaw += (yawT + dragYaw - yaw) * 0.08;
+        yaw += (yawT + dragYaw - yaw) * 0.09;
       }
 
       ctx.clearRect(0, 0, W, H);
@@ -450,36 +542,32 @@
       ctx.lineJoin = 'round';
 
       ground();
-      settingOut();
+      groundShadow(clamp((p - 0.10) * 3, 0, 1) * 0.9);
+      settingOut(p);
 
       // painter's algorithm: far things first
       const draws = [];
       pads.forEach((o) => {
         const t = localT(p, 0, o.order, oPads);
-        if (t > 0) draws.push({ z: project(o.p, W, H).z, fn: () => pad(o.p, t) });
+        if (t > 0) draws.push({ z: project(o.p, W, H).z + 0.4, fn: () => pad(o.p, t) });
       });
       panels.forEach((o) => {
         const t = localT(p, 3, o.order, oPan);
         if (t > 0) {
-          const zz = o.q.reduce((s, v) => s + project(v, W, H).z, 0) / 4;
-          draws.push({ z: zz + 0.01, fn: () => panel(o.q, t) });
+          const zz = o.q.reduce((s, v) => s + project(v, W, H).z, 0) / o.q.length;
+          draws.push({ z: zz + 0.02, fn: () => panel(o.q, t, INK_C, o.alpha) });
         }
       });
       members.forEach((m) => {
         const t = localT(p, m.phase, m.order, oMem[m.phase]);
         if (t <= 0) return;
-        const zz = (project(m.a, W, H).z + project(m.b, W, H).z) / 2;
-        const colour = m.kind === 'service' ? ACCENT : m.kind === 'purlin' ? SOFT : INK;
-        draws.push({
-          z: zz,
-          fn: () => {
-            line(m.a, m.b, t, colour, m.w);
-            if (m.kind === 'steel' && t > 0.9) { node(m.a, t); node(m.b, t); }
-          },
-        });
+        const rgb = m.kind === 'service' ? ACC_C : m.kind === 'purlin' ? SOFT_C : INK_C;
+        const [hw, hh] = SECTION[m.kind] || SECTION.steel;
+        pushSolid(draws, m.a, m.b, t, rgb, hw, hh);
       });
 
-      draws.sort((a, b) => b.z - a.z).forEach((d) => d.fn());
+      draws.sort((a, b) => b.z - a.z);
+      for (const d of draws) d.fn();
       ctx.globalAlpha = 1;
     }
 
@@ -533,10 +621,102 @@
     render();
   }
 
+  /* ===========================================================
+     3 · THE AUTHOR'S PLATE
+     ---------------------------------------------------------
+     The closing clip, scrubbed by the last stretch of scroll on
+     the page, so it finishes exactly as the document does. It
+     never plays on its own and has no audio track.
+
+     Three mechanisms carried over from how the engine drives its
+     own clips, because a naive implementation of this looks
+     broken in three specific ways:
+       - fetch as a Blob, so seeking does not depend on the host
+         answering range requests
+       - lerp the playhead, because wheel events arrive in lumps
+         and a 1:1 write reproduces every gap in them
+       - never queue a seek while the decoder is still resolving
+         the last one, or a fast flick piles them up and freezes
+     =========================================================== */
+  function authorPlate() {
+    const fig = document.querySelector('[data-scrub]');
+    if (!fig || reduced.matches) return;          // reduced motion keeps the poster
+    const video = fig.querySelector('video');
+    if (!video) return;
+
+    const src = (innerWidth <= 760 && fig.dataset.scrubSrcMobile)
+      ? fig.dataset.scrubSrcMobile
+      : fig.dataset.scrubSrc;
+
+    let ready = false, dur = 0, target = 0, playhead = 0, seeking = false, alive = false;
+
+    fetch(src)
+      .then((r) => (r.ok ? r.blob() : Promise.reject(new Error(r.status))))
+      .then((b) => {
+        video.src = URL.createObjectURL(b);
+        return new Promise((res, rej) => {
+          video.onloadedmetadata = res;
+          video.onerror = () => rej(new Error('decode'));
+        });
+      })
+      .then(() => {
+        dur = video.duration || 0;
+        video.currentTime = 0;
+        // wait for a real painted frame before dropping the poster
+        const show = () => { ready = true; fig.setAttribute('data-ready', ''); };
+        if ('requestVideoFrameCallback' in video) video.requestVideoFrameCallback(show);
+        else video.onseeked = show;
+        start();
+      })
+      .catch(() => { /* poster stays; nothing else to do */ });
+
+    // Mapped against the page's remaining scroll rather than the element's own
+    // travel: the colophon is the last thing on the page, so it never fully
+    // passes through the viewport and an element-travel mapping would stop
+    // short of the final frame.
+    function progress() {
+      const r = fig.getBoundingClientRect();
+      const startY = scrollY + r.top - innerHeight;
+      const maxY = document.documentElement.scrollHeight - innerHeight;
+      const span = Math.max(maxY - startY, 1);
+      return clamp((scrollY - startY) / span, 0, 1);
+    }
+
+    function frame() {
+      if (!alive) return;
+      if (ready && dur) {
+        target = progress() * dur;
+        playhead += (target - playhead) * 0.18;
+        const gap = Math.abs(video.currentTime - playhead);
+        const dead = innerWidth <= 760 ? 0.020 : 0.008;
+        if (!seeking && gap > dead) {
+          seeking = true;
+          video.currentTime = playhead;
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+    video.addEventListener('seeked', () => { seeking = false; });
+
+    function start() {
+      if (alive) return;
+      alive = true;
+      requestAnimationFrame(frame);
+    }
+
+    // only run the loop while the plate is anywhere near the screen
+    new IntersectionObserver((es) => {
+      const vis = es.some((e) => e.isIntersecting);
+      if (vis) start();
+      else alive = false;
+    }, { rootMargin: '60% 0px' }).observe(fig);
+  }
+
   const boot = () => {
     document.documentElement.classList.add('js-ready');
     folio();
     portalFrame();
+    authorPlate();
   };
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', boot);
