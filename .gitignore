@@ -30,4 +30,4 @@ build/
 
 # scroll-craft verification output (regenerate with scrollcraft/lab/*.mjs)
 scrollcraft/lab/walk*/
-scrollcraft/lab/shots/
+scrollcraft/lab/shots*/
