@@ -251,43 +251,76 @@
       </p>
     </div>
 
-    <div class="peak" data-sc-act="pin" data-sc-span="4.2">
+    <!-- THE PEAK. A photographic figure that annotates itself.
+         Two plates at different depths, moving at different rates so one
+         genuinely occludes the other, with the survey drawn over the top by
+         scroll. Everything in frame is a photograph of a building AMG built.
+         No render, no generated imagery, no model. -->
+    <div class="peak" data-sc-act="pin" data-sc-span="2.6">
       <div data-sc-stage>
        <div class="peak__stage">
-        <div class="peak__frame">
-          <!-- The resolve. The drawing dissolves into a photograph of the same
-               frame, built and working: columns, rafters, purlins and the
-               services running under the roof, with buses being assembled
-               under it. Opacity is driven off the act's own --sc-p, so the
-               cross-fade is scroll, not a timer. -->
-          <img class="peak__photo" src="assets/amg/eka.jpg"
-               alt="Inside a completed steel portal frame building: columns, rafters, purlins and service runs overhead, with electric buses on the assembly line below"
-               width="1280" height="578" fetchpriority="high">
-          <canvas class="peak__canvas" width="1200" height="820"
-                  role="img"
-                  aria-label="A pre engineered steel portal frame assembling: foundation pads, columns, rafters, purlins, cladding, then the services run."></canvas>
-          <p class="peak__reduced">
-            A pre engineered steel portal frame, drawn complete: four bays of
-            foundation pads, columns, rafters, purlins, cladding, and the
-            service runs below the roof.
+
+        <div class="fig-col">
+         <div class="fig">
+          <figure class="fig__plate fig__plate--back">
+            <img src="assets/amg/eka.jpg"
+                 alt="Inside a completed steel portal frame building: columns, rafters and service runs overhead, with electric buses on the assembly line below"
+                 width="1280" height="578">
+          </figure>
+
+          <figure class="fig__plate fig__plate--front">
+            <img src="assets/amg/acl7.jpg"
+                 alt="A completed open plan office floor with planted desk dividers and exposed red service lines across the soffit"
+                 width="1600" height="1204">
+          </figure>
+
+          <!-- The survey. Lettered markers sit on the photograph and a short
+               stub points at the thing each one names, the way a figure in a
+               technical book is annotated. Each draws itself from
+               stroke-dashoffset against the act's own progress, so scroll is
+               the only input and no JavaScript touches it. -->
+          <svg class="fig__survey" viewBox="0 0 1000 760" fill="none" aria-hidden="true" preserveAspectRatio="none">
+            <g class="fig__datum">
+              <path d="M0 744 H1000" />
+              <path d="M0 738 V750 M250 738 V750 M500 738 V750 M750 738 V750 M1000 738 V750" />
+            </g>
+
+            <g class="fig__leaders">
+              <path style="--i:0" d="M286 118 L348 58" />
+              <path style="--i:1" d="M548 150 L612 92" />
+              <path style="--i:2" d="M120 268 L64 322" />
+              <path style="--i:3" d="M690 402 L752 348" />
+            </g>
+
+            <g class="fig__marks">
+              <g style="--i:0"><circle cx="358" cy="50" r="13" /><text x="358" y="55">A</text></g>
+              <g style="--i:1"><circle cx="622" cy="84" r="13" /><text x="622" y="89">B</text></g>
+              <g style="--i:2"><circle cx="54" cy="330" r="13" /><text x="54" y="335">C</text></g>
+              <g style="--i:3"><circle cx="762" cy="340" r="13" /><text x="762" y="345">D</text></g>
+            </g>
+          </svg>
+         </div>
+
+         <ol class="fig__key">
+            <li style="--i:0"><span class="cap__n">A</span> Portal frame, clear span</li>
+            <li style="--i:1"><span class="cap__n">B</span> MEP and HVAC, run below the roof</li>
+            <li style="--i:2"><span class="cap__n">C</span> Wall sheeting and cladding</li>
+           <li style="--i:3"><span class="cap__n">D</span> Interior fit out, services painted in</li>
+         </ol>
+        </div>
+
+        <div class="peak__side">
+          <p class="peak__lede">
+            Six service lines, one contractor. AMG builds the shed, sheets it,
+            runs the services through it, and fits it out.
+          </p>
+          <p class="peak__cap">
+            <span class="cap__n">Fig. 5</span>
+            Two delivered projects. Pinnacle Mobility Solutions (EKA), above.
+            Interior fit out, below.
           </p>
         </div>
 
-        <ol class="peak__callouts">
-          <!-- Single-value cues: each callout enters and holds, so the key
-               fills in beside the building and is complete and readable by
-               the end of the act. A crossfading pair never reaches full
-               opacity inside a window this tight, and the reader has to stop
-               on the right pixel to read it. -->
-          <li data-sc-cue="0.01"><span class="cap__n">01</span> Foundation pads set out, four bays.</li>
-          <li data-sc-cue="0.07"><span class="cap__n">02</span> Columns raised and plumbed.</li>
-          <li data-sc-cue="0.19"><span class="cap__n">03</span> Rafters landed, portal closed.</li>
-          <li data-sc-cue="0.33"><span class="cap__n">04</span> Purlins, sheeting and cladding.</li>
-          <li data-sc-cue="0.47"><span class="cap__n">05</span> MEP and HVAC run below the roof.</li>
-          <li class="peak__built" data-sc-cue="0.68"><span class="cap__n">06</span> Built. Pinnacle Mobility Solutions, Pune.</li>
-        </ol>
-
-        <p class="peak__hint">Drag to look around.</p>
        </div>
       </div>
     </div>
@@ -410,7 +443,7 @@
       <dl class="colophon__meta">
         <div><dt>Set in</dt><dd>Newsreader and IBM Plex Mono</dd></div>
         <div><dt>Photography</dt><dd>Desi Totes and AMG Projects, used with permission</dd></div>
-        <div><dt>Drawing</dt><dd>Portal frame, projected and rendered in the page</dd></div>
+        <div><dt>Annotation</dt><dd>Survey drawn in the page, by scroll</dd></div>
         <div><dt>Built with</dt><dd>Plain HTML, one stylesheet, no framework</dd></div>
       </dl>
 
