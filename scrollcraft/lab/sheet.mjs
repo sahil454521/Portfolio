@@ -8,7 +8,7 @@ const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const mobile = process.argv.includes('--mobile');
 const reduced = process.argv.includes('--reduced');
-const out = mobile ? 'lab/walk-m' : reduced ? 'lab/walk-r' : 'lab/walk';
+const out = 'scrollcraft/lab/' + (mobile ? 'walk-m' : reduced ? 'walk-r' : 'walk');
 const STEPS = mobile ? 14 : 16;
 
 mkdirSync(out, { recursive: true });
