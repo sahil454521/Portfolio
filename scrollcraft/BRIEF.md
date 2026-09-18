@@ -143,84 +143,46 @@ Not Inter, not Satoshi, not a geometric sans with a violet gradient on it.
 
 ---
 
-## Facts, and what is still unverified
+## Facts, confirmed by the user on 2026-09-18
 
-The old repo contains placeholder and contradictory content that **must not be
-carried forward onto a page whose whole claim is "trusted"**:
+The old repo carried placeholder and contradictory content. It was put to the
+user rather than guessed at, and these are the answers.
 
-- `src/pages/About.jsx` lists a degree at `"Your University Name"` and, directly
-  beneath it, a second degree at `"Indian Institute of Technology (IIT),Ghuwati"`.
-  Both cannot be right and the first is plainly a placeholder.
-- `github.com/yourusername` and `linkedin.com/in/yourusername` are placeholders.
-- Skill lists include TensorFlow, PyTorch, Computer Vision and Adobe XD with no
-  corroborating work anywhere in the repo.
+**Confirmed and now on the page:**
+- **Role: end to end on both sites**, not front end only. The user was offered
+  a narrower option explicitly and chose this one. Chapter one, chapter three
+  and the title block were all widened to match; before this the page
+  undersold the work.
+- **Education: BSc (Hons) Data Science and Artificial Intelligence, Indian
+  Institute of Technology Guwahati, 2023 to 2027.** The old repo spelled it
+  "Ghuwati" and sat it next to a second placeholder degree at "Your University
+  Name". The placeholder is gone and the spelling is corrected. The concern
+  about an unverifiable claim was raised with the user and they reaffirmed it,
+  so it ships as stated. It sits in the title block as one line, not as a
+  section, because it is not the argument of this page.
+- **Portrait: not shipped.** The user chose to keep the drawing title block.
+  See "The portrait, unresolved" above.
 
-**Nothing in that list ships until the user confirms it.** Pending confirmation,
-the page states only what is independently evidenced:
+**Still not on the page, deliberately:**
+- LinkedIn. The old repo had `linkedin.com/in/yourusername`, a placeholder, and
+  no real URL was supplied. A link that 404s is worse than no link.
+- TensorFlow, PyTorch, Computer Vision, Adobe XD. Listed as skills in the old
+  About page with no corroborating work anywhere in either repo. A skills wall
+  nobody can check is the opposite of what this page is for.
 
-**Evidenced and safe to state:**
+**Evidenced independently, and stated on the page:**
 - Two live production sites: `amgprojectsllp.com`, `desitotes.com`.
 - AMG Projects LLP: ISO certified, Pune, civil construction, PEB, interiors,
-  modular furniture, MEP, HVAC. Real named clients visible on the site
-  (HDFC, Plastic Omnium Auto Exteriors, Pinnacle Mobility Solutions / EKA).
-  Figures on their own site: 25+ years, 50+ projects, 90% repeat orders.
-  **These are AMG's numbers about AMG, and the page labels them that way.**
-  They are not presented as the user's metrics.
+  modular furniture, MEP, HVAC. Real named clients on their own site (HDFC,
+  Plastic Omnium Auto Exteriors, Pinnacle Mobility Solutions / EKA). Figures
+  published on their site: 25+ years, 50+ projects, 90% repeat orders.
+  **These are AMG's numbers about AMG, and the page says so in those words.**
 - Desi Totes: 320 GSM cotton canvas, made to order in India, black and off
-  white, printed and plain, with and without zip, INR and USD, free shipping
-  over ₹999. All read off the live site.
-- Own projects, named in the old repo: AiCompiler (ML code suggestion in a
-  VS Code style editor), AI-Terminal (chat and URL analysis), AI-Ecommerce.
-- Stack, evidenced by the repos: React 19, Vite, Tailwind, GSAP, Framer Motion,
-  Node, Express, MongoDB.
-- Email: `sahilpathak2005@gmail.com`.
+  white, printed and plain, with and without zip, with zip ₹299 and without
+  ₹249, INR and USD, free shipping over ₹999. All read off the live site.
+- Own projects: AiCompiler, AI Terminal, AI Ecommerce. Labelled
+  "Personal project" rather than dressed up as client work.
+- Stack: React 19, Vite, Tailwind, GSAP, Node, Express, MongoDB.
+- Email `sahilpathak2005@gmail.com`, GitHub `github.com/sahil454521`.
 
-**No invented statistics. No counters without a real number behind them.**
-Per the hard rules table.
-
----
-
-## Feel check (run cold against the contact sheet, then diffed)
-
-| Chapter | Intended | Felt | Verdict |
-|---|---|---|---|
-| Title page | Composure | Composed, quiet | matches |
-| 01 The brief | Recognition | Credentials | **drifted** |
-| 02 Cloth | Warmth | Warm, tactile | matches |
-| 03 Structure | Weight (peak) | Weight | matches, and it is the peak |
-| 04 Workbench | Curiosity | Cold, short, factual | matches |
-| Colophon | Resolve | Resolved, stops | matches |
-
-**The one drift, and what was done about it.** Chapter one reads slightly more
-formal than "recognition". The title block is a credential object, so it pulls
-that way. It was left in rather than softened: it is carrying the identity
-because no usable portrait exists yet (see below), and the chapter's opening
-line does the recognition work on its own. When a real portrait arrives it goes
-in that slot and the chapter should land closer to the intended feeling. Noted
-here rather than quietly reclassified.
-
-**Peak confirmed on the sheet.** Chapter three is the largest visual change on
-the page and holds the most scroll room by a wide margin (a 4.6 viewport-height
-pinned act inside a chapter that runs about 6.4 of the page's 13.9). It is also
-the only 3D on the page, which is the asset budget going to the peak and
-nowhere else.
-
-**The close resolves.** The last screen is the colophon plate ending on
-"End of document." It does not fade out and it does not become a link farm.
-
-## The portrait, unresolved
-
-Both photographs in the old repo (`profile.jpg`, `profile2.jpg`) are soft,
-low-light candid group shots with other identifiable people in frame. A tight
-crop was tried and rejected: at the size the layout needs, the softness is
-obvious and a third party is still partly in shot.
-
-Two separate reasons not to ship them, and either is sufficient:
-1. They read as snapshots, which works against the one word the user asked for
-   most, "premium".
-2. Publishing other people's faces on a public site is not the user's to decide
-   on their behalf.
-
-Chapter one therefore carries a **drawing title block** instead, which is a real
-editorial object rather than an apology for a missing image. The slot takes a
-portrait with no other change to the markup.
+**No invented statistics. No counter without a real number behind it.**
