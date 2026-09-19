@@ -293,15 +293,21 @@ p { margin: 0; text-wrap: pretty; }
    readable, so the 3D object behaves like the link it looks like. */
 .panel {
   position: absolute;
-  top: 50%; width: 42%;
+  top: 50%; width: 30%;
   margin: 0;
   transform: translateY(-50%);
   display: block;
   text-decoration: none;
   border-radius: 2px;
 }
-.panel:nth-of-type(1) { left: 3%; }
-.panel:nth-of-type(2) { right: 3%; }
+/* Without WebGL the panels lay out in CSS instead, and only the first three
+   are shown: five thumbnails in a row would be unreadable. Scoped to the
+   fallback, because applying it always took two projects out of the tab order
+   entirely once the scene was running. */
+.vitrine:not([data-ready]) .panel:nth-of-type(1) { left: 1%; }
+.vitrine:not([data-ready]) .panel:nth-of-type(2) { left: 35%; }
+.vitrine:not([data-ready]) .panel:nth-of-type(3) { right: 1%; }
+.vitrine:not([data-ready]) .panel:nth-of-type(n+4) { display: none; }
 .panel img {
   display: block; width: 100%; height: auto;
   border: 1px solid var(--line);
@@ -355,6 +361,15 @@ p { margin: 0; text-wrap: pretty; }
 .showing span { font-variant-numeric: tabular-nums; }
 .showing b { color: var(--ink); font-weight: 600; letter-spacing: 0.1em; }
 .showing em { font-style: normal; color: var(--signal); letter-spacing: 0.06em; text-transform: none; }
+.showing u {
+  text-decoration: none;
+  padding: 2px var(--s-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+}
 @media (max-width: 900px) {
   .showing { top: auto; bottom: -2.2rem; right: auto; left: 0; gap: var(--s-2); flex-wrap: wrap; }
   .showing em { flex-basis: 100%; }

@@ -2,19 +2,31 @@
 
 Portfolio. A dark, lit room holding two live commercial sites, in motion.
 
-**The work**
-- [amgprojectsllp.com](https://amgprojectsllp.com) — AMG Turnkey Projects LLP, construction and interiors, Pune
-- [desitotes.com](https://desitotes.com) — Desi Totes, made-to-order cotton canvas totes
+**The work**, all live
+
+| | |
+|---|---|
+| [desitotes.com](https://desitotes.com) | Desi Totes, made-to-order cotton canvas totes. Client |
+| [amgprojectsllp.com](https://amgprojectsllp.com) | AMG Turnkey Projects LLP, construction and interiors, Pune. Client |
+| [ai-compiler-eta.vercel.app](https://ai-compiler-eta.vercel.app) | NeuraCraft, a browser code editor |
+| [ai-chat-bot-gcar.vercel.app](https://ai-chat-bot-gcar.vercel.app) | AI Terminal |
+| [gamifyport.vercel.app](https://gamifyport.vercel.app) | Portfolio Quest, a pixel-art portfolio you walk around |
 
 ## The idea
 
-Both clients send `X-Frame-Options`, so neither can be embedded live, which is
-correct of them. The next most honest thing is stills of the real pages,
-captured from production and standing as planes in a WebGL scene. Scroll
-interchanges them: whichever is forward comes to the front of the room and
-changes what it is showing, and the other falls back. **Clicking either one
+Both client sites send `X-Frame-Options`, so neither can be embedded live,
+which is correct of them. The next most honest thing is stills of the real
+pages, captured from production and standing as planes in a WebGL scene.
+
+Scroll rotates the row. Whichever project reaches the centre comes forward and
+takes the room; the others sit back beside it, angled away. **Clicking any one
 opens that site**, because each panel has a real anchor tracking it, so a
-click, a tap and a Tab all land on a real link.
+click, a tap and a Tab all land on a real link, and focusing one by keyboard
+rotates the row to bring it to the centre.
+
+Adding a project is one row in `index.html` and one still in `assets/work/`.
+The layout is derived from each panel's distance from the centre, so it takes
+any number without a slot per project.
 
 ## Running it
 
@@ -52,6 +64,6 @@ node scrollcraft/lab/a11y.mjs http://localhost:4500
 composition can be read rather than guessed at. `a11y.mjs` checks tab order,
 focus visibility, the heading outline and alt text.
 
-Re-capture the client stills with `node scrollcraft/lab/stills.mjs` (needs
+Re-capture the client stills with `node scrollcraft/lab/stills.mjs`, the personal ones with `more.mjs` (needs
 `ffmpeg` on the machine). `links.mjs` checks the panels are genuinely
 clickable, and `fps.mjs` measures the frame rate while scrolling the hero.
