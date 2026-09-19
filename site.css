@@ -1,0 +1,677 @@
+/* =============================================================
+   Sahil Pathak — portfolio
+
+   Direction: a vitrine, lit. A bright gallery holding two live
+   sites as objects, in motion.
+
+   The palette is taken from the two clients rather than picked:
+   a cool daylight ground, the safety amber that runs through
+   AMG's own delivered buildings as the one signal, and a tint of
+   each client's own material on its case, galvanised steel or
+   unbleached cotton.
+
+   The ground is never a flat colour. It is a lit surface, which
+   is what separates this from a page with a white background.
+   Amber carries two stops, because the page needs it both as
+   readable text and as a fill.
+   ============================================================= */
+
+:root {
+  --void:        #EAEDEF;   /* daylight, with a cool cast. Not cream. */
+  --void-lift:   #F4F6F7;
+  --surface:     #FFFFFF;
+  --ink:         #0E1519;
+  --ink-soft:    #566772;   /* cool, derived from the ground, never flat grey */
+  --signal:      #9C5A08;   /* amber, dark stop: readable as text on daylight */
+  --signal-hot:  #FFB03B;   /* amber, bright stop: fills and the live dot only */
+  --signal-ink:  #1A1204;
+  --steel:       #3F5C6C;
+  --cotton:      #6F5C39;
+
+  --line:        color-mix(in oklab, var(--ink) 17%, transparent);
+  --line-soft:   color-mix(in oklab, var(--ink) 10%, transparent);
+
+  --font-display: "Bricolage Grotesque", "Archivo", system-ui, sans-serif;
+  --font-text:    "Archivo", system-ui, sans-serif;
+
+  /* type ramp. Display runs wide and tight; text stays narrow and plain. */
+  --t-xs:   clamp(0.72rem, 0.70rem + 0.10vw, 0.78rem);
+  --t-sm:   clamp(0.84rem, 0.81rem + 0.16vw, 0.94rem);
+  --t-base: clamp(1rem, 0.96rem + 0.20vw, 1.10rem);
+  --t-lg:   clamp(1.18rem, 1.06rem + 0.56vw, 1.55rem);
+  --t-xl:   clamp(1.7rem, 1.35rem + 1.5vw, 2.6rem);
+  --t-2xl:  clamp(2.3rem, 1.6rem + 3.1vw, 4.4rem);
+  --t-3xl:  clamp(2.9rem, 1.7rem + 5.2vw, 6.6rem);
+
+  --s-1: 0.25rem; --s-2: 0.5rem;  --s-3: 0.75rem; --s-4: 1rem;
+  --s-5: 1.5rem;  --s-6: 2rem;    --s-7: 3rem;    --s-8: 4rem;
+  --s-9: 6rem;    --s-10: 8rem;   --s-11: 12rem;
+
+  --pad:    clamp(3.5rem, 7vw, 9rem);
+  --gutter: clamp(1.25rem, 4vw, 4rem);
+  --maxw:   78rem;
+  --rail-w: 9.5rem;
+
+  /* the engine themes its own chrome from these */
+  --sc-accent: var(--signal-hot);
+  --sc-accent-ink: var(--signal-ink);
+  --sc-canvas: var(--void);
+  --sc-ink: var(--ink);
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --fast: 170ms;
+  --base: 280ms;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+body {
+  margin: 0;
+  background: var(--void);
+  color: var(--ink);
+  font-family: var(--font-text);
+  font-size: var(--t-base);
+  font-variation-settings: "wdth" 100;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* The room. A lit ground rather than a flat one: two soft pools, one cool
+   from above and one warm from the floor, so the page has a light source. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(120vw 72vh at 50% -20%, #FFFFFF 0%, transparent 64%),
+    radial-gradient(95vw 55vh at 50% 120%, #E3DDD0 0%, transparent 62%);
+}
+main, .rail, .grain, .skip { position: relative; z-index: 1; }
+
+.grain {
+  position: fixed; inset: 0; z-index: 2;
+  pointer-events: none; opacity: 0.032; mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/></filter><rect width='140' height='140' filter='url(%23n)'/></svg>");
+}
+
+::selection { background: var(--signal-hot); color: var(--signal-ink); }
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+.skip {
+  position: fixed; top: var(--s-3); left: var(--s-3); z-index: 200;
+  transform: translateY(-160%);
+  background: var(--ink); color: var(--void-lift);
+  padding: var(--s-2) var(--s-4);
+  font-size: var(--t-xs); font-weight: 600;
+  text-decoration: none;
+  transition: transform var(--fast) var(--ease);
+}
+.skip:focus-visible { transform: translateY(0); }
+
+/* --- shared type ------------------------------------------------- */
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  margin: 0;
+  text-wrap: balance;
+  font-variation-settings: "wdth" 96, "opsz" 48;
+  letter-spacing: -0.028em;
+  line-height: 1.02;
+}
+
+p { margin: 0; text-wrap: pretty; }
+
+.eyebrow {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-size: var(--t-xs);
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-variation-settings: "wdth" 88;
+}
+
+/* the live dot. The one place amber is allowed, and it means one thing. */
+.dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ink-soft);
+  flex: none;
+  display: inline-block;
+}
+.dot--live {
+  background: var(--signal-hot);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--signal-hot) 32%, transparent);
+}
+
+.lnk {
+  color: var(--ink);
+  text-decoration-color: color-mix(in oklab, var(--signal) 60%, transparent);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: color var(--fast) var(--ease);
+}
+.lnk:hover { color: var(--signal); }
+
+/* the outbound link to a live site: the page's one repeated action */
+.go {
+  display: inline-flex; align-items: baseline; gap: var(--s-3);
+  margin-top: var(--s-6);
+  padding-bottom: var(--s-2);
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-variation-settings: "wdth" 92, "opsz" 24;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.go span { color: var(--signal); transition: transform var(--base) var(--ease); display: inline-block; }
+.go:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 50%, transparent); }
+.go:hover span { transform: translate(3px, -3px); }
+.go:active { transform: translateY(1px); }
+
+/* =============================================================
+   THE RAIL
+   ============================================================= */
+.rail {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: var(--rail-w);
+  z-index: 60;
+  display: grid;
+  align-content: space-between;
+  padding: var(--s-6) 0 var(--s-6) var(--gutter);
+  pointer-events: none;
+}
+.rail > * { pointer-events: auto; }
+.rail__mark {
+  font-family: var(--font-display);
+  font-size: var(--t-sm);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+  text-decoration: none;
+  font-variation-settings: "wdth" 80;
+}
+.rail__list {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; gap: var(--s-4);
+}
+.rail__list a {
+  display: flex; align-items: center; gap: var(--s-3);
+  color: var(--ink-soft);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: color var(--fast) var(--ease);
+}
+.rail__list i {
+  width: 18px; height: 1px; flex: none;
+  background: currentColor; opacity: 0.5;
+  transition: width var(--base) var(--ease), opacity var(--base) var(--ease);
+}
+.rail__list a:hover { color: var(--ink); }
+.rail__list a[data-here] { color: var(--ink); }
+.rail__list a[data-here] i { width: 34px; opacity: 1; background: var(--signal-hot); }
+.rail__cta {
+  justify-self: start;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  text-decoration: none;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.rail__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
+
+@media (max-width: 1080px) {
+  :root { --rail-w: 0rem; }
+  .rail { display: none; }
+}
+
+/* =============================================================
+   THE VITRINE
+   ============================================================= */
+/* One composition, not two stacked blocks. The room fills the frame edge to
+   edge and the headline sits inside it, which is the difference between a
+   scene and a picture with a caption under it. */
+/* The room and the headline share one column. Bleeding the canvas to the
+   viewport while the type stayed in a container is what made the two drift
+   apart on a wide screen and left the panels marooned in white space. */
+.stage__inner {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  max-width: calc(var(--maxw) + var(--rail-w));
+  margin-inline: auto;
+}
+
+/* The room takes the upper two thirds and the headline the lower third. They
+   overlap rather than sitting in separate rows, so it still reads as one
+   composition, but the reflection never reaches the type. */
+.vitrine {
+  position: absolute;
+  top: 0; bottom: 43%;
+  left: calc(var(--rail-w) + var(--gutter));
+  right: var(--gutter);
+}
+/* Fade the lower edge so the reflection runs out instead of being cut off by
+   the canvas boundary, which left a hard line across the frame. */
+.vitrine canvas {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  display: block;
+  cursor: grab;
+  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  opacity: 0;
+  transition: opacity 700ms var(--ease);
+}
+.vitrine canvas:active { cursor: grabbing; }
+.vitrine[data-ready] canvas { opacity: 1; }
+.vitrine[data-fallback] canvas { display: none; }
+
+/* Each panel is a real link. Without WebGL it is a plain image of the site,
+   laid out in CSS. With WebGL the scene draws the panel and this element is
+   moved to sit exactly on top of it, invisible but clickable, focusable and
+   readable, so the 3D object behaves like the link it looks like. */
+.panel {
+  position: absolute;
+  top: 50%; width: 42%;
+  margin: 0;
+  transform: translateY(-50%);
+  display: block;
+  text-decoration: none;
+  border-radius: 2px;
+}
+.panel:nth-of-type(1) { left: 3%; }
+.panel:nth-of-type(2) { right: 3%; }
+.panel img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--line);
+  box-shadow: 0 26px 60px -32px rgb(14 21 25 / 0.45);
+}
+.panel__go {
+  position: absolute;
+  left: 50%; bottom: var(--s-4);
+  transform: translateX(-50%) translateY(6px);
+  padding: var(--s-2) var(--s-4);
+  background: var(--ink);
+  color: var(--void-lift);
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--base) var(--ease), transform var(--base) var(--ease);
+}
+.panel:hover .panel__go,
+.panel:focus-visible .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* once the scene is drawing, the link becomes an invisible hit area over it */
+.vitrine[data-ready] .panel {
+  top: 0; left: 0; right: auto;
+  width: auto;
+  transform: none;
+  cursor: pointer;
+}
+.vitrine[data-ready] .panel img { opacity: 0; }
+.vitrine[data-ready] .panel:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 4px;
+}
+
+/* Names whichever site currently has the frame. It sits with the room, not
+   with the headline, because it labels the object rather than the page. */
+.showing {
+  position: absolute;
+  top: 0; right: 0;
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-3);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.showing .dot { align-self: center; }
+.showing span { font-variant-numeric: tabular-nums; }
+.showing b { color: var(--ink); font-weight: 600; letter-spacing: 0.1em; }
+.showing em { font-style: normal; color: var(--signal); letter-spacing: 0.06em; text-transform: none; }
+@media (max-width: 900px) {
+  .showing { top: auto; bottom: -2.2rem; right: auto; left: 0; gap: var(--s-2); flex-wrap: wrap; }
+  .showing em { flex-basis: 100%; }
+}
+
+.lede {
+  position: absolute;
+  left: calc(var(--rail-w) + var(--gutter));
+  right: var(--gutter);
+  bottom: clamp(2.5rem, 7vh, 5.5rem);
+  display: grid;
+  gap: var(--s-4);
+  pointer-events: none;
+}
+.lede > * { pointer-events: auto; }
+/* A scrim only where the headline sits, so the reflection can never take the
+   contrast off it. Local, not a sheet over the whole frame. */
+.lede::before {
+  content: "";
+  position: absolute;
+  inset: -12vh -2rem -12vh -2rem;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    var(--void) 0%,
+    color-mix(in oklab, var(--void) 88%, transparent) 42%,
+    transparent 100%);
+}
+.lede h1 {
+  font-size: var(--t-3xl);
+  font-variation-settings: "wdth" 92, "opsz" 96;
+  letter-spacing: -0.038em;
+  max-width: 15ch;
+}
+.lede__p {
+  max-width: 52ch;
+  color: color-mix(in oklab, var(--ink) 74%, var(--void));
+  font-size: var(--t-lg);
+  line-height: 1.45;
+}
+.lede__hint {
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink-soft) 70%, var(--void));
+}
+@media (hover: none) { .lede__hint { display: none; } }
+
+/* =============================================================
+   CASES
+   ============================================================= */
+.case { padding: var(--pad) 0; padding-left: var(--rail-w); }
+.case--steel { --tint: var(--steel); }
+.case--cotton { --tint: var(--cotton); }
+
+.case__head {
+  padding-inline: var(--gutter);
+  max-width: var(--maxw);
+  margin: 0 auto var(--s-8);
+  display: grid; gap: var(--s-3);
+}
+.case__head h2, .build__head h2, .me__text h2 {
+  font-size: var(--t-2xl);
+  font-variation-settings: "wdth" 94, "opsz" 72;
+}
+.case__head h2 { color: var(--tint, var(--ink)); }
+
+.case__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  align-items: center;
+  padding-inline: var(--gutter);
+  max-width: var(--maxw);
+  margin-inline: auto;
+}
+.case__grid--flip > .case__shot { order: 2; }
+.case__grid--flip > .case__story { order: 1; }
+
+.case__story { display: grid; gap: var(--s-4); align-content: start; }
+.case__story p { max-width: 46ch; color: var(--ink-soft); }
+.story {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  line-height: 1.34;
+  letter-spacing: -0.02em;
+  font-variation-settings: "wdth" 94, "opsz" 24;
+  color: var(--ink) !important;
+}
+
+.case__shot { margin: 0; }
+.case__shot img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--line-soft);
+  box-shadow: 0 34px 78px -44px rgb(14 21 25 / 0.4);
+}
+figcaption {
+  margin-top: var(--s-3);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  font-variation-settings: "wdth" 88;
+}
+
+.spec {
+  margin: var(--s-5) 0 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 var(--s-6);
+  border-top: 1px solid var(--line);
+}
+.spec > div {
+  display: grid; gap: 2px;
+  padding: var(--s-3) 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.spec dt {
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink-soft) 82%, var(--void));
+}
+.spec dd {
+  margin: 0;
+  font-size: var(--t-sm);
+  color: var(--ink);
+  display: flex; align-items: center; gap: var(--s-2);
+}
+.spec--wide { grid-template-columns: 1fr; }
+
+.strip {
+  margin-top: clamp(2.5rem, 6vw, 5rem);
+  padding-inline: var(--gutter);
+  max-width: var(--maxw);
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(0.75rem, 1.6vw, 1.5rem);
+}
+.strip--four { grid-template-columns: repeat(4, 1fr); }
+.strip figure { margin: 0; }
+.strip img {
+  display: block; width: 100%; height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border: 1px solid var(--line-soft);
+}
+.strip--four img { aspect-ratio: 1 / 1; }
+
+/* =============================================================
+   BUILD
+   ============================================================= */
+.build { padding: var(--pad) 0; padding-left: var(--rail-w); }
+.build__head {
+  padding-inline: var(--gutter);
+  max-width: var(--maxw);
+  margin: 0 auto var(--s-8);
+  display: grid; gap: var(--s-4);
+}
+.build__p { max-width: 54ch; color: var(--ink-soft); font-size: var(--t-lg); line-height: 1.45; }
+
+.cols {
+  margin: 0; padding-inline: var(--gutter);
+  max-width: var(--maxw);
+  margin-inline: auto;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(1.5rem, 3vw, 3.5rem);
+}
+.cols > li {
+  display: grid; gap: var(--s-3);
+  align-content: start;
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line);
+}
+.cols h3 {
+  font-size: var(--t-xl);
+  font-variation-settings: "wdth" 92, "opsz" 32;
+}
+.cols p { color: var(--ink-soft); font-size: var(--t-sm); }
+
+/* =============================================================
+   ME
+   ============================================================= */
+.me {
+  padding: var(--pad) 0;
+  padding-left: var(--rail-w);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5.5rem);
+  align-items: center;
+  padding-inline: var(--gutter);
+  max-width: calc(var(--maxw) + var(--rail-w));
+  margin-inline: auto;
+}
+.me__plate {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 1024 / 577;
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  box-shadow: 0 34px 78px -44px rgb(14 21 25 / 0.4);
+  background: var(--surface);
+}
+.me__poster, .me__clip {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+.me__clip { opacity: 0; transition: opacity 420ms var(--ease); }
+.me__plate[data-ready] .me__clip { opacity: 1; }
+.me__plate[data-ready] .me__poster { opacity: 0; transition: opacity 420ms var(--ease); }
+
+.me__text { display: grid; gap: var(--s-4); align-content: center; }
+.me__text p { max-width: 46ch; color: var(--ink-soft); }
+
+/* =============================================================
+   END
+   ============================================================= */
+.end {
+  padding: var(--pad) 0 var(--s-8);
+  padding-left: var(--rail-w);
+  border-top: 1px solid var(--line-soft);
+}
+.end__inner {
+  padding-inline: var(--gutter);
+  max-width: var(--maxw);
+  margin-inline: auto;
+  display: grid; gap: var(--s-6);
+}
+.end h2 {
+  font-size: var(--t-2xl);
+  max-width: 18ch;
+  font-variation-settings: "wdth" 94, "opsz" 72;
+}
+.end__cta {
+  justify-self: start;
+  display: grid; gap: var(--s-1);
+  padding: var(--s-5) var(--s-7);
+  background: var(--signal-hot);
+  color: var(--signal-ink);
+  text-decoration: none;
+  border-radius: 2px;
+  transition: transform var(--base) var(--ease), box-shadow var(--base) var(--ease);
+  box-shadow: 0 16px 34px -18px color-mix(in oklab, var(--signal-hot) 75%, transparent);
+}
+.end__cta span {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-variation-settings: "wdth" 90, "opsz" 32;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.end__cta em {
+  font-style: normal;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  opacity: 0.72;
+}
+.end__cta:hover { transform: translateY(-2px); box-shadow: 0 24px 48px -18px color-mix(in oklab, var(--signal-hot) 85%, transparent); }
+.end__cta:active { transform: translateY(0); }
+
+.end__meta {
+  margin: var(--s-6) 0 0;
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--line-soft);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--s-5) var(--s-6);
+}
+.end__meta div { display: grid; gap: 2px; }
+.end__meta dt {
+  font-size: var(--t-xs); letter-spacing: 0.12em; text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink-soft) 80%, var(--void));
+}
+.end__meta dd { margin: 0; font-size: var(--t-sm); color: var(--ink-soft); }
+.end__sig {
+  margin-top: var(--s-7);
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-3);
+  font-size: var(--t-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--ink-soft) 70%, var(--void));
+}
+.end__sig span { color: var(--signal); font-weight: 600; }
+
+/* =============================================================
+   Narrow frames. Art-directed, not shrunk.
+   ============================================================= */
+@media (max-width: 900px) {
+  .case__grid, .case__grid--flip, .me, .cols {
+    grid-template-columns: 1fr;
+  }
+  .case__grid--flip > .case__shot,
+  .case__grid--flip > .case__story { order: initial; }
+  .me { gap: var(--s-6); }
+  .strip { grid-template-columns: repeat(2, 1fr); }
+  .strip--four { grid-template-columns: repeat(2, 1fr); }
+  .spec { grid-template-columns: 1fr; }
+  .lede h1 { font-size: var(--t-2xl); }
+  .lede { bottom: clamp(1.5rem, 4vh, 3rem); left: var(--gutter); right: var(--gutter); }
+  .vitrine { left: var(--gutter); right: var(--gutter); bottom: 46%; }
+  /* the posters stack rather than sitting side by side at postage stamp size */
+  .panel { width: 78%; top: auto; transform: none; }
+  .panel:nth-of-type(1) { left: 0; top: 2%; }
+  .panel:nth-of-type(2) { right: 0; bottom: 2%; top: auto; }
+}
+
+/* =============================================================
+   Reduced motion: the room stays, the travel goes.
+   ============================================================= */
+@media (prefers-reduced-motion: reduce) {
+  /* The room stays. Only the travel goes: no orbit, no scrub, one static
+     frame. Hiding the scene here meant everyone with the OS setting on saw a
+     different, plainer page, which is not what reducing motion should cost. */
+  .go span, .end__cta, .rail__list i { transition: none; }
+}
