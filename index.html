@@ -1,14 +1,278 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Portfolio of Sahil Pathak — AI &amp; full-stack developer building intelligent developer tools." />
-    <title>Sahil Pathak — AI / Full-Stack Developer</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sahil Pathak · Full stack developer, Pune</title>
+<meta name="description" content="Full stack developer in Pune. Two commercial sites in production: AMG Turnkey Projects and Desi Totes. Both built and run end to end.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080B0E'/><circle cx='16' cy='16' r='6' fill='%23FFB03B'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="scrollcraft.css">
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<span data-sc-progress></span>
+<div class="grain" aria-hidden="true"></div>
+
+<a class="skip" href="#work">Skip to the work</a>
+
+<!-- Chrome is a single rail, not a bar. There is nothing to navigate to that
+     is not already below you, so it carries position and the one action, and
+     it never covers the work. -->
+<nav class="rail" aria-label="Sections">
+  <a class="rail__mark" href="#top">SP</a>
+  <ol class="rail__list">
+    <li><a href="#work" data-rail><i></i><span>Work</span></a></li>
+    <li><a href="#build" data-rail><i></i><span>Build</span></a></li>
+    <li><a href="#me" data-rail><i></i><span>Me</span></a></li>
+  </ol>
+  <a class="rail__cta" href="#contact">Get in touch</a>
+</nav>
+
+<main id="top">
+
+  <!-- ==========================================================
+       THE VITRINE
+       Both sites, running, in a lit room. Scroll drives them.
+       ========================================================== -->
+  <section class="stage" data-sc-act="pin" data-sc-span="3.2" aria-labelledby="lede-h">
+    <div data-sc-stage>
+      <div class="stage__inner">
+
+        <div class="vitrine" data-vitrine>
+          <canvas aria-hidden="true"></canvas>
+
+          <!-- Real links, not decoration. They sit over the canvas and are
+               moved to wherever their panel currently is, so a click or a
+               keyboard focus lands on an actual anchor to an actual site. -->
+          <a class="panel" data-panel
+             href="https://desitotes.com" target="_blank" rel="noopener"
+             data-panel-a="assets/work/desi-1.jpg"
+             data-panel-b="assets/work/desi-2.jpg"
+             data-panel-name="Desi Totes" data-panel-host="desitotes.com"
+             data-panel-rot="-0.26">
+            <img src="assets/work/desi-1.jpg" alt="The Desi Totes shop: the Carry It Desi Style hero, with a black canvas hobo tote" width="1680" height="1080">
+            <span class="panel__go">Open desitotes.com</span>
+          </a>
+
+          <a class="panel" data-panel
+             href="https://amgprojectsllp.com" target="_blank" rel="noopener"
+             data-panel-a="assets/work/amg-1.jpg"
+             data-panel-b="assets/work/amg-2.jpg"
+             data-panel-name="AMG Turnkey Projects" data-panel-host="amgprojectsllp.com"
+             data-panel-rot="0.26">
+            <img src="assets/work/amg-1.jpg" alt="The AMG Turnkey Projects site: the Where Quality Meets Swiftness hero" width="1680" height="1080">
+            <span class="panel__go">Open amgprojectsllp.com</span>
+          </a>
+
+          <p class="showing" data-showing aria-live="polite">
+            <i class="dot dot--live"></i>
+            <span data-showing-n>01</span>
+            <b data-showing-name>Desi Totes</b>
+            <em data-showing-host>desitotes.com</em>
+          </p>
+        </div>
+
+        <header class="lede">
+          <p class="eyebrow"><i class="dot dot--live"></i> Pune, India</p>
+          <h1 id="lede-h">Everything here is in production.</h1>
+          <p class="lede__p">
+            I am Sahil. I build and run two commercial sites: a canvas bag
+            label that takes real payments, and the public face of a
+            construction firm. You are watching them run.
+          </p>
+          <p class="lede__hint" aria-hidden="true">Scroll to swap. Click either one to open it.</p>
+        </header>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       CASE 01 · AMG
+       ========================================================== -->
+  <section class="case case--steel" id="work">
+    <div class="case__head" data-sc-in data-sc-stagger="60">
+      <p class="eyebrow">Client 01 · Construction</p>
+      <h2>AMG Turnkey Projects</h2>
+    </div>
+
+    <div class="case__grid">
+      <div class="case__story" data-sc-in data-sc-stagger="60">
+        <p class="story">
+          Twenty five years old, based in Pune, and they build the factory and
+          then fit out the inside of it. Six service lines across three states.
+        </p>
+        <p>
+          The brief was findability. Somebody who needs a hospital block built
+          should reach the right service, the right past project and a way to
+          ask, inside one pass of the page, on a site office connection.
+        </p>
+        <dl class="spec">
+          <div><dt>Front</dt><dd>React, Vite, Tailwind, GSAP</dd></div>
+          <div><dt>Back</dt><dd>Node, Express, MongoDB</dd></div>
+          <div><dt>Scope</dt><dd>End to end</dd></div>
+          <div><dt>Status</dt><dd><i class="dot dot--live"></i> Live</dd></div>
+        </dl>
+        <a class="go" href="https://amgprojectsllp.com" target="_blank" rel="noopener">
+          amgprojectsllp.com <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+
+      <figure class="case__shot" data-sc-reveal="up" data-sc-reveal-at="0.04 0.46">
+        <img src="assets/amg/eka.jpg" alt="Inside a completed steel portal frame building: columns, rafters and service runs overhead, with electric buses on the assembly line below" width="1280" height="578" loading="lazy">
+        <figcaption>Pinnacle Mobility Solutions (EKA). Delivered.</figcaption>
+      </figure>
+    </div>
+
+    <div class="strip" aria-label="Delivered projects">
+      <figure><img src="assets/amg/acl7.jpg" alt="A completed open plan office floor with planted desk dividers and exposed red service lines" width="1600" height="1204" loading="lazy"><figcaption>Interior fit out</figcaption></figure>
+      <figure><img src="assets/amg/hdfc.jpg" alt="A completed open plan office floor, workstations and screens installed" width="1600" height="1200" loading="lazy"><figcaption>Corporate office, HDFC</figcaption></figure>
+      <figure><img src="assets/amg/po22.jpg" alt="An industrial facility delivered for Plastic Omnium Auto Exteriors" width="1280" height="960" loading="lazy"><figcaption>Plastic Omnium Auto Exteriors</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       CASE 02 · Desi Totes
+       ========================================================== -->
+  <section class="case case--cotton">
+    <div class="case__head" data-sc-in data-sc-stagger="60">
+      <p class="eyebrow">Client 02 · Commerce</p>
+      <h2>Desi Totes</h2>
+    </div>
+
+    <div class="case__grid case__grid--flip">
+      <figure class="case__shot" data-sc-reveal="up" data-sc-reveal-at="0.04 0.46">
+        <img src="assets/desi/plain_pocket_tote_natural.jpg" alt="A natural cotton canvas tote with a front pocket, standing on a wooden table" width="686" height="1024" loading="lazy">
+        <figcaption>Plain pocket tote, natural. 320 GSM.</figcaption>
+      </figure>
+
+      <div class="case__story" data-sc-in data-sc-stagger="60">
+        <p class="story">
+          Cotton canvas, cut and printed after the order arrives. Nothing sits
+          in a warehouse, so nothing can be vague.
+        </p>
+        <p>
+          Fabric weight, finished size, zip or no zip and the price gap between
+          them all have to land before anyone reaches a cart. It takes cards
+          through Razorpay, switches currency in place, and keeps a bag that
+          survives a refresh.
+        </p>
+        <dl class="spec">
+          <div><dt>Front</dt><dd>React, Vite, Tailwind</dd></div>
+          <div><dt>Back</dt><dd>Node, Express, MongoDB</dd></div>
+          <div><dt>Payments</dt><dd>Razorpay, INR and USD</dd></div>
+          <div><dt>Status</dt><dd><i class="dot dot--live"></i> Live</dd></div>
+        </dl>
+        <a class="go" href="https://desitotes.com" target="_blank" rel="noopener">
+          desitotes.com <span aria-hidden="true">↗</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="strip strip--four" aria-label="Printed range">
+      <figure><img src="assets/desi/print_emotionalbaggage_natural.jpg" alt="Printed tote, natural canvas" width="600" height="600" loading="lazy"><figcaption>Emotional Baggage</figcaption></figure>
+      <figure><img src="assets/desi/print_evil_eye_natural.jpg" alt="Printed tote, natural canvas" width="600" height="600" loading="lazy"><figcaption>Evil Eye</figcaption></figure>
+      <figure><img src="assets/desi/hobo_black.jpg" alt="Black canvas hobo tote" width="600" height="600" loading="lazy"><figcaption>Hobo, black</figcaption></figure>
+      <figure><img src="assets/desi/print_daisy_black.jpg" alt="Printed tote, black canvas" width="600" height="600" loading="lazy"><figcaption>Daisy, black</figcaption></figure>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       HOW IT IS BUILT
+       ========================================================== -->
+  <section class="build" id="build">
+    <div class="build__head" data-sc-in data-sc-stagger="60">
+      <p class="eyebrow">The work behind it</p>
+      <h2>Both ends, or it is not finished.</h2>
+      <p class="build__p">
+        A shop that renders beautifully and loses a cart is not a shop. I build
+        the surface and the thing underneath it, and I stay on afterwards,
+        which is the part that decides whether either was any good.
+      </p>
+    </div>
+
+    <ol class="cols" data-sc-in data-sc-stagger="70">
+      <li>
+        <h3>Interface</h3>
+        <p>React and Vite, Tailwind for the system, GSAP where scroll has to carry meaning. Real markup, keyboard order, reduced motion honoured.</p>
+      </li>
+      <li>
+        <h3>Service</h3>
+        <p>Node and Express over MongoDB. Catalogue, cart, orders and the admin side of them. Razorpay for cards, with the states that go wrong handled.</p>
+      </li>
+      <li>
+        <h3>Running</h3>
+        <p>A content security policy, image budgets, lazy media, and a deploy that does not need me awake. Then the part nobody photographs: fixing it in production.</p>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ==========================================================
+       ME
+       ========================================================== -->
+  <section class="me" id="me">
+    <figure class="me__plate" data-scrub
+            data-scrub-src="assets/me/colophon.mp4"
+            data-scrub-src-mobile="assets/me/colophon-m.mp4">
+      <img class="me__poster" src="assets/me/colophon-poster.jpg" alt="Sahil Pathak" width="1024" height="577">
+      <video class="me__clip" muted playsinline preload="none" aria-hidden="true" tabindex="-1"></video>
+    </figure>
+
+    <div class="me__text" data-sc-in data-sc-stagger="60">
+      <p class="eyebrow">Who is behind it</p>
+      <h2>Sahil Pathak</h2>
+      <p class="story">
+        Studying data science and AI at IIT Guwahati, and shipping commercial
+        work at the same time.
+      </p>
+      <p>
+        The two sites above are the whole argument. They took real briefs, they
+        take real money and real enquiries, and they are still up. That is a
+        different thing from a portfolio piece, and it is the only thing I would
+        want to be judged on.
+      </p>
+      <dl class="spec spec--wide">
+        <div><dt>Based</dt><dd>Pune, India</dd></div>
+        <div><dt>Reading</dt><dd>BSc (Hons) Data Science and AI, IIT Guwahati, 2023 to 2027</dd></div>
+        <div><dt>Code</dt><dd><a class="lnk" href="https://github.com/sahil454521" target="_blank" rel="noopener">github.com/sahil454521</a></dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       CONTACT
+       ========================================================== -->
+  <footer class="end" id="contact">
+    <div class="end__inner" data-sc-in data-sc-stagger="60">
+      <h2>Got something that has to go live and stay live?</h2>
+      <a class="end__cta" href="mailto:sahilpathak2005@gmail.com">
+        <span>Get in touch</span>
+        <em>sahilpathak2005@gmail.com</em>
+      </a>
+      <dl class="end__meta">
+        <div><dt>Set in</dt><dd>Bricolage Grotesque and Archivo</dd></div>
+        <div><dt>Footage</dt><dd>Both client sites, captured from production</dd></div>
+        <div><dt>Photography</dt><dd>AMG Projects and Desi Totes, used with permission</dd></div>
+        <div><dt>Built with</dt><dd>Plain HTML, one stylesheet, Three.js for the vitrine</dd></div>
+      </dl>
+      <p class="end__sig">Sahil Pathak, Pune. <span>Still up.</span></p>
+    </div>
+  </footer>
+
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
+<script src="scrollcraft.js"></script>
+<script src="site.js"></script>
+<script>
+  ScrollCraft.mount(document.body);
+</script>
+<script src="vitrine.js"></script>
+</body>
 </html>
