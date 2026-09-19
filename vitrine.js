@@ -8,8 +8,9 @@
    production, standing as planes in a real 3D scene.
 
    Scroll interchanges them: whichever is forward comes to the
-   front of the room and changes what it is showing, and the
-   other falls back. Clicking either one opens that site.
+   front of the room and the other falls back. Each panel shows
+   one still and keeps it, so nothing ever double-exposes.
+   Clicking either one opens that site.
 
    Stills rather than footage on purpose. Nothing decodes, so
    nothing stutters, and a still at 1600px is sharper than any
@@ -42,7 +43,6 @@
   const PANELS = [...root.querySelectorAll('[data-panel]')].map((el, i) => ({
     el, i,
     a: el.dataset.panelA,
-    b: el.dataset.panelB,
     rot: parseFloat(el.dataset.panelRot) || 0,
     name: el.dataset.panelName || '',
     host: el.dataset.panelHost || '',
@@ -100,13 +100,12 @@
   const quad = new THREE.PlaneGeometry(PANEL_W, PANEL_H);
 
   PANELS.forEach((p) => {
-    // two faces, one per still, cross faded as the panel takes the room
-    const mkFace = () => new THREE.Mesh(quad, new THREE.MeshBasicMaterial({
+    // One face, one still. Fading a second image in over the first left a
+    // ghost of the site hanging over itself mid-swap, which is exactly what
+    // it looked like: two copies of the same page, half transparent.
+    p.face = new THREE.Mesh(quad, new THREE.MeshBasicMaterial({
       toneMapped: false, transparent: true, opacity: 0,
     }));
-    p.faceA = mkFace();
-    p.faceB = mkFace();
-    p.faceB.position.z = 0.001;
 
     const bezel = new THREE.Mesh(
       new THREE.PlaneGeometry(PANEL_W + 0.07, PANEL_H + 0.07),
@@ -123,7 +122,7 @@
     p.mirror = mirror;
 
     const cell = new THREE.Group();
-    cell.add(bezel, p.faceA, p.faceB, mirror);
+    cell.add(bezel, p.face, mirror);
     group.add(cell);
     p.cell = cell;
     p.anchor = new THREE.Vector3();
@@ -152,26 +151,21 @@
   /* ---- load every still before showing anything -------------------
      A room that fills in one panel at a time looks broken. */
   let armed = false;
-  Promise.all(PANELS.flatMap((p) => [
-    load(p.a).then((t) => { p.texA = t; }),
-    load(p.b).then((t) => { p.texB = t; }),
-  ])).then(() => {
+  Promise.all(PANELS.map((p) => load(p.a).then((t) => { p.tex = t; })))
+    .then(() => {
     PANELS.forEach((p) => {
-      [[p.texA, p.faceA], [p.texB, p.faceB]].forEach(([t, m]) => {
-        t.colorSpace = THREE.SRGBColorSpace;
-        // The stills are 1600px and land around 1000 device pixels, so they
-        // are minified. Without mipmaps that undersamples the source and the
-        // result reads as soft and noisy however sharp the original is.
-        // Trilinear plus anisotropy is what makes a shrunk texture stay crisp.
-        t.generateMipmaps = true;
-        t.minFilter = THREE.LinearMipmapLinearFilter;
-        t.magFilter = THREE.LinearFilter;
-        t.anisotropy = renderer.capabilities.getMaxAnisotropy();
-        t.needsUpdate = true;
-        m.material.map = t;
-        m.material.needsUpdate = true;
-      });
-      p.mirror.material.map = p.texA;
+      const t = p.tex;
+      t.colorSpace = THREE.SRGBColorSpace;
+      // The stills are minified to fit the panel. Without mipmaps that
+      // undersamples the source and reads as soft however sharp it is.
+      t.generateMipmaps = true;
+      t.minFilter = THREE.LinearMipmapLinearFilter;
+      t.magFilter = THREE.LinearFilter;
+      t.anisotropy = renderer.capabilities.getMaxAnisotropy();
+      t.needsUpdate = true;
+      p.face.material.map = t;
+      p.face.material.needsUpdate = true;
+      p.mirror.material.map = t;
       p.mirror.material.needsUpdate = true;
     });
     armed = true;
@@ -276,26 +270,12 @@
       const sc = lerp(S.small.s, S.big.s, f);
       p.cell.scale.set(sc, sc, 1);
 
-      // The forward panel also changes what it is showing, driven by its own
-      // window rather than by focus: focus sits at 1 for most of a panel's
-      // turn, so keying the swap to it meant the second still was up the whole
-      // time and the first was only ever glimpsed during the handover.
-      const swap = i === 0
-        ? smooth(pS, 0.12, 0.38)     // Desi: hero, then the printed range
-        : smooth(pS, 0.64, 0.90);    // AMG: hero, then the projects
-      const a = lerp(0.9, 1, f);    // the small one is beside it, not faded out
-      // The second still fades in OVER the first rather than the two
-      // cross-fading. Cross-fading put both at half opacity at the midpoint,
-      // which washed the panel out against a light ground.
-      p.faceA.material.opacity = a;
-      p.faceB.material.opacity = a * swap;
-      p.bezel.material.opacity = a;
+      // Fully opaque throughout. The only thing scroll changes is where each
+      // panel is, never how transparent it is, so neither site is ever seen
+      // through the other.
+      p.face.material.opacity = 1;
+      p.bezel.material.opacity = 1;
       p.mirror.material.opacity = lerp(0.07, 0.14, f);
-      const want = swap > 0.5 ? p.texB : p.texA;
-      if (p.mirror.material.map !== want) {
-        p.mirror.material.map = want;
-        p.mirror.material.needsUpdate = true;
-      }
 
       p.cell.updateMatrixWorld();
       p.anchor.set(0, 0, 0).applyMatrix4(p.cell.matrixWorld);
