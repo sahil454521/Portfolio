@@ -4,7 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Sahil Pathak · Full stack developer, Pune</title>
-<meta name="description" content="Full stack developer in Pune. Two commercial sites in production: AMG Turnkey Projects and Desi Totes. Both built and run end to end.">
+<meta name="description" content="Full stack developer in Pune. Two commercial sites built and run end to end, Desi Totes and AMG Turnkey Projects, and three more of my own. All five are live.">
+<meta name="theme-color" content="#EAEDEF">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://portfolio-q38w.vercel.app/">
+<meta property="og:title" content="Sahil Pathak · Everything here is in production">
+<meta property="og:description" content="Two commercial sites built and run end to end, and three more of my own. All five are live.">
+<meta property="og:image" content="https://portfolio-q38w.vercel.app/assets/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080B0E'/><circle cx='16' cy='16' r='6' fill='%23FFB03B'/></svg>">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -28,10 +37,11 @@
   <a class="rail__mark" href="#top">SP</a>
   <ol class="rail__list">
     <li><a href="#work" data-rail><i></i><span>Work</span></a></li>
+    <li><a href="#also" data-rail><i></i><span>Also</span></a></li>
     <li><a href="#build" data-rail><i></i><span>Build</span></a></li>
     <li><a href="#me" data-rail><i></i><span>Me</span></a></li>
   </ol>
-  <a class="rail__cta" href="#contact">Get in touch</a>
+  <a class="rail__cta" href="mailto:sahilpathak2005@gmail.com">Email me</a>
 </nav>
 
 <main id="top">
@@ -47,9 +57,6 @@
         <div class="vitrine" data-vitrine>
           <canvas aria-hidden="true"></canvas>
 
-          <!-- Real links, not decoration. They sit over the canvas and are
-               moved to wherever their panel currently is, so a click or a
-               keyboard focus lands on an actual anchor to an actual site. -->
           <!-- Real links, not decoration. Each sits exactly over its panel,
                wherever the carousel has put it, so a click, a tap and a Tab
                all land on an actual anchor to an actual site. -->
@@ -103,125 +110,124 @@
         </div>
 
         <header class="lede">
-          <p class="eyebrow"><i class="dot dot--live"></i> Pune, India</p>
+          <p class="eyebrow">Full stack developer</p>
           <h1 id="lede-h">Everything here is in production.</h1>
           <p class="lede__p">
-            I am Sahil. Two of these are commercial sites I build and run: a
-            canvas bag label that takes real payments, and the public face of a
-            construction firm. The rest are mine. All five are live.
+            I am Sahil. Two of these are client sites I build and run. Three
+            are mine. All five are live.
           </p>
-          <p class="lede__hint" aria-hidden="true">Scroll through them. Click any one to open it.</p>
         </header>
 
       </div>
     </div>
   </section>
 
-  <!-- ==========================================================
-       CASE 01 · AMG
-       ========================================================== -->
-  <section class="case case--steel" id="work">
-    <div class="case__head" data-sc-in data-sc-stagger="60">
-      <p class="eyebrow">Client 01 · Construction</p>
-      <h2>AMG Turnkey Projects</h2>
-    </div>
+  <section class="case case--cotton" id="work" aria-labelledby="case-01">
+    <header class="case__head" data-sc-in data-sc-stagger="60">
+      <h2 id="case-01">Desi Totes</h2>
+      <p class="case__kind">Client, commerce. <a class="go go--sm" href="https://desitotes.com" target="_blank" rel="noopener">desitotes.com <span aria-hidden="true">↗</span></a></p>
+    </header>
 
-    <div class="case__grid">
-      <div class="case__story" data-sc-in data-sc-stagger="60">
-        <p class="story">
-          Twenty five years old, based in Pune, and they build the factory and
-          then fit out the inside of it. Six service lines across three states.
-        </p>
-        <p>
-          The brief was findability. Somebody who needs a hospital block built
-          should reach the right service, the right past project and a way to
-          ask, inside one pass of the page, on a site office connection.
-        </p>
-        <dl class="spec">
-          <div><dt>Front</dt><dd>React, Vite, Tailwind, GSAP</dd></div>
-          <div><dt>Back</dt><dd>Node, Express, MongoDB</dd></div>
-          <div><dt>Scope</dt><dd>End to end</dd></div>
-          <div><dt>Status</dt><dd><i class="dot dot--live"></i> Live</dd></div>
-        </dl>
-        <a class="go" href="https://amgprojectsllp.com" target="_blank" rel="noopener">
-          amgprojectsllp.com <span aria-hidden="true">↗</span>
-        </a>
+    <figure class="case__site" data-sc-reveal="up" data-sc-reveal-at="0.02 0.4">
+      <a href="https://desitotes.com" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+        <img src="assets/work/desi-1.jpg" alt="The Desi Totes storefront: the Carry It Desi Style hero with a black canvas hobo tote" width="1680" height="1080" loading="lazy">
+      </a>
+      <figcaption>desitotes.com, captured from the live site.</figcaption>
+    </figure>
+
+    <div class="case__body" data-sc-in data-sc-stagger="60">
+      <div class="case__copy">
+        <p class="story">Cotton canvas, cut and printed after the order arrives. Nothing sits in a warehouse, so nothing can be vague.</p>
+        <p>Fabric weight, finished size, zip or no zip and the price gap between them all have to land before anyone reaches a cart. It takes cards through Razorpay, switches currency in place, and keeps a bag that survives a refresh.</p>
       </div>
-
-      <figure class="case__shot" data-sc-reveal="up" data-sc-reveal-at="0.04 0.46">
-        <img src="assets/amg/eka.jpg" alt="Inside a completed steel portal frame building: columns, rafters and service runs overhead, with electric buses on the assembly line below" width="1280" height="578" loading="lazy">
-        <figcaption>Pinnacle Mobility Solutions (EKA). Delivered.</figcaption>
-      </figure>
+      <dl class="spec"><div><dt>Front</dt><dd>React, Vite, Tailwind</dd></div><div><dt>Back</dt><dd>Node, Express, MongoDB</dd></div><div><dt>Payments</dt><dd>Razorpay, INR and USD</dd></div><div><dt>Status</dt><dd><i class="dot dot--live"></i> Live</dd></div></dl>
     </div>
 
-    <div class="strip" aria-label="Delivered projects">
-      <figure><img src="assets/amg/acl7.jpg" alt="A completed open plan office floor with planted desk dividers and exposed red service lines" width="1600" height="1204" loading="lazy"><figcaption>Interior fit out</figcaption></figure>
+    <div class="case__photos">
+      <figure><img src="assets/desi/plain_pocket_tote_natural.jpg" alt="A natural cotton canvas tote with a front pocket, standing on a wooden table" width="686" height="1024" loading="lazy"><figcaption>Plain pocket tote, natural. 320 GSM.</figcaption></figure>
+      <figure><img src="assets/desi/hobo_black.jpg" alt="Black canvas hobo tote" width="600" height="600" loading="lazy"><figcaption>Hobo, black</figcaption></figure>
+      <figure><img src="assets/desi/print_daisy_black.jpg" alt="Printed tote, black canvas, with a daisy print" width="600" height="600" loading="lazy"><figcaption>Daisy print</figcaption></figure>
+    </div>
+  </section>
+
+  <section class="case case--steel" aria-labelledby="case-02">
+    <header class="case__head" data-sc-in data-sc-stagger="60">
+      <h2 id="case-02">AMG Turnkey Projects</h2>
+      <p class="case__kind">Client, construction. <a class="go go--sm" href="https://amgprojectsllp.com" target="_blank" rel="noopener">amgprojectsllp.com <span aria-hidden="true">↗</span></a></p>
+    </header>
+
+    <figure class="case__site" data-sc-reveal="up" data-sc-reveal-at="0.02 0.4">
+      <a href="https://amgprojectsllp.com" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">
+        <img src="assets/work/amg-1.jpg" alt="The AMG Turnkey Projects site: the Where Quality Meets Swiftness hero" width="1680" height="1080" loading="lazy">
+      </a>
+      <figcaption>amgprojectsllp.com, captured from the live site.</figcaption>
+    </figure>
+
+    <div class="case__body" data-sc-in data-sc-stagger="60">
+      <div class="case__copy">
+        <p class="story">Twenty five years old, based in Pune, and they build the factory and then fit out the inside of it. Six service lines across three states.</p>
+        <p>The brief was findability. Somebody who needs a hospital block built should reach the right service, the right past project and a way to ask, inside one pass of the page, on a site office connection.</p>
+      </div>
+      <dl class="spec"><div><dt>Front</dt><dd>React, Vite, Tailwind, GSAP</dd></div><div><dt>Back</dt><dd>Node, Express, MongoDB</dd></div><div><dt>Scope</dt><dd>End to end</dd></div><div><dt>Status</dt><dd><i class="dot dot--live"></i> Live</dd></div></dl>
+    </div>
+
+    <div class="case__photos">
+      <figure><img src="assets/amg/eka.jpg" alt="Inside a completed steel portal frame building, with electric buses on the assembly line below" width="1280" height="578" loading="lazy"><figcaption>Pinnacle Mobility Solutions (EKA)</figcaption></figure>
       <figure><img src="assets/amg/hdfc.jpg" alt="A completed open plan office floor, workstations and screens installed" width="1600" height="1200" loading="lazy"><figcaption>Corporate office, HDFC</figcaption></figure>
       <figure><img src="assets/amg/po22.jpg" alt="An industrial facility delivered for Plastic Omnium Auto Exteriors" width="1280" height="960" loading="lazy"><figcaption>Plastic Omnium Auto Exteriors</figcaption></figure>
     </div>
   </section>
 
-  <!-- ==========================================================
-       CASE 02 · Desi Totes
-       ========================================================== -->
-  <section class="case case--cotton">
-    <div class="case__head" data-sc-in data-sc-stagger="60">
-      <p class="eyebrow">Client 02 · Commerce</p>
-      <h2>Desi Totes</h2>
+  <section class="also" id="also" aria-labelledby="also-h">
+    <div class="also__head" data-sc-in data-sc-stagger="60">
+      <h2 id="also-h">Also live</h2>
+      <p>No client, no brief. Things I built to find out whether I could, and left running.</p>
     </div>
-
-    <div class="case__grid case__grid--flip">
-      <figure class="case__shot" data-sc-reveal="up" data-sc-reveal-at="0.04 0.46">
-        <img src="assets/desi/plain_pocket_tote_natural.jpg" alt="A natural cotton canvas tote with a front pocket, standing on a wooden table" width="686" height="1024" loading="lazy">
-        <figcaption>Plain pocket tote, natural. 320 GSM.</figcaption>
-      </figure>
-
-      <div class="case__story" data-sc-in data-sc-stagger="60">
-        <p class="story">
-          Cotton canvas, cut and printed after the order arrives. Nothing sits
-          in a warehouse, so nothing can be vague.
-        </p>
-        <p>
-          Fabric weight, finished size, zip or no zip and the price gap between
-          them all have to land before anyone reaches a cart. It takes cards
-          through Razorpay, switches currency in place, and keeps a bag that
-          survives a refresh.
-        </p>
-        <dl class="spec">
-          <div><dt>Front</dt><dd>React, Vite, Tailwind</dd></div>
-          <div><dt>Back</dt><dd>Node, Express, MongoDB</dd></div>
-          <div><dt>Payments</dt><dd>Razorpay, INR and USD</dd></div>
-          <div><dt>Status</dt><dd><i class="dot dot--live"></i> Live</dd></div>
-        </dl>
-        <a class="go" href="https://desitotes.com" target="_blank" rel="noopener">
-          desitotes.com <span aria-hidden="true">↗</span>
+    <ol class="also__list" data-sc-in data-sc-stagger="70">
+      <li>
+        <a class="also__row" href="https://ai-compiler-eta.vercel.app" target="_blank" rel="noopener">
+          <img src="assets/work/neura.jpg" alt="" width="1680" height="1080" loading="lazy">
+          <span class="also__text">
+            <strong>NeuraCraft</strong>
+            <span>A code editor in the browser that suggests machine learning snippets as you type, backed by a model I trained.</span>
+          </span>
+          <span class="also__host">ai-compiler-eta.vercel.app <span aria-hidden="true">↗</span></span>
         </a>
-      </div>
-    </div>
-
-    <div class="strip strip--four" aria-label="Printed range">
-      <figure><img src="assets/desi/print_emotionalbaggage_natural.jpg" alt="Printed tote, natural canvas" width="600" height="600" loading="lazy"><figcaption>Emotional Baggage</figcaption></figure>
-      <figure><img src="assets/desi/print_evil_eye_natural.jpg" alt="Printed tote, natural canvas" width="600" height="600" loading="lazy"><figcaption>Evil Eye</figcaption></figure>
-      <figure><img src="assets/desi/hobo_black.jpg" alt="Black canvas hobo tote" width="600" height="600" loading="lazy"><figcaption>Hobo, black</figcaption></figure>
-      <figure><img src="assets/desi/print_daisy_black.jpg" alt="Printed tote, black canvas" width="600" height="600" loading="lazy"><figcaption>Daisy, black</figcaption></figure>
-    </div>
+      </li>
+      <li>
+        <a class="also__row" href="https://ai-chat-bot-gcar.vercel.app" target="_blank" rel="noopener">
+          <img src="assets/work/terminal.jpg" alt="" width="1680" height="1080" loading="lazy">
+          <span class="also__text">
+            <strong>AI Terminal</strong>
+            <span>A terminal-style front end for a language model. Chat, pull a URL apart, run commands.</span>
+          </span>
+          <span class="also__host">ai-chat-bot-gcar.vercel.app <span aria-hidden="true">↗</span></span>
+        </a>
+      </li>
+      <li>
+        <a class="also__row" href="https://gamifyport.vercel.app" target="_blank" rel="noopener">
+          <img src="assets/work/quest.jpg" alt="" width="1680" height="1080" loading="lazy">
+          <span class="also__text">
+            <strong>Portfolio Quest</strong>
+            <span>This portfolio as a pixel-art game. Walk the town, enter the buildings, challenge the gym leader for the résumé.</span>
+          </span>
+          <span class="also__host">gamifyport.vercel.app <span aria-hidden="true">↗</span></span>
+        </a>
+      </li>
+    </ol>
   </section>
 
-  <!-- ==========================================================
-       HOW IT IS BUILT
-       ========================================================== -->
-  <section class="build" id="build">
+  <section class="build" id="build" aria-labelledby="build-h">
     <div class="build__head" data-sc-in data-sc-stagger="60">
-      <p class="eyebrow">The work behind it</p>
-      <h2>Both ends, or it is not finished.</h2>
-      <p class="build__p">
+      <h2 id="build-h">Both ends, or it is not finished.</h2>
+      <p>
         A shop that renders beautifully and loses a cart is not a shop. I build
         the surface and the thing underneath it, and I stay on afterwards,
         which is the part that decides whether either was any good.
       </p>
     </div>
 
-    <ol class="cols" data-sc-in data-sc-stagger="70">
+    <ol class="build__list" data-sc-in data-sc-stagger="70">
       <li>
         <h3>Interface</h3>
         <p>React and Vite, Tailwind for the system, GSAP where scroll has to carry meaning. Real markup, keyboard order, reduced motion honoured.</p>
@@ -237,10 +243,7 @@
     </ol>
   </section>
 
-  <!-- ==========================================================
-       ME
-       ========================================================== -->
-  <section class="me" id="me">
+  <section class="me" id="me" aria-labelledby="me-h">
     <figure class="me__plate" data-scrub
             data-scrub-src="assets/me/colophon.mp4"
             data-scrub-src-mobile="assets/me/colophon-m.mp4">
@@ -249,17 +252,15 @@
     </figure>
 
     <div class="me__text" data-sc-in data-sc-stagger="60">
-      <p class="eyebrow">Who is behind it</p>
-      <h2>Sahil Pathak</h2>
+      <h2 id="me-h">Sahil Pathak</h2>
       <p class="story">
         Studying data science and AI at IIT Guwahati, and shipping commercial
         work at the same time.
       </p>
       <p>
-        The two sites above are the whole argument. They took real briefs, they
-        take real money and real enquiries, and they are still up. That is a
-        different thing from a portfolio piece, and it is the only thing I would
-        want to be judged on.
+        The two client sites are the whole argument. They took real briefs,
+        they take real money and real enquiries, and they are still up. The
+        rest is how I find out what I can build next.
       </p>
       <dl class="spec spec--wide">
         <div><dt>Based</dt><dd>Pune, India</dd></div>
@@ -269,23 +270,18 @@
     </div>
   </section>
 
-  <!-- ==========================================================
-       CONTACT
-       ========================================================== -->
   <footer class="end" id="contact">
     <div class="end__inner" data-sc-in data-sc-stagger="60">
       <h2>Got something that has to go live and stay live?</h2>
       <a class="end__cta" href="mailto:sahilpathak2005@gmail.com">
-        <span>Get in touch</span>
+        <span>Email me</span>
         <em>sahilpathak2005@gmail.com</em>
       </a>
       <dl class="end__meta">
         <div><dt>Set in</dt><dd>Bricolage Grotesque and Archivo</dd></div>
-        <div><dt>Footage</dt><dd>Both client sites, captured from production</dd></div>
+        <div><dt>Built with</dt><dd>Plain HTML, one stylesheet, Three.js for the row</dd></div>
         <div><dt>Photography</dt><dd>AMG Projects and Desi Totes, used with permission</dd></div>
-        <div><dt>Built with</dt><dd>Plain HTML, one stylesheet, Three.js for the vitrine</dd></div>
       </dl>
-      <p class="end__sig">Sahil Pathak, Pune. <span>Still up.</span></p>
     </div>
   </footer>
 
