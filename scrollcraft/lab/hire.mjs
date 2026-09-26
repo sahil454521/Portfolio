@@ -1,6 +1,6 @@
-// The hiring path, driven for real: flick the row, switch the research
-// diagram's inputs, copy the address, cross to the résumé and back, and check
-// the view switch never sits on top of the hero's two actions.
+// The hiring path, driven for real: switch the research diagram's inputs,
+// copy the address, cross to the résumé and back, and check the view switch
+// never sits on top of the hero's two actions.
 import { chromium } from 'playwright-core';
 
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
@@ -27,20 +27,8 @@ const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, permiss
 const p = await ctx.newPage();
 p.on('pageerror', (e) => errors.push(String(e)));
 await p.goto(url, { waitUntil: 'load' });
-await p.waitForSelector('[data-vitrine][data-ready]');
+await p.waitForSelector('[data-desk][data-ready]');
 await p.waitForTimeout(600);
-
-// flick the row two panels on, starting on a panel so the click guard is tested too
-const v = await p.locator('.vitrine canvas').boundingBox();
-const before = await p.locator('[data-showing-n]').textContent();
-const pagesBefore = ctx.pages().length;
-await p.mouse.move(v.x + v.width * 0.5, v.y + v.height * 0.45);
-await p.mouse.down();
-for (let i = 1; i <= 12; i++) { await p.mouse.move(v.x + v.width * 0.5 - i * 45, v.y + v.height * 0.45); await p.waitForTimeout(12); }
-await p.mouse.up();
-await p.waitForTimeout(1600);
-const after = await p.locator('[data-showing-n]').textContent();
-console.log(`drag      ${before} -> ${after}   opened a tab by accident: ${ctx.pages().length !== pagesBefore}`);
 
 // research diagram
 await p.locator('#research').scrollIntoViewIfNeeded();
@@ -53,10 +41,10 @@ await sig.nth(0).click();
 console.log('          one back:', await p.locator('[data-net-count]').textContent());
 
 // copy
-await p.locator('.copy').scrollIntoViewIfNeeded();
-await p.locator('.copy').click();
+await p.locator('.end .copy').scrollIntoViewIfNeeded();
+await p.locator('.end .copy').click();
 await p.waitForTimeout(100);
-console.log('copy      label:', await p.locator('.copy').textContent(), '| clipboard:', await p.evaluate(() => navigator.clipboard.readText()));
+console.log('copy      label:', await p.locator('.end .copy').textContent(), '| clipboard:', await p.evaluate(() => navigator.clipboard.readText()));
 
 // view switch
 await p.locator('.mode a', { hasText: 'Résumé' }).click();

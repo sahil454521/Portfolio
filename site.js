@@ -5,9 +5,7 @@
    Six small things:
      1. the rail       (where you are)
      2. the plate      (the closing clip, scrubbed by scroll)
-     3. verify state   (so the pinned hero is visible to the
-                        verification harness, which compares
-                        engine state rather than pixels)
+     3. status         (every live site, checked from the server)
      4. bits           (three React Bits components, ported)
      5. net            (the research diagram, switchable inputs)
      6. copy           (the email address, to the clipboard)
@@ -121,43 +119,38 @@
   }
 
   /* ===========================================================
-     3 · VERIFY STATE
+     3 · LIVE STATUS
      ---------------------------------------------------------
-     The hero is driven from --sc-p by the vitrine's own renderer
-     and by CSS, so it uses none of the engine's devices. The
-     dead-scroll check compares engine state rather than pixels,
-     which means an act like this is invisible to it and would be
-     reported dead however much it actually moves. shoot.mjs reads
-     [data-sc-verify-state] for exactly this case.
+     /api/status fetches every project from the server and times
+     it. The top bar says how many are up, each case says how
+     fast its site answered, and the desk lights up. Locally, or
+     if the check fails, nothing claims anything: the page keeps
+     its plain "Live" and the bar stays hidden.
      =========================================================== */
-  function verifyState() {
-    const act = document.querySelector('.stage[data-sc-act]');
-    const vit = document.querySelector('[data-vitrine]');
-    if (!act || !vit) return;
+  function status() {
+    fetch('/api/status')
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+      .then((d) => {
+        const byHost = {};
+        (d.sites || []).forEach((x) => { byHost[x.host] = x; });
+        const up = (d.sites || []).filter((x) => x.up).length;
+        window.__siteStatus = { ...d, byHost };
+        dispatchEvent(new CustomEvent('site-status', { detail: window.__siteStatus }));
 
-    let last = '', queued = false, near = false;
-
-    const write = () => {
-      queued = false;
-      const p = parseFloat(getComputedStyle(act).getPropertyValue('--sc-p')) || 0;
-      const v = vit.querySelector('video');
-      const t = v && v.currentTime ? v.currentTime.toFixed(2) : '0.00';
-      const s = 'p' + p.toFixed(3) + ' t' + t;
-      if (s !== last) { vit.setAttribute('data-sc-verify-state', s); last = s; }
-    };
-
-    addEventListener('scroll', () => {
-      if (!near || queued) return;
-      queued = true;
-      requestAnimationFrame(write);
-    }, { passive: true });
-
-    new IntersectionObserver((es) => {
-      near = es.some((e) => e.isIntersecting);
-      if (near) write();
-    }, { rootMargin: '40% 0px' }).observe(act);
-
-    write();
+        const bar = document.querySelector('[data-live]');
+        if (bar && d.sites && d.sites.length) {
+          bar.querySelector('[data-live-text]').textContent = `${up} of ${d.sites.length} live`;
+          bar.title = d.sites.map((x) => `${x.host}: ${x.up ? x.ms + ' ms' : 'down'}`).join(', ');
+          bar.hidden = false;
+        }
+        document.querySelectorAll('[data-status-host]').forEach((dd) => {
+          const x = byHost[dd.dataset.statusHost];
+          if (!x) return;
+          dd.querySelector('span').textContent = x.up ? `Live, answered in ${x.ms} ms` : 'Not answering right now';
+          dd.querySelector('.dot').classList.toggle('dot--live', x.up);
+        });
+      })
+      .catch(() => { /* no claim is better than a wrong one */ });
   }
 
   /* ===========================================================
@@ -361,7 +354,7 @@
     document.documentElement.classList.add('js-ready');
     rail();
     plate();
-    verifyState();
+    status();
     bits();
     net();
     copy();

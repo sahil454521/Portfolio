@@ -1,6 +1,6 @@
 // Captures the personal projects that are actually deployed and actually
 // present well. Same spec as the client stills: 1120 CSS at 2x, delivered
-// at 1680, so every panel in the vitrine is sampled identically.
+// at 1680, so every screen on the desk is sampled identically.
 import { chromium } from 'playwright-core';
 import { execFileSync } from 'node:child_process';
 import { rmSync } from 'node:fs';

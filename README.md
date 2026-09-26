@@ -1,6 +1,6 @@
 # Sahil Pathak
 
-Portfolio of an AI/ML and full-stack engineer. A bright, lit room holding five live products, then the research, then the résumé, in the order someone hiring asks for them.
+Portfolio of an AI/ML and full-stack engineer. The hero is a desk in 3D where every object is something I built and every object opens: the arcade plays Portfolio Quest, the terminal runs AI Terminal, the laptop runs NeuraCraft, all live in the page. Status lights are real, checked by a serverless function. Then the client work, the research and the résumé, in the order someone hiring asks for them.
 
 **The work**, all live
 
@@ -14,19 +14,28 @@ Portfolio of an AI/ML and full-stack engineer. A bright, lit room holding five l
 
 ## The idea
 
-Both client sites send `X-Frame-Options`, so neither can be embedded live,
-which is correct of them. The next most honest thing is stills of the real
-pages, captured from production and standing as planes in a WebGL scene.
+Borrowed from basement.studio, whose hero is its office and whose objects are
+the navigation. Here it is a desk, and each object is one piece of work:
 
-Scroll rotates the row. Whichever project reaches the centre comes forward and
-takes the room; the others sit back beside it, angled away. **Clicking any one
-opens that site**, because each panel has a real anchor tracking it, so a
-click, a tap and a Tab all land on a real link, and focusing one by keyboard
-rotates the row to bring it to the centre.
+| Object | Opens |
+|---|---|
+| Two monitors | The Desi Totes and AMG case studies |
+| Arcade cabinet | Portfolio Quest, playable in a window that grows out of its screen |
+| CRT terminal | AI Terminal, running live |
+| Laptop | NeuraCraft, running live |
+| Stack of papers | The PPEMDD research |
+| Clipboard | The résumé |
+| Phone | A compose window that opens the visitor's own email app |
 
-Adding a project is one row in `index.html` and one still in `assets/work/`.
-The layout is derived from each panel's distance from the centre, so it takes
-any number without a slot per project.
+The two client sites refuse framing (`X-Frame-Options`), correctly, so they are
+stills of the real pages. The three personal apps allow it, so they run.
+
+Every object is also a real link in the page (`[data-thing]`), so the desk is a
+way in, never the only one: keyboards, screen readers and phones use the list.
+
+`api/status.js` fetches every site and times it. The top bar shows how many
+are up, each object's light breathes while its site answers, and each case
+says how fast it answered. Cached at the edge for a minute.
 
 ## Running it
 
@@ -44,8 +53,9 @@ npx serve . -l 4500
 | `cv.html` | The résumé as plain, printable HTML: the page's second view |
 | `assets/Sahil_Pathak_Resume.pdf` | Printed from `cv.html` by `scrollcraft/lab/cv-pdf.mjs`; re-run it after editing the résumé |
 | `site.css` | The design system: one palette, two faces, the room |
-| `site.js` | The rail, the closing clip, the harness state, the pointer effects, the research diagram, copy-to-clipboard |
-| `vitrine.js` | The WebGL scene: five live sites as objects, scrubbed by scroll, flickable by drag |
+| `site.js` | Section tracking in the top bar, the closing clip, live status, the pointer effects, the research diagram, copy-to-clipboard |
+| `desk.js` | The desk: the scene, hover frames, camera flights, the app and compose windows |
+| `api/status.js` | Checks every live site from the server; the page lights up with the answer |
 | `scrollcraft.css` / `scrollcraft.js` | Scroll engine. Not edited, themed by tokens |
 | `assets/work/` | Stills of both client sites, captured from production |
 | `assets/amg`, `assets/desi` | Real client photography |
@@ -61,6 +71,7 @@ node scrollcraft/lab/sheet.mjs http://localhost:4500
 node scrollcraft/lab/sheet.mjs http://localhost:4500 --mobile
 node scrollcraft/lab/a11y.mjs http://localhost:4500
 node scrollcraft/lab/hire.mjs http://localhost:4500
+node scrollcraft/lab/desk.mjs http://localhost:4500
 ```
 
 `sheet.mjs` walks the page and tiles the frames into one contact sheet, so the

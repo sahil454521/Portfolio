@@ -11,7 +11,7 @@ page.on('response', (r) => { if (r.status() >= 400) failed.push(r.status() + '  
 await page.goto(process.argv[2] || 'http://localhost:4500', { waitUntil: 'load' });
 await page.waitForTimeout(6000);
 const state = await page.evaluate(() => {
-  const v = document.querySelector('[data-vitrine]');
+  const v = document.querySelector('[data-desk]');
   const c = v && v.querySelector('canvas');
   let webgl = false;
   try { webgl = !!document.createElement('canvas').getContext('webgl2'); } catch {}
@@ -19,8 +19,8 @@ const state = await page.evaluate(() => {
     three: typeof window.THREE,
     threeRev: window.THREE ? window.THREE.REVISION : null,
     webgl2: webgl,
-    vitrineReady: v ? v.hasAttribute('data-ready') : 'no element',
-    vitrineFallback: v ? v.hasAttribute('data-fallback') : 'n/a',
+    deskReady: v ? v.hasAttribute('data-ready') : 'no element',
+    deskFallback: v ? v.hasAttribute('data-fallback') : 'n/a',
     canvasSize: c ? c.width + 'x' + c.height : 'none',
     canvasOpacity: c ? getComputedStyle(c).opacity : 'n/a',
     videosInScene: document.querySelectorAll('video').length,
