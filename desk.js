@@ -32,6 +32,7 @@
   const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
   const lerp = (a, b, t) => a + (b - a) * t;
   const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
+  const out = (t) => 1 - (1 - t) ** 4;     // the arrival: fast start, long settle
 
   /* ---- the things: named by the links that lead to them ----------- */
   const links = [...document.querySelectorAll('[data-thing]')];
@@ -46,18 +47,29 @@
   const compose = document.querySelector('dialog[data-compose]');
   let scene = null;          // the 3D side, once it exists
   let openId = null;
+  let seq = 0;               // the latest click; an older one still in flight gives way
 
   /* ---- actions, which work with or without WebGL ------------------- */
-  function go(id) {
+  // Every action first moves toward its object, when the desk is in view, so
+  // a click visibly goes somewhere: the apps are entered, the rest leaned
+  // into, and then the page does what the object stands for.
+  async function go(id) {
     const t = THING[id];
     if (!t) return;
     const a = t.el;
     if (a.hasAttribute('data-app')) return openApp(id);
     if (a.hasAttribute('data-compose')) return openDialog(compose, id);
+    const my = ++seq;
+    if (scene && scene.onScreen()) {
+      await scene.flyTo(id, 0.5, 620);
+      if (my !== seq) return;
+    }
     const href = a.getAttribute('href');
     if (href.startsWith('#')) {
       const target = document.querySelector(href);
       if (target) target.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+      // pull back while the page scrolls away, so the desk is whole on return
+      if (scene) scene.home();
     } else location.href = href;
   }
 
@@ -76,6 +88,12 @@
     win.querySelector('[data-win-host]').textContent = a.dataset.host || '';
     win.querySelector('[data-win-out]').href = a.href;
     frameEl.title = (a.dataset.name || '') + ', running live';
+    // The window opens on the same still the object's screen shows, and the
+    // live app fades in over it once it has loaded, so it never flashes blank.
+    const view = win.querySelector('[data-win-view]');
+    view.style.backgroundImage = a.dataset.still ? `url("${a.dataset.still}")` : '';
+    view.removeAttribute('data-loaded');
+    frameEl.onload = () => { if (frameEl.getAttribute('src') !== 'about:blank') view.setAttribute('data-loaded', ''); };
     frameEl.src = a.href;
     openDialog(win, id);
   }
@@ -84,8 +102,15 @@
   // it, so it is always clear where it came from and where it went.
   async function openDialog(dlg, id) {
     if (!dlg || dlg.open) return;
+    const my = ++seq;
+    let from = null;
+    if (scene && scene.onScreen()) {
+      // close enough that the screen nearly fills the view, so the window
+      // growing out of it reads as going inside
+      from = await scene.flyTo(id, 0.9, 860);
+      if (my !== seq) { if (dlg === win) frameEl.src = 'about:blank'; return; }
+    }
     openId = id;
-    const from = scene && scene.onScreen() ? await scene.flyTo(id) : null;
     // Focus stays in this page (on Close) rather than going into the app: a
     // key pressed inside another site's frame never reaches this window, so
     // Escape would stop closing it. The app takes focus when it is clicked.
@@ -105,8 +130,10 @@
       if (scene) scene.home();
       const was = openId;
       openId = null;
-      if (!fromHistory && history.state && history.state.open === was) history.back();
-      else if (!fromHistory && location.hash === '#' + was) history.replaceState(null, '', location.pathname + location.search);
+      // Clean the address in place. Stepping back would go through the
+      // history the app inside the window may have added, and land on a
+      // stale #id that reopens a window nobody asked for.
+      if (!fromHistory && location.hash === '#' + was) history.replaceState(null, '', location.pathname + location.search);
       const back = THING[was] && document.querySelector(`[data-thing="${was}"]:not([hidden])`);
       if (back && document.activeElement === document.body) back.focus({ preventScroll: true });
     });
@@ -126,7 +153,7 @@
       frames = [{ opacity: 0, transform: reduced ? 'none' : 'scale(0.97)' }, { opacity: 1, transform: 'none' }];
     }
     if (reverse) frames.reverse();
-    const opts = { duration: reduced ? 160 : reverse ? 320 : 460, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' };
+    const opts = { duration: reduced ? 160 : reverse ? 300 : 400, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'both' };
     try {
       if (dlg._backdrop) dlg._backdrop.cancel();
       dlg._backdrop = dlg.animate(reverse ? [{ opacity: 1 }, { opacity: 0 }] : [{ opacity: 0 }, { opacity: 1 }], { ...opts, pseudoElement: '::backdrop' });
@@ -143,10 +170,12 @@
     dlg.addEventListener('click', (e) => { if (e.target === dlg) shut(dlg); });
   });
 
+  // Back closes an open window, which is what a phone user expects from a
+  // full-screen one. It never opens one: this page shares its history with
+  // whatever runs inside the window, so an old #quest can surface here long
+  // after that window closed. Only a link opened fresh (#quest) opens it.
   addEventListener('popstate', () => {
-    const id = location.hash.slice(1);
-    if (openId && id !== openId) shut(openId === 'phone' ? compose : win, true);
-    else if (!openId && THING[id] && (THING[id].el.hasAttribute('data-app') || THING[id].el.hasAttribute('data-compose'))) go(id);
+    if (openId && location.hash !== '#' + openId) shut(openId === 'phone' ? compose : win, true);
   });
 
   /* ---- the compose window ----------------------------------------- */
@@ -249,7 +278,11 @@
       return m;
     }
 
-    const loader = new THREE.TextureLoader();
+    // Nothing shows until every screen has its picture: a desk whose monitors
+    // light up one at a time looks broken, not loading.
+    const manager = new THREE.LoadingManager();
+    manager.onLoad = () => reveal();
+    const loader = new THREE.TextureLoader(manager);
     let dirty = true;
     // a still of a real site, centre-cropped to the screen it goes on (top kept)
     function still(src, aspect) {
@@ -472,6 +505,11 @@
       })));
       face.position.set(0, 0.086, 0.0056);
       tilt.add(face);
+      // the phone is the smallest thing on the desk: an unseen box around it
+      // gives the pointer a target it can actually hit
+      const reach = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.24, 0.16), new THREE.MeshBasicMaterial({ visible: false }));
+      reach.position.set(0, 0.11, 0.01);
+      g.add(reach);
       thing('phone', g, face, null);
     }
 
@@ -494,6 +532,7 @@
     const pose = { pos: new THREE.Vector3(), at: new THREE.Vector3(), ox: 0, oy: 0 };
     const homePose = { pos: new THREE.Vector3(), at: new THREE.Vector3(), ox: 0, oy: 0 };
     let W = 0, H = 0, wide = true;
+    const lede = document.querySelector('.desk .lede');
 
     function resize() {
       const r = canvas.getBoundingClientRect();
@@ -507,7 +546,6 @@
       // the right of the frame on a wide screen, clear of the headline; the
       // whole stage on a phone. Measured once from far away, then scaled,
       // because projected size falls off as one over distance.
-      const box2 = wide ? { w: 0.56, h: 0.66, x: 0.69, y: 0.47 } : { w: 0.94, h: 0.84, x: 0.5, y: 0.52 };
       const at = sphere.center.clone();
       const far = 14;
       camera.clearViewOffset();
@@ -520,7 +558,22 @@
         v.copy(c).project(camera);
         x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y);
       });
-      const k = Math.max((x1 - x0) / 2 / box2.w, (y1 - y0) / 2 / box2.h);
+      // The box comes from where the headline actually is, not from a fixed
+      // share of the width: beside it, or above it, whichever gives the desk
+      // more room. A fixed box put the laptop on the headline at mid widths.
+      const kFor = (b) => Math.max((x1 - x0) / 2 / b.w, (y1 - y0) / 2 / b.h);
+      let box2 = { w: 0.94, h: 0.84, x: 0.5, y: 0.52 };
+      if (wide && lede) {
+        const lr = lede.getBoundingClientRect();
+        const top = 88 / H, bottom = (H - 96) / H;              // under the bar, above the switch
+        const left = (lr.right - r.left + 40) / W, right = 0.985;
+        const beside = { w: right - left, h: bottom - top, x: (left + right) / 2, y: (top + bottom) / 2 };
+        const ceil = (lr.top - r.top - 28) / H;
+        const above = { w: 0.94, h: ceil - top, x: 0.5, y: (top + ceil) / 2 };
+        const ok = (b) => b.w > 0.2 && b.h > 0.2;
+        box2 = [beside, above].filter(ok).sort((a, b) => kFor(a) - kFor(b))[0] || beside;
+      }
+      const k = kFor(box2);
       homePose.at.copy(at);
       homePose.pos.copy(at).addScaledVector(DIR, far * k);
       // where the outline's centre lands, as a fraction of the frame, then
@@ -534,17 +587,24 @@
     function copyPose(a, b) { a.pos.copy(b.pos); a.at.copy(b.at); a.ox = b.ox; a.oy = b.oy; }
 
     let tween = null;
-    function tweenTo(target, ms) {
+    function tweenTo(target, ms, curve = inOut) {
+      // start from where the camera actually is, lean included, so a flight
+      // never begins with a jump
+      if (!openId && !tween && (lean.x || lean.y)) {
+        pose.pos.add(new THREE.Vector3(lean.x * 0.22, lean.y * 0.1, 0));
+        lean.x = lean.y = lean.tx = lean.ty = 0;
+      }
+      if (tween) tween.done(false);          // an interrupted flight gives way
       const from = { pos: pose.pos.clone(), at: pose.at.clone(), ox: pose.ox, oy: pose.oy };
       return new Promise((done) => {
-        if (reduced || ms === 0) { copyPose(pose, target); dirty = true; done(); return; }
-        tween = { from, to: target, t0: performance.now(), ms, done };
+        if (reduced || ms === 0) { copyPose(pose, target); dirty = true; wake(); done(true); return; }
+        tween = { from, to: target, t0: performance.now(), ms, done, curve };
         wake();
       });
     }
 
-    // where the camera has to be for a screen to fill most of the frame
-    function poseFor(t) {
+    // where the camera has to be for a screen to fill a share of the frame
+    function poseFor(t, fill = 0.7) {
       const f = t.face;
       f.updateWorldMatrix(true, false);
       const P = new THREE.Vector3().setFromMatrixPosition(f.matrixWorld);
@@ -553,8 +613,8 @@
       const gp = f.geometry.parameters;
       const vf = (camera.fov * Math.PI) / 180;
       const hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
-      const dH = (gp.height * s.y / 2) / Math.tan(vf / 2) / 0.7;
-      const dW = (gp.width * s.x / 2) / Math.tan(hf / 2) / 0.7;
+      const dH = (gp.height * s.y / 2) / Math.tan(vf / 2) / fill;
+      const dW = (gp.width * s.x / 2) / Math.tan(hf / 2) / fill;
       return { pos: P.clone().addScaledVector(N, Math.max(dH, dW)), at: P, ox: 0, oy: 0 };
     }
 
@@ -596,18 +656,33 @@
         fName.textContent = THING[id].label;
         fNote.textContent = note(id);
         fNote.hidden = !fNote.textContent;
+        labW = label.offsetWidth; labH = label.offsetHeight;   // read once per change, not per frame
       }
       frame.toggleAttribute('data-on', !!id);
       wake();
     }
-    function placeFrame() {
-      if (!hovered) return;
+    // The frame glides from one object to the next (about 150ms) instead of
+    // jumping, so the eye follows it; the first time it appears it is simply there.
+    const label = frame.querySelector('p');
+    const fr = { x: 0, y: 0, w: 0, h: 0, on: false };
+    let labW = 0, labH = 0;
+    function placeFrame(dt) {
+      if (!hovered) { fr.on = false; return false; }
       const r = rectOfObject(things[hovered].group);
       const c = canvas.getBoundingClientRect();
       const pad = 10;
-      frame.style.transform = `translate(${Math.round(r.left - c.left - pad)}px, ${Math.round(r.top - c.top - pad)}px)`;
-      frame.style.width = Math.round(r.width + pad * 2) + 'px';
-      frame.style.height = Math.round(r.height + pad * 2) + 'px';
+      const t = { x: r.left - c.left - pad, y: r.top - c.top - pad, w: r.width + pad * 2, h: r.height + pad * 2 };
+      const k = !fr.on || reduced ? 1 : 1 - Math.exp(-dt / 0.045);
+      fr.x += (t.x - fr.x) * k; fr.y += (t.y - fr.y) * k; fr.w += (t.w - fr.w) * k; fr.h += (t.h - fr.h) * k;
+      fr.on = true;
+      frame.style.transform = `translate(${Math.round(fr.x)}px, ${Math.round(fr.y)}px)`;
+      frame.style.width = Math.round(fr.w) + 'px';
+      frame.style.height = Math.round(fr.h) + 'px';
+      // the label keeps inside the frame of the page, and goes above the object
+      // when below it would run into the view switch
+      label.style.left = clamp(fr.w / 2, labW / 2 + 8 - fr.x, W - labW / 2 - 8 - fr.x) + 'px';
+      label.style.top = fr.y + fr.h + 10 + labH < H - 90 ? 'calc(100% + 10px)' : `${-labH - 10}px`;
+      return Math.abs(t.x - fr.x) + Math.abs(t.y - fr.y) + Math.abs(t.w - fr.w) > 0.5;
     }
 
     function pick() {
@@ -681,7 +756,7 @@
     // Once, on arrival, the frame visits each object in turn, so it is clear
     // before anyone has to guess that everything on the desk opens.
     const ORDER = ['desi', 'amg', 'term', 'quest', 'phone', 'cv', 'paper', 'neura'];
-    let attract = (fine && !reduced && !location.hash) ? { i: 0, t: performance.now() + 900 } : null;
+    let attract = (fine && !reduced && !location.hash) ? { i: 0, t: Infinity } : null;
 
     /* ---- status: real, from /api/status ------------------------------ */
     let status = window.__siteStatus || null;
@@ -690,25 +765,29 @@
 
     /* ---- the public side, for the actions above ----------------------- */
     let inView = true;
+    const stage = root.closest('.desk') || root;
     scene = {
       onScreen: () => inView,
       rectOf(id) {
         const t = things[id];
         return t ? rectOfObject(t.face || t.group) : null;
       },
-      async flyTo(id) {
+      async flyTo(id, fill, ms) {
         const t = things[id];
         if (!t) return null;
         setHover(null);
         attract = null;
-        await tweenTo(poseFor(t), 820);
+        // the headline steps back while the camera goes in, so the object
+        // being entered has the screen to itself
+        stage.setAttribute('data-flying', '');
+        await tweenTo(poseFor(t, fill), ms);
         return rectOfObject(t.face);
       },
-      home() { tweenTo(homePose, 700); },
+      home() { stage.removeAttribute('data-flying'); tweenTo(homePose, 700); },
     };
 
     /* ---- the loop ---------------------------------------------------- */
-    let awake = false, last = performance.now();
+    let awake = false, last = performance.now(), tick = 0;
     function wake() { if (!awake && inView) { awake = true; last = performance.now(); requestAnimationFrame(frameLoop); } }
 
     function frameLoop(now) {
@@ -717,12 +796,12 @@
       let busy = false;
 
       if (tween) {
-        const k = clamp((now - tween.t0) / tween.ms, 0, 1), e = inOut(k);
+        const k = clamp((now - tween.t0) / tween.ms, 0, 1), e = tween.curve(k);
         pose.pos.lerpVectors(tween.from.pos, tween.to.pos, e);
         pose.at.lerpVectors(tween.from.at, tween.to.at, e);
         pose.ox = lerp(tween.from.ox, tween.to.ox, e);
         pose.oy = lerp(tween.from.oy, tween.to.oy, e);
-        if (k >= 1) { const d = tween.done; tween = null; d(); }
+        if (k >= 1) { const d = tween.done; tween = null; d(true); }
         busy = true;
       }
 
@@ -760,15 +839,18 @@
 
       // status lights breathe while their site is up
       const tt = now / 1000;
+      // Breathing keeps the loop awake, so it happens only with a mouse, where
+      // the desk is being looked at; on a phone the lights hold steady and the
+      // loop sleeps.
+      const breathe = !!status && fine && !reduced;
       Object.values(things).forEach((t) => {
         if (!t.led) return;
         const st = statusOf(t.host);
         const m = t.led.material;
         if (!st) { m.emissiveIntensity = 0.15; m.color.setHex(0xc7a266); return; }
         m.color.setHex(st.up ? 0xffb03b : 0x9aa4ab);
-        m.emissiveIntensity = st.up ? (reduced ? 1.2 : 0.9 + 0.6 * (0.5 + 0.5 * Math.sin(tt * 2.4 + t.base * 9))) : 0;
+        m.emissiveIntensity = st.up ? (breathe ? 0.9 + 0.6 * (0.5 + 0.5 * Math.sin(tt * 2.4 + t.base * 9)) : 1.2) : 0;
       });
-      if (status && !reduced) busy = true;
 
       // camera, with the lean added on top of the pose
       camera.position.copy(pose.pos);
@@ -777,11 +859,13 @@
       if (pose.ox || pose.oy) camera.setViewOffset(W, H, pose.ox * W, pose.oy * H, W, H);
       else camera.clearViewOffset();
 
-      gl.render(s3, camera);
-      placeFrame();
+      const gliding = placeFrame(dt);
+      const moving = busy || gliding || drag !== null || dirty;
+      // when only the lights are changing, every other frame is plenty
+      if (moving || !(tick++ & 1)) gl.render(s3, camera);
       dirty = false;
 
-      awake = busy || drag !== null || dirty;
+      awake = moving || breathe;
       if (awake && inView) requestAnimationFrame(frameLoop);
       else awake = false;
     }
@@ -790,11 +874,27 @@
       inView = es.some((e) => e.isIntersecting);
       if (inView) wake();
     }, { rootMargin: '10% 0px' }).observe(root);
+    // coming back from the résumé through the browser's own cache
+    addEventListener('pageshow', (e) => { if (e.persisted) { tween = null; copyPose(pose, homePose); stage.removeAttribute('data-flying'); dirty = true; wake(); } });
 
     addEventListener('resize', () => { resize(); wake(); }, { passive: true });
     resize();
-    root.setAttribute('data-ready', '');
-    wake();
-    openFromHash();
+    setTimeout(reveal, 5000);          // a slow or failed image must not hold the desk back
+
+    // The desk arrives rather than appears: it starts a little further out and
+    // settles in with a long ease-out, once, while the canvas fades up. Then
+    // the tour. Reduced motion gets the fade and no travel.
+    function reveal() {
+      if (root.hasAttribute('data-ready')) return;
+      const start = {
+        pos: homePose.pos.clone().sub(homePose.at).multiplyScalar(1.16).add(homePose.at).add(new THREE.Vector3(0.3, 0.1, 0)),
+        at: homePose.at.clone(), ox: homePose.ox, oy: homePose.oy,
+      };
+      copyPose(pose, reduced ? homePose : start);
+      root.setAttribute('data-ready', '');
+      wake();
+      tweenTo(homePose, 1300, out).then(() => { if (attract) attract.t = performance.now() + 250; });
+      openFromHash();
+    }
   }
 })();

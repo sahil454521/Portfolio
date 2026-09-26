@@ -18,9 +18,13 @@
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Person", "name": "Sahil Pathak", "jobTitle": "AI/ML and full-stack engineer", "url": "https://portfolio-q38w.vercel.app/", "email": "mailto:sahilpathak2005@gmail.com", "address": {"@type": "PostalAddress", "addressLocality": "Pune", "addressCountry": "IN"}, "alumniOf": [{"@type": "CollegeOrUniversity", "name": "Indian Institute of Technology Guwahati"}, {"@type": "CollegeOrUniversity", "name": "DY Patil International University"}], "sameAs": ["https://github.com/sahil454521", "https://www.linkedin.com/in/sahil-pathak-98a523202"], "knowsAbout": ["Machine learning", "Deep learning", "Multimodal learning", "PyTorch", "React", "Next.js", "Node.js", "FastAPI", "MongoDB"]}</script>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080B0E'/><circle cx='16' cy='16' r='6' fill='%23FFB03B'/></svg>">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/work/desi-1.jpg" as="image">
+<link rel="preload" href="assets/work/amg-1.jpg" as="image">
+<link rel="preload" href="assets/work/neura.jpg" as="image">
+<link rel="preload" href="assets/work/terminal.jpg" as="image">
+<link rel="preload" href="assets/work/quest.jpg" as="image">
 
 <link rel="stylesheet" href="scrollcraft.css">
 <link rel="stylesheet" href="site.css">
@@ -44,7 +48,7 @@
     <a href="#me" data-rail>About</a>
   </nav>
   <p class="top__live" data-live hidden><i class="dot dot--live"></i> <span data-live-text></span></p>
-  <a class="top__cta" href="mailto:sahilpathak2005@gmail.com">Email me</a>
+  <a class="top__cta" href="mailto:sahilpathak2005@gmail.com" data-thing="phone" data-compose>Email me</a>
 </header>
 
 <!-- Two views of the same person, one tap apart, wherever you are on the page:
@@ -73,10 +77,10 @@
       <h1 id="lede-h">Everything here is in production.</h1>
       <p class="lede__p">
         I am Sahil, final year at IIT Guwahati. Everything on this desk is
-        something I built, and it is all running.
+        something I built, all of it live.
       </p>
       <p class="lede__act">
-        <a class="btn btn--hot" href="mailto:sahilpathak2005@gmail.com">Email me</a>
+        <a class="btn btn--hot" href="mailto:sahilpathak2005@gmail.com" data-thing="phone" data-compose>Email me</a>
         <a class="btn" href="cv.html">Résumé</a>
       </p>
     </div>
@@ -84,12 +88,12 @@
     <ul class="desk__menu" aria-label="On the desk">
       <li><a href="#work" data-thing="desi" data-host="desitotes.com" data-label="Read the Desi Totes case">Desi Totes</a></li>
       <li><a href="#amg" data-thing="amg" data-host="amgprojectsllp.com" data-label="Read the AMG case">AMG Turnkey</a></li>
-      <li><a href="https://gamifyport.vercel.app" target="_blank" rel="noopener" data-thing="quest" data-app data-name="Portfolio Quest" data-host="gamifyport.vercel.app" data-label="Play Portfolio Quest">Play Portfolio Quest</a></li>
-      <li><a href="https://ai-chat-bot-gcar.vercel.app" target="_blank" rel="noopener" data-thing="term" data-app data-name="AI Terminal" data-host="ai-chat-bot-gcar.vercel.app" data-label="Run AI Terminal">Run AI Terminal</a></li>
-      <li><a href="https://ai-compiler-eta.vercel.app" target="_blank" rel="noopener" data-thing="neura" data-app data-name="NeuraCraft" data-host="ai-compiler-eta.vercel.app" data-label="Try NeuraCraft">Try NeuraCraft</a></li>
+      <li><a href="https://gamifyport.vercel.app" target="_blank" rel="noopener" data-thing="quest" data-app data-still="assets/work/quest.jpg" data-name="Portfolio Quest" data-host="gamifyport.vercel.app" data-label="Play Portfolio Quest">Play Portfolio Quest</a></li>
+      <li><a href="https://ai-chat-bot-gcar.vercel.app" target="_blank" rel="noopener" data-thing="term" data-app data-still="assets/work/terminal.jpg" data-name="AI Terminal" data-host="ai-chat-bot-gcar.vercel.app" data-label="Run AI Terminal">Run AI Terminal</a></li>
+      <li><a href="https://ai-compiler-eta.vercel.app" target="_blank" rel="noopener" data-thing="neura" data-app data-still="assets/work/neura.jpg" data-name="NeuraCraft" data-host="ai-compiler-eta.vercel.app" data-label="Try NeuraCraft">Try NeuraCraft</a></li>
       <li><a href="#research" data-thing="paper" data-label="Read the research">The research</a></li>
       <li><a href="cv.html" data-thing="cv" data-label="Open the résumé">Résumé</a></li>
-      <li><a href="mailto:sahilpathak2005@gmail.com" data-thing="phone" data-compose data-label="Write to me">Write to me</a></li>
+      <li><a href="mailto:sahilpathak2005@gmail.com" data-thing="phone" data-compose data-label="Email me">Email me</a></li>
     </ul>
   </section>
 
@@ -206,7 +210,7 @@
           </span>
           <span class="also__host">ai-compiler-eta.vercel.app <span aria-hidden="true">↗</span></span>
         </a>
-        <a class="also__run" href="https://ai-compiler-eta.vercel.app" target="_blank" rel="noopener" data-thing="neura" data-app data-name="NeuraCraft" data-host="ai-compiler-eta.vercel.app">Try it here</a>
+        <a class="also__run" href="https://ai-compiler-eta.vercel.app" target="_blank" rel="noopener" data-thing="neura" data-app data-still="assets/work/neura.jpg" data-name="NeuraCraft" data-host="ai-compiler-eta.vercel.app">Try it here</a>
       </li>
       <li>
         <a class="also__row" href="https://ai-chat-bot-gcar.vercel.app" target="_blank" rel="noopener">
@@ -217,7 +221,7 @@
           </span>
           <span class="also__host">ai-chat-bot-gcar.vercel.app <span aria-hidden="true">↗</span></span>
         </a>
-        <a class="also__run" href="https://ai-chat-bot-gcar.vercel.app" target="_blank" rel="noopener" data-thing="term" data-app data-name="AI Terminal" data-host="ai-chat-bot-gcar.vercel.app">Run it here</a>
+        <a class="also__run" href="https://ai-chat-bot-gcar.vercel.app" target="_blank" rel="noopener" data-thing="term" data-app data-still="assets/work/terminal.jpg" data-name="AI Terminal" data-host="ai-chat-bot-gcar.vercel.app">Run it here</a>
       </li>
       <li>
         <a class="also__row" href="https://gamifyport.vercel.app" target="_blank" rel="noopener">
@@ -228,7 +232,7 @@
           </span>
           <span class="also__host">gamifyport.vercel.app <span aria-hidden="true">↗</span></span>
         </a>
-        <a class="also__run" href="https://gamifyport.vercel.app" target="_blank" rel="noopener" data-thing="quest" data-app data-name="Portfolio Quest" data-host="gamifyport.vercel.app">Play it here</a>
+        <a class="also__run" href="https://gamifyport.vercel.app" target="_blank" rel="noopener" data-thing="quest" data-app data-still="assets/work/quest.jpg" data-name="Portfolio Quest" data-host="gamifyport.vercel.app">Play it here</a>
       </li>
     </ol>
   </section>
@@ -297,7 +301,7 @@
     <div class="end__inner" data-sc-in data-sc-stagger="60">
       <h2>Hiring, or building something that has to stay live?</h2>
       <div class="end__act">
-        <a class="end__cta" href="mailto:sahilpathak2005@gmail.com">
+        <a class="end__cta" href="mailto:sahilpathak2005@gmail.com" data-thing="phone" data-compose>
           <span>Email me</span>
           <em>sahilpathak2005@gmail.com</em>
         </a>
@@ -326,7 +330,9 @@
     <a class="win__out" data-win-out href="#" target="_blank" rel="noopener">Open in a new tab <span aria-hidden="true">↗</span></a>
     <button class="win__close" type="button" data-win-close autofocus>Close</button>
   </div>
-  <iframe title="Live app" allow="clipboard-write; fullscreen; autoplay" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  <div class="win__view" data-win-view>
+    <iframe title="Live app" allow="clipboard-write; fullscreen; autoplay" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
 </dialog>
 
 <!-- Write to me. Nothing is sent from this page: it opens the visitor's own
