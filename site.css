@@ -59,13 +59,30 @@
   --sc-ink: var(--ink);
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  /* one radius for surfaces (frames, photos, rows, the CTA); small
+     controls and tags are pills. Nothing else. */
+  --r: 8px;
   --fast: 170ms;
   --base: 280ms;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  /* the grey flash iOS and Android paint over anything tapped */
+  -webkit-tap-highlight-color: transparent;
+  /* no font inflation when a phone turns to landscape */
+  -webkit-text-size-adjust: 100%;
+}
+/* fire click immediately: nothing here double-tap zooms */
+a, button { touch-action: manipulation; }
+/* controls, not content: a long press should not select their label */
+.panel, .rail a, .go, .end__cta, .also__row, .skip {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 
 body {
@@ -161,7 +178,6 @@ p { margin: 0; text-wrap: pretty; }
   text-underline-offset: 0.25em;
   transition: color var(--fast) var(--ease);
 }
-.lnk:hover { color: var(--signal); }
 
 /* the outbound link to a live site: the page's one repeated action */
 .go {
@@ -178,8 +194,6 @@ p { margin: 0; text-wrap: pretty; }
   transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease);
 }
 .go span { color: var(--signal); transition: transform var(--base) var(--ease); display: inline-block; }
-.go:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 50%, transparent); }
-.go:hover span { transform: translate(3px, -3px); }
 .go:active { transform: translateY(1px); }
 
 /* =============================================================
@@ -219,13 +233,14 @@ p { margin: 0; text-wrap: pretty; }
   transition: color var(--fast) var(--ease);
 }
 .rail__list i {
-  width: 18px; height: 1px; flex: none;
+  width: 34px; height: 1px; flex: none;
   background: currentColor; opacity: 0.5;
-  transition: width var(--base) var(--ease), opacity var(--base) var(--ease);
+  transform: scaleX(0.53);
+  transform-origin: left;
+  transition: transform var(--base) var(--ease), opacity var(--base) var(--ease);
 }
-.rail__list a:hover { color: var(--ink); }
 .rail__list a[data-here] { color: var(--ink); }
-.rail__list a[data-here] i { width: 34px; opacity: 1; background: var(--signal-hot); }
+.rail__list a[data-here] i { transform: none; opacity: 1; background: var(--signal-hot); }
 .rail__cta {
   justify-self: start;
   font-size: var(--t-xs);
@@ -233,12 +248,13 @@ p { margin: 0; text-wrap: pretty; }
   text-transform: uppercase;
   color: var(--ink);
   text-decoration: none;
-  padding: var(--s-2) var(--s-4);
+  padding: var(--s-2) var(--s-3);
+  white-space: nowrap;
   border: 1px solid var(--line);
   border-radius: 999px;
   transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
 }
-.rail__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
+.rail__cta:active { transform: scale(0.97); }
 
 @media (max-width: 1080px) {
   :root { --rail-w: 0rem; }
@@ -277,13 +293,11 @@ p { margin: 0; text-wrap: pretty; }
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   display: block;
-  cursor: grab;
   -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
   mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
   opacity: 0;
   transition: opacity 700ms var(--ease);
 }
-.vitrine canvas:active { cursor: grabbing; }
 .vitrine[data-ready] canvas { opacity: 1; }
 .vitrine[data-fallback] canvas { display: none; }
 
@@ -324,11 +338,11 @@ p { margin: 0; text-wrap: pretty; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   white-space: nowrap;
+  border-radius: 999px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--base) var(--ease), transform var(--base) var(--ease);
+  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
 }
-.panel:hover .panel__go,
 .panel:focus-visible .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* once the scene is drawing, the link becomes an invisible hit area over it */
@@ -399,6 +413,7 @@ p { margin: 0; text-wrap: pretty; }
     color-mix(in oklab, var(--void) 88%, transparent) 42%,
     transparent 100%);
 }
+.vp__w { white-space: nowrap; }
 .lede h1 {
   font-size: var(--t-3xl);
   font-variation-settings: "wdth" 92, "opsz" 96;
@@ -411,47 +426,61 @@ p { margin: 0; text-wrap: pretty; }
   font-size: var(--t-lg);
   line-height: 1.45;
 }
-.lede__hint {
-  font-size: var(--t-xs);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink-soft) 70%, var(--void));
-}
-@media (hover: none) { .lede__hint { display: none; } }
 
 /* =============================================================
    CASES
+   One layout, used twice, so the two clients read as a series
+   rather than a zig-zag. The site itself leads, because this is
+   a web developer's portfolio and the website is the work. The
+   client's own photography follows as evidence.
    ============================================================= */
-.case { padding: var(--pad) 0; padding-left: var(--rail-w); }
+.case {
+  padding: var(--pad) var(--gutter);
+  padding-left: calc(var(--rail-w) + var(--gutter));
+  --tint: var(--ink);
+}
 .case--steel { --tint: var(--steel); }
 .case--cotton { --tint: var(--cotton); }
+.case > * { max-width: var(--maxw); margin-inline: auto; }
 
 .case__head {
-  padding-inline: var(--gutter);
-  max-width: var(--maxw);
-  margin: 0 auto var(--s-8);
-  display: grid; gap: var(--s-3);
-}
-.case__head h2, .build__head h2, .me__text h2 {
-  font-size: var(--t-2xl);
-  font-variation-settings: "wdth" 94, "opsz" 72;
-}
-.case__head h2 { color: var(--tint, var(--ink)); }
-
-.case__grid {
   display: grid;
-  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
-  gap: clamp(2rem, 5vw, 5.5rem);
-  align-items: center;
-  padding-inline: var(--gutter);
-  max-width: var(--maxw);
-  margin-inline: auto;
+  row-gap: var(--s-3);
+  margin-bottom: var(--s-7);
 }
-.case__grid--flip > .case__shot { order: 2; }
-.case__grid--flip > .case__story { order: 1; }
+.case__head h2 {
+  font-size: var(--t-3xl);
+  font-variation-settings: "wdth" 92, "opsz" 96;
+  letter-spacing: -0.036em;
+}
+.case__kind {
+  display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: var(--s-2) var(--s-5);
+  color: var(--ink-soft);
+}
 
-.case__story { display: grid; gap: var(--s-4); align-content: start; }
-.case__story p { max-width: 46ch; color: var(--ink-soft); }
+.case__site { margin-block: 0 var(--s-8); perspective: 1600px; }
+.case__site a {
+  display: block;
+  border-radius: var(--r);
+  overflow: hidden;
+  border: 1px solid var(--line-soft);
+  box-shadow:
+    0 2px 6px rgb(14 21 25 / 0.06),
+    0 40px 90px -52px rgb(14 21 25 / 0.5);
+  transition: transform var(--base) var(--ease), box-shadow var(--base) var(--ease);
+}
+.case__site img { display: block; width: 100%; height: auto; }
+
+.case__body {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  margin-bottom: var(--s-8);
+}
+.case__copy { display: grid; gap: var(--s-4); }
+.case__copy p { max-width: 58ch; color: color-mix(in oklab, var(--ink) 74%, var(--void)); }
 .story {
   font-family: var(--font-display);
   font-size: var(--t-lg);
@@ -461,23 +490,37 @@ p { margin: 0; text-wrap: pretty; }
   color: var(--ink) !important;
 }
 
-.case__shot { margin: 0; }
-.case__shot img {
-  display: block; width: 100%; height: auto;
-  border: 1px solid var(--line-soft);
-  box-shadow: 0 34px 78px -44px rgb(14 21 25 / 0.4);
+/* one large, two beside it: not three equal tiles */
+.case__photos {
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  grid-template-rows: repeat(2, clamp(10rem, 17vw, 16rem));
+  gap: clamp(0.75rem, 1.6vw, 1.25rem);
 }
+.case__photos figure {
+  margin: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
+}
+.case__photos figure:first-child { grid-row: span 2; }
+.case__photos img {
+  display: block;
+  width: 100%; height: 100%;
+  min-height: 0;
+  object-fit: cover;
+  border-radius: var(--r);
+}
+
 figcaption {
   margin-top: var(--s-3);
   font-size: var(--t-xs);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: var(--ink-soft);
-  font-variation-settings: "wdth" 88;
 }
 
 .spec {
-  margin: var(--s-5) 0 0;
+  margin: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0 var(--s-6);
@@ -490,9 +533,9 @@ figcaption {
 }
 .spec dt {
   font-size: var(--t-xs);
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink-soft) 82%, var(--void));
+  color: var(--ink-soft);
 }
 .spec dd {
   margin: 0;
@@ -502,70 +545,115 @@ figcaption {
 }
 .spec--wide { grid-template-columns: 1fr; }
 
-.strip {
-  margin-top: clamp(2.5rem, 6vw, 5rem);
-  padding-inline: var(--gutter);
-  max-width: var(--maxw);
-  margin-inline: auto;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(0.75rem, 1.6vw, 1.5rem);
+/* =============================================================
+   ALSO LIVE
+   Rows, not cards. The personal work is listed as what it is,
+   below the client work, so the page never implies they are
+   the same kind of thing.
+   ============================================================= */
+.also {
+  padding: var(--pad) var(--gutter);
+  padding-left: calc(var(--rail-w) + var(--gutter));
 }
-.strip--four { grid-template-columns: repeat(4, 1fr); }
-.strip figure { margin: 0; }
-.strip img {
-  display: block; width: 100%; height: auto;
-  aspect-ratio: 4 / 3;
+.also > * { max-width: var(--maxw); margin-inline: auto; }
+.also__head {
+  display: grid;
+  gap: var(--s-3);
+  margin-bottom: var(--s-7);
+}
+.also__head h2 {
+  font-size: var(--t-3xl);
+  font-variation-settings: "wdth" 92, "opsz" 96;
+  letter-spacing: -0.036em;
+}
+.also__head p { max-width: 52ch; color: var(--ink-soft); }
+
+.also__list { list-style: none; padding: 0; }
+.also__list li { border-bottom: 1px solid var(--line-soft); }
+.also__list li:first-child { border-top: 1px solid var(--line); }
+.also__row {
+  display: grid;
+  grid-template-columns: 11rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-5);
+  padding: var(--s-5) var(--s-2);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--r);
+  transition: background var(--fast) var(--ease);
+}
+.also__row img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
+  object-position: top;
+  border-radius: calc(var(--r) - 2px);
   border: 1px solid var(--line-soft);
 }
-.strip--four img { aspect-ratio: 1 / 1; }
+.also__text { display: grid; gap: var(--s-1); }
+.also__text strong {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 500;
+  letter-spacing: -0.024em;
+  line-height: 1.1;
+  font-variation-settings: "wdth" 92, "opsz" 32;
+}
+.also__text span { max-width: 56ch; color: var(--ink-soft); }
+.also__host { color: var(--signal); font-size: var(--t-sm); white-space: nowrap; }
+.also__host span { display: inline-block; transition: transform var(--base) var(--ease); }
+.also__row:active { background: color-mix(in oklab, var(--ink) 5%, transparent); }
 
 /* =============================================================
    BUILD
+   Two columns: the argument holds still on the left while the
+   three parts of it pass on the right. Replaces three equal
+   columns, which is the most recognisable generated layout.
    ============================================================= */
-.build { padding: var(--pad) 0; padding-left: var(--rail-w); }
-.build__head {
-  padding-inline: var(--gutter);
-  max-width: var(--maxw);
-  margin: 0 auto var(--s-8);
-  display: grid; gap: var(--s-4);
-}
-.build__p { max-width: 54ch; color: var(--ink-soft); font-size: var(--t-lg); line-height: 1.45; }
-
-.cols {
-  margin: 0; padding-inline: var(--gutter);
-  max-width: var(--maxw);
-  margin-inline: auto;
-  list-style: none;
+.build {
+  padding: var(--pad) var(--gutter);
+  padding-left: calc(var(--rail-w) + var(--gutter));
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: clamp(1.5rem, 3vw, 3.5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+  max-width: calc(var(--maxw) + var(--rail-w) + var(--gutter) * 2);
+  margin-inline: auto;
 }
-.cols > li {
-  display: grid; gap: var(--s-3);
-  align-content: start;
-  padding-top: var(--s-5);
-  border-top: 1px solid var(--line);
+.build__head { position: sticky; top: var(--s-8); display: grid; gap: var(--s-4); }
+.build__head h2 {
+  font-size: var(--t-2xl);
+  font-variation-settings: "wdth" 94, "opsz" 72;
 }
-.cols h3 {
+.build__head p { max-width: 44ch; color: var(--ink-soft); font-size: var(--t-lg); line-height: 1.45; }
+
+.build__list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.build__list li {
+  display: grid;
+  grid-template-columns: 9rem minmax(0, 1fr);
+  gap: var(--s-5);
+  padding: var(--s-6) 0;
+  border-bottom: 1px solid var(--line-soft);
+}
+.build__list h3 {
   font-size: var(--t-xl);
   font-variation-settings: "wdth" 92, "opsz" 32;
 }
-.cols p { color: var(--ink-soft); font-size: var(--t-sm); }
+.build__list p { color: color-mix(in oklab, var(--ink) 74%, var(--void)); }
 
 /* =============================================================
    ME
    ============================================================= */
 .me {
-  padding: var(--pad) 0;
-  padding-left: var(--rail-w);
+  padding: var(--pad) var(--gutter);
+  padding-left: calc(var(--rail-w) + var(--gutter));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 5.5rem);
   align-items: center;
-  padding-inline: var(--gutter);
-  max-width: calc(var(--maxw) + var(--rail-w));
+  max-width: calc(var(--maxw) + var(--rail-w) + var(--gutter) * 2);
   margin-inline: auto;
 }
 .me__plate {
@@ -573,6 +661,7 @@ figcaption {
   margin: 0;
   aspect-ratio: 1024 / 577;
   overflow: hidden;
+  border-radius: var(--r);
   border: 1px solid var(--line-soft);
   box-shadow: 0 34px 78px -44px rgb(14 21 25 / 0.4);
   background: var(--surface);
@@ -587,7 +676,11 @@ figcaption {
 .me__plate[data-ready] .me__poster { opacity: 0; transition: opacity 420ms var(--ease); }
 
 .me__text { display: grid; gap: var(--s-4); align-content: center; }
-.me__text p { max-width: 46ch; color: var(--ink-soft); }
+.me__text h2 {
+  font-size: var(--t-2xl);
+  font-variation-settings: "wdth" 94, "opsz" 72;
+}
+.me__text p { max-width: 46ch; color: color-mix(in oklab, var(--ink) 74%, var(--void)); }
 
 /* =============================================================
    END
@@ -615,7 +708,7 @@ figcaption {
   background: var(--signal-hot);
   color: var(--signal-ink);
   text-decoration: none;
-  border-radius: 2px;
+  border-radius: var(--r);
   transition: transform var(--base) var(--ease), box-shadow var(--base) var(--ease);
   box-shadow: 0 16px 34px -18px color-mix(in oklab, var(--signal-hot) 75%, transparent);
 }
@@ -632,8 +725,7 @@ figcaption {
   letter-spacing: 0.1em;
   opacity: 0.72;
 }
-.end__cta:hover { transform: translateY(-2px); box-shadow: 0 24px 48px -18px color-mix(in oklab, var(--signal-hot) 85%, transparent); }
-.end__cta:active { transform: translateY(0); }
+.end__cta:active { transform: scale(0.97); transition-duration: 120ms; }
 
 .end__meta {
   margin: var(--s-6) 0 0;
@@ -649,36 +741,32 @@ figcaption {
   color: color-mix(in oklab, var(--ink-soft) 80%, var(--void));
 }
 .end__meta dd { margin: 0; font-size: var(--t-sm); color: var(--ink-soft); }
-.end__sig {
-  margin-top: var(--s-7);
-  display: flex; justify-content: space-between; flex-wrap: wrap; gap: var(--s-3);
-  font-size: var(--t-xs);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: color-mix(in oklab, var(--ink-soft) 70%, var(--void));
-}
-.end__sig span { color: var(--signal); font-weight: 600; }
 
 /* =============================================================
    Narrow frames. Art-directed, not shrunk.
    ============================================================= */
 @media (max-width: 900px) {
-  .case__grid, .case__grid--flip, .me, .cols {
-    grid-template-columns: 1fr;
-  }
-  .case__grid--flip > .case__shot,
-  .case__grid--flip > .case__story { order: initial; }
-  .me { gap: var(--s-6); }
-  .strip { grid-template-columns: repeat(2, 1fr); }
-  .strip--four { grid-template-columns: repeat(2, 1fr); }
+  .case__head { grid-template-columns: 1fr; }
+  .case__kind { grid-column: 1; }
+  .case__body, .build, .me { grid-template-columns: 1fr; }
+  .build__head { position: static; }
+  .build__list li { grid-template-columns: 1fr; gap: var(--s-2); }
   .spec { grid-template-columns: 1fr; }
+
+  .case__photos { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
+  .case__photos figure:first-child { grid-row: auto; grid-column: span 2; }
+  .case__photos img { height: auto; aspect-ratio: 4 / 3; }
+
+  .also__row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: var(--s-4); }
+  .also__host { grid-column: 2; }
+
   .lede h1 { font-size: var(--t-2xl); }
   .lede { bottom: clamp(1.5rem, 4vh, 3rem); left: var(--gutter); right: var(--gutter); }
   .vitrine { left: var(--gutter); right: var(--gutter); bottom: 46%; }
-  /* the posters stack rather than sitting side by side at postage stamp size */
-  .panel { width: 78%; top: auto; transform: none; }
-  .panel:nth-of-type(1) { left: 0; top: 2%; }
-  .panel:nth-of-type(2) { right: 0; bottom: 2%; top: auto; }
+  /* the no-WebGL posters stack rather than sit side by side at stamp size */
+  .vitrine:not([data-ready]) .panel { width: 78%; top: auto; transform: none; }
+  .vitrine:not([data-ready]) .panel:nth-of-type(1) { left: 0; top: 2%; }
+  .vitrine:not([data-ready]) .panel:nth-of-type(2) { right: 0; bottom: 2%; top: auto; }
 }
 
 /* =============================================================
@@ -688,5 +776,29 @@ figcaption {
   /* The room stays. Only the travel goes: no orbit, no scrub, one static
      frame. Hiding the scene here meant everyone with the OS setting on saw a
      different, plainer page, which is not what reducing motion should cost. */
-  .go span, .end__cta, .rail__list i { transition: none; }
+  .go span, .end__cta, .rail__list i, .case__site a, .also__host span { transition: none; }
+  .panel__go { transition: opacity var(--fast) var(--ease); }
+}
+
+/* =============================================================
+   Hover, for pointers that can hover.
+   Touch has no hover, so a phone applies :hover on the first tap
+   and leaves it stuck. Every hover rule lives here, gated by
+   capability rather than by screen size.
+   ============================================================= */
+@media (hover: hover) and (pointer: fine) {
+  .lnk:hover { color: var(--signal); }
+  .go:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 50%, transparent); }
+  .go:hover span { transform: translate(3px, -3px); }
+  .rail__list a:hover { color: var(--ink); }
+  .rail__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
+  .panel:hover .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .case__site a:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 2px 6px rgb(14 21 25 / 0.06), 0 52px 100px -52px rgb(14 21 25 / 0.55);
+  }
+  .also__row:hover { background: color-mix(in oklab, var(--ink) 3.5%, transparent); }
+  .also__row:hover strong { color: var(--signal); }
+  .also__row:hover .also__host span { transform: translate(3px, -3px); }
+  .end__cta:hover { transform: translateY(-2px); box-shadow: 0 24px 48px -18px color-mix(in oklab, var(--signal-hot) 85%, transparent); }
 }

@@ -273,6 +273,12 @@
       showName.textContent = p.name;
       showHost.textContent = p.host;
       if (showKind) showKind.textContent = p.kind;
+      // bridge the swap so the label never teleports; reduced motion keeps
+      // the fade and drops the movement
+      showing.animate(still
+        ? [{ opacity: 0 }, { opacity: 1 }]
+        : [{ opacity: 0, transform: 'translateY(4px)', filter: 'blur(2px)' }, { opacity: 1, transform: 'none', filter: 'none' }],
+        { duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' });
     }
   }
 
@@ -317,7 +323,8 @@
     const travel = act.offsetHeight - innerHeight;
     if (travel <= 0) return;
     const target = top + (i / (N - 1)) * travel;
-    scrollTo({ top: target, behavior: still ? 'auto' : 'smooth' });
+    // instant: a keyboard action should never wait on an animation
+    scrollTo({ top: target, behavior: 'auto' });
   }
 
   PANELS.forEach((p) => {
