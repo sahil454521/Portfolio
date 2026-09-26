@@ -388,8 +388,19 @@ html { scroll-padding-top: 5rem; }
 }
 .desk__menu a:active { transform: scale(0.97); }
 @media (min-width: 901px) {
+  .lede {
+    right: var(--gutter);
+    max-width: none;
+    grid-template-columns: minmax(0, 40rem) auto;
+    column-gap: var(--s-7);
+    align-items: end;
+  }
+  .lede .eyebrow, .lede h1 { grid-column: 1 / -1; }
+  .lede h1 { max-width: none; white-space: nowrap; font-size: clamp(2.8rem, 1rem + 4vw, 5.4rem); }
+  .lede__p { max-width: 40rem; }
+  .lede__act { margin-top: 0; justify-self: start; }
   .desk__stage:not([data-fallback]) ~ .desk__menu {
-    position: absolute; right: var(--gutter); bottom: calc(clamp(2rem, 6vh, 4rem) + 3rem);
+    position: absolute; right: var(--gutter); top: 80px;
     z-index: 2;
     max-width: 30rem; justify-content: flex-end;
     clip-path: inset(50%);
@@ -416,11 +427,7 @@ html { scroll-padding-top: 5rem; }
   box-shadow: 0 40px 120px -40px rgb(14 21 25 / 0.55);
 }
 .win[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
-.win::backdrop {
-  background: color-mix(in oklab, var(--ink) 38%, transparent);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
+.win::backdrop { background: color-mix(in oklab, var(--ink) 44%, transparent); }
 .win__bar {
   display: flex; align-items: center; gap: var(--s-4);
   padding: var(--s-3) var(--s-3) var(--s-3) var(--s-5);
@@ -470,6 +477,23 @@ html { scroll-padding-top: 5rem; }
   transition: opacity 200ms var(--ease);
 }
 .win__view[data-loaded]::after { opacity: 0; }
+
+/* ---- the status board ------------------------------------------ */
+.win--board { width: min(520px, 94vw); height: fit-content; max-height: 90svh; }
+.win--board[open] { display: block; overflow: auto; }
+.board { display: grid; gap: var(--s-4); padding: var(--s-5); }
+.board__list { display: grid; gap: var(--s-2); margin: 0; padding: 0; list-style: none; min-height: 3rem; }
+.board__list li {
+  display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border-radius: calc(var(--r) - 2px);
+  background: var(--void-lift);
+  font-size: var(--t-sm);
+}
+.board__list b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.board__list span { color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); }
+.board__foot p { font-size: var(--t-xs); color: var(--ink-soft); max-width: 34ch; }
 
 /* ---- write to me ---------------------------------------------- */
 .win--compose { width: min(560px, 94vw); height: fit-content; max-height: 90svh; }
@@ -1047,10 +1071,19 @@ figcaption {
   .desk { display: flex; flex-direction: column; padding-bottom: 5rem; }
   /* the desk takes what the headline block leaves, so the two actions always
      clear the view switch at the foot of the screen, even on a short phone */
-  .desk__stage { position: relative; height: clamp(12rem, calc(100svh - 30rem), 50svh); margin-top: 64px; }
+  .desk__stage { position: relative; height: min(clamp(12rem, calc(100svh - 30rem), 50svh), 70vw); margin-top: 64px; }
   .lede { position: static; padding: var(--s-4) var(--gutter) 0; max-width: none; }
   .lede h1 { font-size: var(--t-2xl); }
-  .desk__menu { padding: var(--s-5) var(--gutter) 0; }
+  .desk__menu {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    padding: var(--s-5) var(--gutter) var(--s-2);
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+  }
+  .desk__menu::-webkit-scrollbar { display: none; }
+  .desk__menu li { scroll-snap-align: start; flex: none; }
   .desk__stage[data-fallback] { display: none; }
   .desk__stage[data-fallback] ~ .desk__menu { position: static; }
 

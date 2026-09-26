@@ -26,6 +26,12 @@ the navigation. Here it is a desk, and each object is one piece of work:
 | Stack of papers | The PPEMDD research |
 | Clipboard | The résumé |
 | Phone | A compose window that opens the visitor's own email app |
+| Five stacked boards | A status board: every live site, checked from the server just now |
+| Framed photo | About me |
+| Books | Education, on the résumé |
+| Trophy | Hackathons and prizes, on the résumé |
+| Tote bag | The Desi Totes shop, in a new tab |
+| Lamp | Switches on and off; the one toy on the desk |
 
 The two client sites refuse framing (`X-Frame-Options`), correctly, so they are
 stills of the real pages. The three personal apps allow it, so they run.
@@ -72,6 +78,8 @@ node scrollcraft/lab/sheet.mjs http://localhost:4500 --mobile
 node scrollcraft/lab/a11y.mjs http://localhost:4500
 node scrollcraft/lab/hire.mjs http://localhost:4500
 node scrollcraft/lab/desk.mjs http://localhost:4500
+node scrollcraft/lab/clicks.mjs http://localhost:4500 1152x870
+node scrollcraft/lab/flight.mjs http://localhost:4500 quest
 ```
 
 `sheet.mjs` walks the page and tiles the frames into one contact sheet, so the

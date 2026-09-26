@@ -33,6 +33,21 @@
   const lerp = (a, b, t) => a + (b - a) * t;
   const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
   const out = (t) => 1 - (1 - t) ** 4;     // the arrival: fast start, long settle
+  // A CSS cubic-bezier as a function of time, solved by bisection (x(t) is
+  // monotonic, so this never misses), so flights use the page's own curves.
+  function bezier(x1, y1, x2, y2) {
+    const f = (t, a, b) => 3 * (1 - t) * (1 - t) * t * a + 3 * (1 - t) * t * t * b + t * t * t;
+    return (x) => {
+      if (x <= 0) return 0;
+      if (x >= 1) return 1;
+      let lo = 0, hi = 1, t = x;
+      for (let i = 0; i < 22; i++) { t = (lo + hi) / 2; if (f(t, x1, x2) < x) lo = t; else hi = t; }
+      return f(t, y1, y2);
+    };
+  }
+  // The iOS sheet curve: it moves the instant you click, then settles long,
+  // which is what makes a camera flight read as smooth rather than late.
+  const glide = bezier(0.32, 0.72, 0, 1);
 
   /* ---- the things: named by the links that lead to them ----------- */
   const links = [...document.querySelectorAll('[data-thing]')];
@@ -43,10 +58,11 @@
   });
 
   const win = document.querySelector('[data-win]');
+  const board = document.querySelector('dialog[data-live-board]');
   const frameEl = win && win.querySelector('iframe');
   const compose = document.querySelector('dialog[data-compose]');
   let scene = null;          // the 3D side, once it exists
-  let openId = null;
+  let openId = null, openDlg = null, pendingSrc = null;
   let seq = 0;               // the latest click; an older one still in flight gives way
 
   /* ---- actions, which work with or without WebGL ------------------- */
@@ -59,9 +75,13 @@
     const a = t.el;
     if (a.hasAttribute('data-app')) return openApp(id);
     if (a.hasAttribute('data-compose')) return openDialog(compose, id);
+    if (a.hasAttribute('data-live-board')) { fillBoard(); return openDialog(board, id); }
+    // A link to another site opens at once, in a new tab: after a flight the
+    // browser may no longer count it as the click that asked for it.
+    if (a.target === '_blank') { window.open(a.href, '_blank', 'noopener'); return; }
     const my = ++seq;
     if (scene && scene.onScreen()) {
-      await scene.flyTo(id, 0.5, 620);
+      await scene.flyTo(id, 0.5, 720);
       if (my !== seq) return;
     }
     const href = a.getAttribute('href');
@@ -76,7 +96,7 @@
   links.forEach((a) => a.addEventListener('click', (e) => {
     // a modified click is a request for a new tab; honour it
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-    if (!a.hasAttribute('data-app') && !a.hasAttribute('data-compose')) return;
+    if (!a.hasAttribute('data-app') && !a.hasAttribute('data-compose') && !a.hasAttribute('data-live-board')) return;
     e.preventDefault();
     go(a.dataset.thing);
   }));
@@ -94,7 +114,9 @@
     view.style.backgroundImage = a.dataset.still ? `url("${a.dataset.still}")` : '';
     view.removeAttribute('data-loaded');
     frameEl.onload = () => { if (frameEl.getAttribute('src') !== 'about:blank') view.setAttribute('data-loaded', ''); };
-    frameEl.src = a.href;
+    // The app starts loading only once the window has finished growing:
+    // loading it during the animation is what dropped frames there.
+    pendingSrc = a.href;
     openDialog(win, id);
   }
 
@@ -107,16 +129,18 @@
     if (scene && scene.onScreen()) {
       // close enough that the screen nearly fills the view, so the window
       // growing out of it reads as going inside
-      from = await scene.flyTo(id, 0.9, 860);
-      if (my !== seq) { if (dlg === win) frameEl.src = 'about:blank'; return; }
+      from = await scene.flyTo(id, 0.9, 950);
+      if (my !== seq) { pendingSrc = null; return; }
     }
     openId = id;
+    openDlg = dlg;
     // Focus stays in this page (on Close) rather than going into the app: a
     // key pressed inside another site's frame never reaches this window, so
     // Escape would stop closing it. The app takes focus when it is clicked.
     dlg.showModal();
-    grow(dlg, from, false);
     if (location.hash !== '#' + id) history.pushState({ open: id }, '', '#' + id);
+    await grow(dlg, from, false);
+    if (dlg === win && pendingSrc && openId === id && !dlg.dataset.closing) { frameEl.src = pendingSrc; pendingSrc = null; }
   }
 
   function shut(dlg, fromHistory) {
@@ -130,6 +154,7 @@
       if (scene) scene.home();
       const was = openId;
       openId = null;
+      openDlg = null;
       // Clean the address in place. Stepping back would go through the
       // history the app inside the window may have added, and land on a
       // stale #id that reopens a window nobody asked for.
@@ -162,7 +187,7 @@
     return run.finished.then(() => run.cancel(), () => {});
   }
 
-  [win, compose].forEach((dlg) => {
+  [win, compose, board].forEach((dlg) => {
     if (!dlg) return;
     dlg.addEventListener('cancel', (e) => { e.preventDefault(); shut(dlg); });
     dlg.querySelectorAll('[data-win-close]').forEach((b) => b.addEventListener('click', () => shut(dlg)));
@@ -175,8 +200,42 @@
   // whatever runs inside the window, so an old #quest can surface here long
   // after that window closed. Only a link opened fresh (#quest) opens it.
   addEventListener('popstate', () => {
-    if (openId && location.hash !== '#' + openId) shut(openId === 'phone' ? compose : win, true);
+    if (openId && location.hash !== '#' + openId) shut(openDlg, true);
   });
+
+  /* ---- the status board: every site, checked from the server ---------- */
+  function fillBoard(after) {
+    if (!board) return;
+    const list = board.querySelector('[data-board-list]');
+    const when = board.querySelector('[data-board-when]');
+    const d = window.__siteStatus;
+    if (!d) {
+      list.replaceChildren();
+      if (after) { when.textContent = 'The check could not run from here. Every site is linked on this page.'; return; }
+      when.textContent = 'Checking every site now.';
+      if (window.checkStatus) window.checkStatus(true).then(() => fillBoard(true));
+      return;
+    }
+    list.replaceChildren(...d.sites.map((x) => {
+      const li = document.createElement('li');
+      const dot = document.createElement('i');
+      dot.className = 'dot' + (x.up ? ' dot--live' : '');
+      const b = document.createElement('b');
+      b.textContent = x.host;
+      const span = document.createElement('span');
+      span.textContent = x.up ? `answered in ${x.ms} ms` : 'not answering right now';
+      li.append(dot, b, span);
+      return li;
+    }));
+    const up = d.sites.filter((x) => x.up).length;
+    when.textContent = `${up} of ${d.sites.length} up, checked from the server at ${new Date(d.checked).toLocaleTimeString()}.`;
+  }
+  if (board) {
+    board.querySelector('[data-board-again]').addEventListener('click', () => {
+      board.querySelector('[data-board-when]').textContent = 'Checking every site now.';
+      if (window.checkStatus) window.checkStatus(true).then(() => fillBoard(true));
+    });
+  }
 
   /* ---- the compose window ----------------------------------------- */
   const form = compose && compose.querySelector('form');
@@ -224,6 +283,11 @@
     gl.toneMappingExposure = 1.0;
     gl.shadowMap.enabled = true;
     gl.shadowMap.type = THREE.PCFSoftShadowMap;
+    // Nothing on the desk moves during a flight, so the shadows are drawn
+    // once and redrawn only when something does. Redrawing them every frame
+    // was most of what a flight cost on a slower machine.
+    gl.shadowMap.autoUpdate = false;
+    gl.shadowMap.needsUpdate = true;
 
     const s3 = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(26, 1, 0.1, 80);
@@ -284,12 +348,12 @@
     manager.onLoad = () => reveal();
     const loader = new THREE.TextureLoader(manager);
     let dirty = true;
-    // a still of a real site, centre-cropped to the screen it goes on (top kept)
-    function still(src, aspect) {
+    // a still, centre-cropped to the surface it goes on (top kept); site
+    // captures are 1680x1080, anything else says its own proportions
+    function still(src, aspect, a = 1680 / 1080) {
       const t = loader.load(src, () => { dirty = true; wake(); });
       t.colorSpace = THREE.SRGBColorSpace;
       t.anisotropy = aniso;
-      const a = 1680 / 1080;
       if (aspect < a) { t.repeat.x = aspect / a; t.offset.x = (1 - t.repeat.x) / 2; }
       else { t.repeat.y = a / aspect; t.offset.y = 1 - t.repeat.y; }
       return t;
@@ -309,9 +373,9 @@
     const text = (px, weight = 500) => `${weight} ${px}px Archivo, sans-serif`;
 
     const things = {};
-    function thing(id, group, face, led) {
+    function thing(id, group, face, led, extra) {
       group.traverse((o) => { if (o.isMesh) o.userData.thing = id; });
-      things[id] = { id, group, face, led, lift: 0, base: group.position.y, host: THING[id] ? THING[id].host : '' };
+      things[id] = { id, group, face, led, lift: 0, base: group.position.y, host: THING[id] ? THING[id].host : '', ...extra };
     }
 
     const TOP = 0.74;
@@ -319,9 +383,9 @@
     /* ---- the desk -------------------------------------------------- */
     const desk = new THREE.Group();
     world.add(desk);
-    add(desk, rbox(2.7, 0.05, 1.04, 0.022), clay, -0.2, TOP - 0.025, 0);
-    add(desk, rbox(0.05, TOP - 0.05, 0.92, 0.02), clay, -1.47, (TOP - 0.05) / 2, 0);
-    add(desk, rbox(0.05, TOP - 0.05, 0.92, 0.02), clay, 1.07, (TOP - 0.05) / 2, 0);
+    add(desk, rbox(3.46, 0.05, 1.16, 0.022), clay, -0.08, TOP - 0.025, 0);
+    add(desk, rbox(0.05, TOP - 0.05, 1.04, 0.02), clay, -1.76, (TOP - 0.05) / 2, 0);
+    add(desk, rbox(0.05, TOP - 0.05, 1.04, 0.02), clay, 1.6, (TOP - 0.05) / 2, 0);
 
     /* ---- monitors: the two client sites ----------------------------- */
     function monitor(id, src, x, z, ry) {
@@ -339,13 +403,13 @@
       const led = add(g, new THREE.SphereGeometry(0.0062, 14, 10), ledMat(), W / 2 - 0.02, cy - H / 2 - 0.009, 0.005);
       thing(id, g, face, led);
     }
-    monitor('desi', 'assets/work/desi-1.jpg', -0.78, -0.24, 0.2);
-    monitor('amg', 'assets/work/amg-1.jpg', 0.16, -0.27, -0.06);
+    monitor('desi', 'assets/work/desi-1.jpg', -0.5, -0.28, 0.18);
+    monitor('amg', 'assets/work/amg-1.jpg', 0.42, -0.3, -0.08);
 
     /* ---- laptop: NeuraCraft ----------------------------------------- */
     {
       const g = new THREE.Group();
-      g.position.set(-1.16, TOP, 0.22); g.rotation.y = 0.46;
+      g.position.set(-1.3, TOP, 0.24); g.rotation.y = 0.46;
       world.add(g);
       const W = 0.44, D = 0.3, LH = 0.3;
       add(g, rbox(W, 0.018, D, 0.008), clay, 0, 0.009, 0);
@@ -367,7 +431,7 @@
     /* ---- CRT terminal: AI Terminal --------------------------------- */
     {
       const g = new THREE.Group();
-      g.position.set(0.84, TOP, -0.1); g.rotation.y = -0.36;
+      g.position.set(1.12, TOP, -0.12); g.rotation.y = -0.36;
       world.add(g);
       add(g, rbox(0.3, 0.02, 0.26, 0.01), clayDim, 0, 0.01, -0.04);
       add(g, rbox(0.44, 0.37, 0.4, 0.05), clay, 0, 0.205, -0.04);
@@ -386,7 +450,7 @@
     /* ---- arcade: Portfolio Quest, standing beside the desk ---------- */
     {
       const g = new THREE.Group();
-      g.position.set(1.62, 0, -0.16); g.rotation.y = -0.44;
+      g.position.set(1.98, 0, -0.18); g.rotation.y = -0.44;
       world.add(g);
       add(g, rbox(0.56, 0.92, 0.56, 0.03), clay, 0, 0.46, 0);
       add(g, rbox(0.46, 0.12, 0.02, 0.01), inkM, 0, 0.12, 0.28);
@@ -420,7 +484,7 @@
     /* ---- papers: the research -------------------------------------- */
     {
       const g = new THREE.Group();
-      g.position.set(-0.46, TOP, 0.28); g.rotation.y = 0.18;
+      g.position.set(-0.36, TOP, 0.3); g.rotation.y = 0.18;
       world.add(g);
       for (let i = 0; i < 4; i++) {
         const s = add(g, rbox(0.3, 0.006, 0.42, 0.002), clay, (i % 2) * 0.006 - 0.003, 0.003 + i * 0.0065, 0);
@@ -462,7 +526,7 @@
     /* ---- clipboard: the résumé -------------------------------------- */
     {
       const g = new THREE.Group();
-      g.position.set(0.02, TOP, 0.3); g.rotation.y = -0.1;
+      g.position.set(0.08, TOP, 0.32); g.rotation.y = -0.1;
       world.add(g);
       add(g, rbox(0.25, 0.012, 0.35, 0.01), inkM, 0, 0.006, 0);
       const sheet = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.3), screen(painted(440, 600, (c, w, h) => {
@@ -487,7 +551,7 @@
     /* ---- phone: write to me ------------------------------------------ */
     {
       const g = new THREE.Group();
-      g.position.set(0.44, TOP, 0.3); g.rotation.y = -0.3; g.scale.setScalar(1.25);
+      g.position.set(0.44, TOP, 0.33); g.rotation.y = -0.3; g.scale.setScalar(1.25);
       world.add(g);
       add(g, rbox(0.11, 0.014, 0.09, 0.006), clay, 0, 0.007, 0);
       const tilt = new THREE.Group();
@@ -513,6 +577,123 @@
       thing('phone', g, face, null);
     }
 
+    /* ---- lamp: the one toy on the desk; it switches on and off ------- */
+    {
+      const g = new THREE.Group();
+      g.position.set(-1.62, TOP, -0.38); g.rotation.y = 0.7;
+      world.add(g);
+      add(g, new THREE.CylinderGeometry(0.075, 0.085, 0.022, 28), clay, 0, 0.011, 0);
+      const arm1 = new THREE.Group(); arm1.position.set(0, 0.022, 0); arm1.rotation.z = -0.28; g.add(arm1);
+      add(arm1, new THREE.CylinderGeometry(0.009, 0.009, 0.36, 12), clay, 0, 0.18, 0);
+      const arm2 = new THREE.Group(); arm2.position.set(0, 0.36, 0); arm2.rotation.z = 1.25; arm1.add(arm2);
+      add(arm2, new THREE.SphereGeometry(0.016, 14, 10), clay, 0, 0, 0);
+      add(arm2, new THREE.CylinderGeometry(0.009, 0.009, 0.3, 12), clay, 0, 0.15, 0);
+      const head = new THREE.Group(); head.position.set(0, 0.3, 0); head.rotation.z = 0.95; arm2.add(head);
+      add(head, new THREE.CylinderGeometry(0.045, 0.085, 0.11, 28, 1, true), clay, 0, -0.04, 0).material.side = THREE.DoubleSide;
+      const bulbMat = new THREE.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffc877, emissiveIntensity: 1.6 });
+      add(head, new THREE.SphereGeometry(0.03, 16, 12), bulbMat, 0, -0.07, 0);
+      // a warm pool of light on the desk, no shadow of its own (that would
+      // be a second shadow pass for a toy)
+      const bulb = new THREE.PointLight(0xffc27a, 1.4, 1.9, 1.6);
+      bulb.position.set(0, -0.12, 0);
+      head.add(bulb);
+      thing('lamp', g, null, null, { label: 'Turn the lamp off', on: true, bulb, bulbMat });
+    }
+
+    /* ---- books: the two degrees ------------------------------------------ */
+    {
+      const g = new THREE.Group();
+      g.position.set(-1.3, TOP, -0.4); g.rotation.y = 0.28;
+      world.add(g);
+      const spine = (label, sub, bg, fg) => painted(120, 560, (c, w, h) => {
+        c.fillStyle = bg; c.fillRect(0, 0, w, h);
+        c.save(); c.translate(w / 2 + 12, h - 30); c.rotate(-Math.PI / 2);
+        c.fillStyle = fg; c.font = display(46); c.fillText(label, 0, 0);
+        c.globalAlpha = 0.7; c.font = text(24, 600); c.fillText(sub, 0, -44);
+        c.restore();
+      });
+      [['IIT Guwahati', 'BSc (Hons) DS and AI', '#3F5C6C', '#F4F6F7', 0.058, 0.3],
+       ['DY Patil', 'B.Tech CSE', '#6F5C39', '#F4F6F7', 0.05, 0.27],
+       ['', '', '#E3E8EB', '#0E1519', 0.04, 0.24]].forEach(([l, sb, bg, fg, w, h], i) => {
+        const bookMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(bg), roughness: 0.8 });
+        const bk = add(g, rbox(w, h, 0.2, 0.006), bookMat, -0.06 + i * 0.062, h / 2, 0);
+        if (i === 2) { bk.rotation.z = -0.22; bk.position.x += 0.02; }
+        if (l) {
+          const face = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.9, h * 0.92), screen(spine(l, sb, bg, fg)));
+          face.position.set(bk.position.x, h / 2, 0.1011);
+          g.add(face);
+        }
+      });
+      thing('books', g, null, null);
+    }
+
+    /* ---- trophy: hackathons and prizes ---------------------------------------- */
+    {
+      const g = new THREE.Group();
+      g.position.set(-1.0, TOP, -0.2);
+      world.add(g);
+      const gold = new THREE.MeshStandardMaterial({ color: 0xf2a93b, roughness: 0.32, metalness: 0.55, emissive: 0x3a2200, emissiveIntensity: 0.4 });
+      add(g, rbox(0.1, 0.03, 0.1, 0.008), inkM, 0, 0.015, 0);
+      add(g, new THREE.CylinderGeometry(0.012, 0.018, 0.07, 16), gold, 0, 0.065, 0);
+      const cup = [];
+      for (let i = 0; i <= 10; i++) { const t = i / 10; cup.push(new THREE.Vector2(0.012 + 0.05 * Math.sin(t * 1.35), t * 0.1)); }
+      const bowl = add(g, new THREE.LatheGeometry(cup, 32), gold, 0, 0.1, 0);
+      bowl.material = gold;
+      [-1, 1].forEach((sd) => {
+        const h = add(g, new THREE.TorusGeometry(0.025, 0.006, 8, 20, Math.PI), gold, sd * 0.058, 0.16, 0);
+        h.rotation.z = sd * -Math.PI / 2;
+      });
+      thing('trophy', g, null, null);
+    }
+
+    /* ---- the five boards: one light per live site ------------------------------ */
+    {
+      const g = new THREE.Group();
+      g.position.set(1.37, TOP, 0.27); g.rotation.y = -0.55; g.scale.setScalar(1.35);
+      world.add(g);
+      const leds = [];
+      const hosts = ['desitotes.com', 'amgprojectsllp.com', 'ai-compiler-eta.vercel.app', 'ai-chat-bot-gcar.vercel.app', 'gamifyport.vercel.app'];
+      for (let i = 0; i < 5; i++) {
+        const y = 0.02 + i * 0.045;
+        add(g, rbox(0.17, 0.014, 0.12, 0.004), i % 2 ? clayDim : clay, 0, y, 0);
+        const led = add(g, new THREE.SphereGeometry(0.0065, 12, 8), ledMat(), 0.062, y + 0.012, 0.055);
+        leds.push({ led, host: hosts[i] });
+      }
+      [[-0.075, -0.05], [0.075, -0.05], [-0.075, 0.05], [0.075, 0.05]].forEach(([x, z]) => add(g, new THREE.CylinderGeometry(0.004, 0.004, 0.2, 8), inkM, x, 0.11, z));
+      thing('rack', g, null, null, { leds });
+    }
+
+    /* ---- photo: about me --------------------------------------------------------- */
+    {
+      const g = new THREE.Group();
+      g.position.set(-0.84, TOP, 0.36); g.rotation.y = 0.32;
+      world.add(g);
+      const tilt = new THREE.Group(); tilt.rotation.x = -0.2; g.add(tilt);
+      add(tilt, rbox(0.15, 0.19, 0.014, 0.006), inkM, 0, 0.095, 0);
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(0.126, 0.166), screen(still('assets/me/colophon-poster.jpg', 0.126 / 0.166, 1024 / 577)));
+      face.position.set(0, 0.095, 0.0074);
+      tilt.add(face);
+      add(g, rbox(0.03, 0.08, 0.012, 0.004), inkM, 0, 0.04, -0.045).rotation.x = 0.5;
+      thing('photo', g, face, null);
+    }
+
+    /* ---- the tote: the shop itself ------------------------------------------------- */
+    {
+      const g = new THREE.Group();
+      g.position.set(0.74, TOP, 0.34); g.rotation.y = -0.36;
+      world.add(g);
+      const bag = new THREE.MeshStandardMaterial({ color: 0x17191b, roughness: 0.95 });
+      add(g, rbox(0.21, 0.22, 0.07, 0.016), bag, 0, 0.11, 0);
+      const face = new THREE.Mesh(new THREE.PlaneGeometry(0.19, 0.2), new THREE.MeshStandardMaterial({ map: still('assets/desi/print_daisy_black.jpg', 0.19 / 0.2, 1), roughness: 0.95 }));
+      face.position.set(0, 0.11, 0.0356);
+      g.add(face);
+      [-1, 1].forEach((sd) => {
+        const h = add(g, new THREE.TorusGeometry(0.05, 0.006, 8, 24, Math.PI), bag, sd * 0.045, 0.22, 0);
+        h.scale.y = 1.3;
+      });
+      thing('tote', g, face, null);
+    }
+
     const pickable = [];
     Object.values(things).forEach((t) => t.group.traverse((o) => { if (o.isMesh) pickable.push(o); }));
 
@@ -521,7 +702,7 @@
     Object.values(things).forEach((t) => bounds.expandByObject(t.group));
     bounds.expandByObject(desk);
     const sphere = bounds.getBoundingSphere(new THREE.Sphere());
-    const DIR = new THREE.Vector3(-0.2, 0.62, 1).normalize();
+    const DIR = new THREE.Vector3(-0.18, 0.72, 1).normalize();
     const corners = [];
     for (let i = 0; i < 8; i++) {
       corners.push(new THREE.Vector3(i & 1 ? bounds.max.x : bounds.min.x, i & 2 ? bounds.max.y : bounds.min.y, i & 4 ? bounds.max.z : bounds.min.z));
@@ -565,11 +746,11 @@
       let box2 = { w: 0.94, h: 0.84, x: 0.5, y: 0.52 };
       if (wide && lede) {
         const lr = lede.getBoundingClientRect();
-        const top = 88 / H, bottom = (H - 96) / H;              // under the bar, above the switch
-        const left = (lr.right - r.left + 40) / W, right = 0.985;
+        const top = 74 / H, bottom = (H - 92) / H;              // under the bar, above the switch
+        const left = (lr.right - r.left + 28) / W, right = 0.99;
         const beside = { w: right - left, h: bottom - top, x: (left + right) / 2, y: (top + bottom) / 2 };
-        const ceil = (lr.top - r.top - 28) / H;
-        const above = { w: 0.94, h: ceil - top, x: 0.5, y: (top + ceil) / 2 };
+        const ceil = (lr.top - r.top - 16) / H;
+        const above = { w: 0.96, h: ceil - top, x: 0.5, y: (top + ceil) / 2 };
         const ok = (b) => b.w > 0.2 && b.h > 0.2;
         box2 = [beside, above].filter(ok).sort((a, b) => kFor(a) - kFor(b))[0] || beside;
       }
@@ -605,6 +786,7 @@
 
     // where the camera has to be for a screen to fill a share of the frame
     function poseFor(t, fill = 0.7) {
+      if (!t.face) return poseForObject(t.group, fill);
       const f = t.face;
       f.updateWorldMatrix(true, false);
       const P = new THREE.Vector3().setFromMatrixPosition(f.matrixWorld);
@@ -616,6 +798,17 @@
       const dH = (gp.height * s.y / 2) / Math.tan(vf / 2) / fill;
       const dW = (gp.width * s.x / 2) / Math.tan(hf / 2) / fill;
       return { pos: P.clone().addScaledVector(N, Math.max(dH, dW)), at: P, ox: 0, oy: 0 };
+    }
+
+    // an object with no screen is approached along the home direction until
+    // its outline fills the given share of the frame
+    function poseForObject(o, fill) {
+      box.setFromObject(o);
+      const c = box.getCenter(new THREE.Vector3());
+      const r = box.getBoundingSphere(new THREE.Sphere()).radius;
+      const vf = (camera.fov * Math.PI) / 180;
+      const d = r / Math.tan(vf / 2) / fill;
+      return { pos: c.clone().addScaledVector(DIR, d), at: c, ox: 0, oy: 0 };
     }
 
     /* ---- projection helpers ------------------------------------------ */
@@ -644,6 +837,10 @@
 
     function note(id) {
       const t = things[id];
+      if (t && t.leds && status) {
+        const up = t.leds.filter((l) => (statusOf(l.host) || {}).up).length;
+        return `${up} of ${t.leds.length} sites answering`;
+      }
       const st = t && t.host && statusOf(t.host);
       if (!st) return '';
       return st.up ? `live, ${st.ms} ms` : 'not answering right now';
@@ -653,7 +850,7 @@
       hovered = id;
       canvas.style.cursor = id ? 'pointer' : '';
       if (id) {
-        fName.textContent = THING[id].label;
+        fName.textContent = (THING[id] && THING[id].label) || things[id].label;
         fNote.textContent = note(id);
         fNote.hidden = !fNote.textContent;
         labW = label.offsetWidth; labH = label.offsetHeight;   // read once per change, not per frame
@@ -685,10 +882,26 @@
       return Math.abs(t.x - fr.x) + Math.abs(t.y - fr.y) + Math.abs(t.w - fr.w) > 0.5;
     }
 
+    const pointerAt = { x: -1, y: -1 };
+    function insideFrame() {
+      return !!hovered && fr.on && pointerAt.x >= fr.x && pointerAt.x <= fr.x + fr.w && pointerAt.y >= fr.y && pointerAt.y <= fr.y + fr.h;
+    }
     function pick() {
       ray.setFromCamera(ndc, camera);
       const hit = ray.intersectObjects(pickable, false)[0];
       return hit ? hit.object.userData.thing : null;
+    }
+
+    function toggleLamp() {
+      const l = things.lamp;
+      l.on = !l.on;
+      l.bulb.intensity = l.on ? 1.4 : 0;
+      l.bulbMat.emissiveIntensity = l.on ? 1.6 : 0;
+      l.label = l.on ? 'Turn the lamp off' : 'Turn the lamp on';
+      fName.textContent = l.label;
+      labW = label.offsetWidth;
+      dirty = true;
+      wake();
     }
 
     /* ---- pointer: lean, hover, drag to turn, click to go ---------------- */
@@ -699,6 +912,7 @@
     canvas.addEventListener('pointermove', (e) => {
       const r = canvas.getBoundingClientRect();
       ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      pointerAt.x = e.clientX - r.left; pointerAt.y = e.clientY - r.top;
       pointerIn = true;
       attract = null;
       if (fine && !reduced) { lean.tx = ndc.x; lean.ty = ndc.y; }
@@ -739,8 +953,10 @@
       if (moved) { moved = false; return; }
       const r = canvas.getBoundingClientRect();
       ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
-      const id = pick();
-      if (id) go(id);
+      pointerAt.x = e.clientX - r.left; pointerAt.y = e.clientY - r.top;
+      const id = pick() || (insideFrame() ? hovered : null);
+      if (id === 'lamp') toggleLamp();
+      else if (id) go(id);
     });
 
     // the links in the page name the same things: focusing one frames it here
@@ -755,7 +971,7 @@
 
     // Once, on arrival, the frame visits each object in turn, so it is clear
     // before anyone has to guess that everything on the desk opens.
-    const ORDER = ['desi', 'amg', 'term', 'quest', 'phone', 'cv', 'paper', 'neura'];
+    const ORDER = ['desi', 'amg', 'quest', 'term', 'rack', 'phone'];
     let attract = (fine && !reduced && !location.hash) ? { i: 0, t: Infinity } : null;
 
     /* ---- status: real, from /api/status ------------------------------ */
@@ -774,16 +990,16 @@
       },
       async flyTo(id, fill, ms) {
         const t = things[id];
-        if (!t) return null;
+        if (!t || !(t.face || t.group)) return null;
         setHover(null);
         attract = null;
         // the headline steps back while the camera goes in, so the object
         // being entered has the screen to itself
         stage.setAttribute('data-flying', '');
-        await tweenTo(poseFor(t, fill), ms);
-        return rectOfObject(t.face);
+        await tweenTo(poseFor(t, fill), ms, glide);
+        return rectOfObject(t.face || t.group);
       },
-      home() { stage.removeAttribute('data-flying'); tweenTo(homePose, 700); },
+      home() { stage.removeAttribute('data-flying'); tweenTo(homePose, 820, glide); },
     };
 
     /* ---- the loop ---------------------------------------------------- */
@@ -793,7 +1009,10 @@
     function frameLoop(now) {
       const dt = Math.min((now - last) / 1000, 1 / 20);
       last = now;
-      let busy = false;
+      // behind an open window nothing is visible, so nothing is drawn: the
+      // app in the window gets the whole machine
+      if (openId && !tween) { awake = false; return; }
+      let busy = false, moved = false;
 
       if (tween) {
         const k = clamp((now - tween.t0) / tween.ms, 0, 1), e = tween.curve(k);
@@ -812,7 +1031,7 @@
         if (Math.abs(yaw) >= YAW) yawV = 0;
         busy = true;
       }
-      if (Math.abs(world.rotation.y - yaw) > 1e-4) { world.rotation.y += (yaw - world.rotation.y) * 0.25; busy = true; }
+      if (Math.abs(world.rotation.y - yaw) > 1e-4) { world.rotation.y += (yaw - world.rotation.y) * 0.25; busy = true; moved = true; }
 
       if (!openId && !tween) {
         lean.x += (lean.tx - lean.x) * 0.06;
@@ -828,12 +1047,18 @@
       if (attract) busy = true;
 
       // hover from the ray, when the pointer is over the canvas
-      if (pointerIn && !drag && !tween && !openId && !attract) setHover(pick());
+      // A hovered object rises, which can carry its edge out from under the
+      // pointer; while the pointer is still inside the frame, the hover holds,
+      // so nothing flickers at the edges.
+      if (pointerIn && !drag && !tween && !openId && !attract) {
+        const hit = pick();
+        if (hit || !insideFrame()) setHover(hit);
+      }
 
       // a hovered object rises a few millimetres, as if picked up
       Object.values(things).forEach((t) => {
         const goal = t.id === hovered && !openId ? 0.028 : 0;
-        if (Math.abs(t.lift - goal) > 1e-4) { t.lift += (goal - t.lift) * (reduced ? 1 : 0.2); busy = true; }
+        if (Math.abs(t.lift - goal) > 1e-4) { t.lift += (goal - t.lift) * (reduced ? 1 : 0.2); busy = true; moved = true; }
         t.group.position.y = t.base + t.lift;
       });
 
@@ -843,13 +1068,16 @@
       // the desk is being looked at; on a phone the lights hold steady and the
       // loop sleeps.
       const breathe = !!status && fine && !reduced;
-      Object.values(things).forEach((t) => {
-        if (!t.led) return;
-        const st = statusOf(t.host);
-        const m = t.led.material;
+      const light = (led, host, phase) => {
+        const st = statusOf(host);
+        const m = led.material;
         if (!st) { m.emissiveIntensity = 0.15; m.color.setHex(0xc7a266); return; }
         m.color.setHex(st.up ? 0xffb03b : 0x9aa4ab);
-        m.emissiveIntensity = st.up ? (breathe ? 0.9 + 0.6 * (0.5 + 0.5 * Math.sin(tt * 2.4 + t.base * 9)) : 1.2) : 0;
+        m.emissiveIntensity = st.up ? (breathe ? 0.9 + 0.6 * (0.5 + 0.5 * Math.sin(tt * 2.4 + phase)) : 1.2) : 0;
+      };
+      Object.values(things).forEach((t, i) => {
+        if (t.led) light(t.led, t.host, i * 1.3);
+        if (t.leds) t.leds.forEach((l, k) => light(l.led, l.host, k * 0.9));
       });
 
       // camera, with the lean added on top of the pose
@@ -862,6 +1090,7 @@
       const gliding = placeFrame(dt);
       const moving = busy || gliding || drag !== null || dirty;
       // when only the lights are changing, every other frame is plenty
+      if (moved) gl.shadowMap.needsUpdate = true;
       if (moving || !(tick++ & 1)) gl.render(s3, camera);
       dirty = false;
 
