@@ -1,8 +1,8 @@
 /* =============================================================
-   Sahil Pathak — portfolio
+   Sahil Pathak, portfolio
 
-   Direction: a vitrine, lit. A bright gallery holding two live
-   sites as objects, in motion.
+   Direction: a desk, lit. Every object on it is something that
+   is running, and every object opens.
 
    The palette is taken from the two clients rather than picked:
    a cool daylight ground, the safety amber that runs through
@@ -50,7 +50,7 @@
   --pad:    clamp(3.5rem, 7vw, 9rem);
   --gutter: clamp(1.25rem, 4vw, 4rem);
   --maxw:   78rem;
-  --rail-w: 9.5rem;
+  --rail-w: 0rem;
 
   /* the engine themes its own chrome from these */
   --sc-accent: var(--signal-hot);
@@ -78,7 +78,7 @@ html {
 /* fire click immediately: nothing here double-tap zooms */
 a, button { touch-action: manipulation; }
 /* controls, not content: a long press should not select their label */
-.panel, .rail a, .go, .end__cta, .also__row, .skip, .btn, .mode a, .net__sig, .copy {
+.top a, .go, .end__cta, .also__row, .also__run, .skip, .btn, .mode a, .net__sig, .copy, .desk__menu a, .win__close, .compose__about span {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -197,173 +197,89 @@ p { margin: 0; text-wrap: pretty; }
 .go:active { transform: translateY(1px); }
 
 /* =============================================================
-   THE RAIL
+   THE TOP BAR
+   Who, where to go, whether it is all still up, the one action.
    ============================================================= */
-.rail {
+html { scroll-padding-top: 5rem; }
+.top {
   position: fixed;
-  left: 0; top: 0; bottom: 0;
-  width: var(--rail-w);
-  z-index: 60;
-  display: grid;
-  align-content: space-between;
-  padding: var(--s-6) 0 var(--s-6) var(--gutter);
-  pointer-events: none;
+  inset: 0 0 auto 0;
+  z-index: 70;
+  display: flex; align-items: center; gap: var(--s-6);
+  height: 64px;
+  padding: 0 var(--gutter);
+  padding-top: env(safe-area-inset-top, 0px);
+  background: color-mix(in oklab, var(--void) 74%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
 }
-.rail > * { pointer-events: auto; }
-.rail__mark {
+.top__mark {
   font-family: var(--font-display);
-  font-size: var(--t-sm);
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  font-size: var(--t-base);
+  letter-spacing: -0.02em;
   color: var(--ink);
   text-decoration: none;
-  font-variation-settings: "wdth" 80;
 }
-.rail__list {
-  margin: 0; padding: 0; list-style: none;
-  display: grid; gap: var(--s-4);
-}
-.rail__list a {
-  display: flex; align-items: center; gap: var(--s-3);
+.top__nav { display: flex; gap: var(--s-5); margin-inline: auto; }
+.top__nav a {
+  font-size: var(--t-sm);
   color: var(--ink-soft);
-  font-size: var(--t-xs);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
   text-decoration: none;
   transition: color var(--fast) var(--ease);
 }
-.rail__list i {
-  width: 34px; height: 1px; flex: none;
-  background: currentColor; opacity: 0.5;
-  transform: scaleX(0.53);
-  transform-origin: left;
-  transition: transform var(--base) var(--ease), opacity var(--base) var(--ease);
+.top__nav a[data-here] { color: var(--ink); }
+.top__nav sup { margin-left: 2px; font-size: 0.66em; color: var(--signal); }
+.top__live {
+  display: flex; align-items: center; gap: var(--s-2);
+  font-size: var(--t-xs);
+  color: var(--ink-soft);
+  white-space: nowrap;
 }
-.rail__list a[data-here] { color: var(--ink); }
-.rail__list a[data-here] i { transform: none; opacity: 1; background: var(--signal-hot); }
-.rail__cta {
-  justify-self: start;
+.top__live[hidden] { display: none; }
+.top__cta {
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
   font-size: var(--t-xs);
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink);
   text-decoration: none;
-  padding: var(--s-2) var(--s-3);
   white-space: nowrap;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease);
+  transition: border-color var(--fast) var(--ease), color var(--fast) var(--ease), transform 120ms var(--ease);
 }
-.rail__cta:active { transform: scale(0.97); }
-
-@media (max-width: 1080px) {
-  :root { --rail-w: 0rem; }
-  .rail { display: none; }
+.top__cta:active { transform: scale(0.97); }
+@media (prefers-reduced-transparency: reduce) {
+  .top { background: var(--void); -webkit-backdrop-filter: none; backdrop-filter: none; }
 }
 
 /* =============================================================
-   THE VITRINE
+   THE DESK
+   A lit desk standing on the page itself: its shadow falls on
+   the page colour, so it is an object in this room, not a
+   picture of one. Hover frames what you point at, with the
+   corner brackets basement.studio uses in its own room.
    ============================================================= */
-/* One composition, not two stacked blocks. The room fills the frame edge to
-   edge and the headline sits inside it, which is the difference between a
-   scene and a picture with a caption under it. */
-/* The room and the headline share one column. Bleeding the canvas to the
-   viewport while the type stayed in a container is what made the two drift
-   apart on a wide screen and left the panels marooned in white space. */
-.stage__inner {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  max-width: calc(var(--maxw) + var(--rail-w));
-  margin-inline: auto;
-}
-
-/* The room takes the upper two thirds and the headline the lower third. They
-   overlap rather than sitting in separate rows, so it still reads as one
-   composition, but the reflection never reaches the type. */
-.vitrine {
-  position: absolute;
-  top: 0; bottom: 43%;
-  left: calc(var(--rail-w) + var(--gutter));
-  right: var(--gutter);
-}
-/* Fade the lower edge so the reflection runs out instead of being cut off by
-   the canvas boundary, which left a hard line across the frame. */
-.vitrine canvas {
-  position: absolute; inset: 0;
+.desk { position: relative; min-height: 100svh; }
+.desk__stage { position: absolute; inset: 0; }
+.desk__stage canvas {
+  display: block;
   width: 100%; height: 100%;
-  display: block;
-  -webkit-mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 74%, transparent 100%);
+  cursor: grab;
+  touch-action: pan-y pinch-zoom;
   opacity: 0;
-  transition: opacity 700ms var(--ease);
+  transition: opacity 900ms var(--ease);
 }
-.vitrine[data-ready] canvas { opacity: 1; }
-.vitrine[data-fallback] canvas { display: none; }
+.desk__stage[data-ready] canvas { opacity: 1; }
+.desk__stage[data-turning] canvas { cursor: grabbing; }
+.desk__stage[data-fallback] canvas { display: none; }
 
-/* Each panel is a real link. Without WebGL it is a plain image of the site,
-   laid out in CSS. With WebGL the scene draws the panel and this element is
-   moved to sit exactly on top of it, invisible but clickable, focusable and
-   readable, so the 3D object behaves like the link it looks like. */
-.panel {
-  position: absolute;
-  top: 50%; width: 30%;
-  margin: 0;
-  transform: translateY(-50%);
-  display: block;
-  text-decoration: none;
-  border-radius: 2px;
-}
-/* Without WebGL the panels lay out in CSS instead, and only the first three
-   are shown: five thumbnails in a row would be unreadable. Scoped to the
-   fallback, because applying it always took two projects out of the tab order
-   entirely once the scene was running. */
-.vitrine:not([data-ready]) .panel:nth-of-type(1) { left: 1%; }
-.vitrine:not([data-ready]) .panel:nth-of-type(2) { left: 35%; }
-.vitrine:not([data-ready]) .panel:nth-of-type(3) { right: 1%; }
-.vitrine:not([data-ready]) .panel:nth-of-type(n+4) { display: none; }
-.panel img {
-  display: block; width: 100%; height: auto;
-  border: 1px solid var(--line);
-  box-shadow: 0 26px 60px -32px rgb(14 21 25 / 0.45);
-}
-.panel__go {
-  position: absolute;
-  left: 50%; bottom: var(--s-4);
-  transform: translateX(-50%) translateY(6px);
-  padding: var(--s-2) var(--s-4);
-  background: var(--ink);
-  color: var(--void-lift);
-  font-size: var(--t-xs);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  border-radius: 999px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
-}
-.panel:focus-visible .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* once the scene is drawing, the link becomes an invisible hit area over it */
-.vitrine[data-ready] .panel {
-  top: 0; left: 0; right: auto;
-  width: auto;
-  transform: none;
-  cursor: pointer;
-}
-.vitrine[data-ready] .panel img { opacity: 0; }
-.vitrine[data-ready] .panel:focus-visible {
-  outline: 2px solid var(--signal);
-  outline-offset: 4px;
-}
-/* A hovered project gets corner brackets (the move basement.studio uses on the
-   objects in its room), so the row says what is clickable without drawing a
-   button over the work. Eight hairlines, no markup. */
-.vitrine[data-ready] .panel::before {
+.desk__frame {
   --b: var(--ink);
-  content: '';
-  position: absolute; inset: -9px;
+  position: absolute; left: 0; top: 0;
+  pointer-events: none;
+  opacity: 0;
   background:
     linear-gradient(var(--b) 0 0) 0 0 / 18px 1.5px,
     linear-gradient(var(--b) 0 0) 0 0 / 1.5px 18px,
@@ -374,74 +290,32 @@ p { margin: 0; text-wrap: pretty; }
     linear-gradient(var(--b) 0 0) 100% 100% / 18px 1.5px,
     linear-gradient(var(--b) 0 0) 100% 100% / 1.5px 18px;
   background-repeat: no-repeat;
-  opacity: 0;
-  transform: scale(1.04);
-  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
-  pointer-events: none;
+  transition: opacity var(--fast) var(--ease);
 }
-.vitrine[data-ready] .panel:focus-visible::before { opacity: 1; transform: none; }
-/* the row can be flicked sideways; vertical swipes and pinch stay the page's */
-.vitrine[data-ready] { touch-action: pan-y pinch-zoom; }
-.vitrine[data-ready] canvas { cursor: grab; }
-.vitrine[data-dragging], .vitrine[data-dragging] * { cursor: grabbing !important; }
-
-/* Names whichever site currently has the frame. It sits with the room, not
-   with the headline, because it labels the object rather than the page. */
-.showing {
-  position: absolute;
-  top: 0; right: 0;
-  display: flex;
-  align-items: baseline;
-  gap: var(--s-3);
-  font-size: var(--t-xs);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-}
-.showing .dot { align-self: center; }
-.showing span { font-variant-numeric: tabular-nums; }
-.showing b { color: var(--ink); font-weight: 600; letter-spacing: 0.1em; }
-.showing em { font-style: normal; color: var(--signal); letter-spacing: 0.06em; text-transform: none; }
-.showing u {
-  text-decoration: none;
-  padding: 2px var(--s-2);
-  border: 1px solid var(--line);
+.desk__frame[data-on] { opacity: 1; }
+.desk__frame p {
+  position: absolute; left: 50%; top: calc(100% + 10px);
+  display: grid; justify-items: center; gap: 1px;
+  translate: -50% 0;
+  padding: var(--s-2) var(--s-4);
   border-radius: 999px;
-  font-size: 0.62rem;
-  letter-spacing: 0.1em;
-  color: var(--ink-soft);
+  background: var(--ink);
+  color: var(--void-lift);
+  white-space: nowrap;
 }
-@media (max-width: 900px) {
-  .showing { top: auto; bottom: -2.2rem; right: auto; left: 0; gap: var(--s-2); flex-wrap: wrap; }
-  .showing em { flex-basis: 100%; }
-  /* the sections below say client or personal; here the tag would crowd the headline */
-  .showing u { display: none; }
-}
+.desk__frame b { font-size: var(--t-sm); font-weight: 500; }
+.desk__frame span { font-size: var(--t-xs); color: var(--signal-hot); letter-spacing: 0.04em; }
 
 .lede {
   position: absolute;
-  left: calc(var(--rail-w) + var(--gutter));
-  right: var(--gutter);
-  bottom: clamp(2.5rem, 7vh, 5.5rem);
-  display: grid;
-  gap: var(--s-4);
+  left: var(--gutter);
+  bottom: calc(clamp(2rem, 6vh, 4rem) + 3rem);
+  z-index: 2;
+  display: grid; gap: var(--s-4);
+  max-width: 36rem;
   pointer-events: none;
 }
 .lede > * { pointer-events: auto; }
-/* A scrim only where the headline sits, so the reflection can never take the
-   contrast off it. Local, not a sheet over the whole frame. */
-.lede::before {
-  content: "";
-  position: absolute;
-  inset: -12vh -2rem -12vh -2rem;
-  z-index: -1;
-  pointer-events: none;
-  background: linear-gradient(
-    to top,
-    var(--void) 0%,
-    color-mix(in oklab, var(--void) 88%, transparent) 42%,
-    transparent 100%);
-}
 .vp__w { white-space: nowrap; }
 .lede h1 {
   font-size: var(--t-3xl);
@@ -450,11 +324,125 @@ p { margin: 0; text-wrap: pretty; }
   max-width: 15ch;
 }
 .lede__p {
-  max-width: 52ch;
+  max-width: 44ch;
   color: color-mix(in oklab, var(--ink) 74%, var(--void));
   font-size: var(--t-lg);
   line-height: 1.45;
 }
+
+/* The same things as real links. On a wide screen the desk is the menu, so
+   this list only appears when a keyboard reaches it; on a phone it is a row
+   of pills under the headline, because a thumb should not have to aim. */
+.desk__menu {
+  display: flex; flex-wrap: wrap; gap: var(--s-2);
+  margin: 0; padding: 0;
+  list-style: none;
+}
+.desk__menu a {
+  display: inline-flex;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--void-lift);
+  font-size: var(--t-sm);
+  color: var(--ink);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: border-color var(--fast) var(--ease), transform 120ms var(--ease);
+}
+.desk__menu a:active { transform: scale(0.97); }
+@media (min-width: 901px) {
+  .desk__stage:not([data-fallback]) ~ .desk__menu {
+    position: absolute; right: var(--gutter); bottom: calc(clamp(2rem, 6vh, 4rem) + 3rem);
+    z-index: 2;
+    max-width: 30rem; justify-content: flex-end;
+    clip-path: inset(50%);
+    opacity: 0;
+  }
+  .desk__stage:not([data-fallback]) ~ .desk__menu:focus-within { clip-path: none; opacity: 1; }
+}
+.desk__stage[data-fallback] ~ .desk__menu {
+  position: absolute; right: var(--gutter); top: 30%;
+  max-width: 34rem; justify-content: flex-end;
+}
+
+/* ---- the window the live apps open in ------------------------ */
+.win {
+  width: min(1280px, 92vw);
+  height: min(820px, 86svh);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r);
+  background: var(--surface);
+  color: var(--ink);
+  overflow: hidden;
+  transform-origin: 0 0;
+  box-shadow: 0 40px 120px -40px rgb(14 21 25 / 0.55);
+}
+.win[open] { display: grid; grid-template-rows: auto minmax(0, 1fr); }
+.win::backdrop {
+  background: color-mix(in oklab, var(--ink) 38%, transparent);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.win__bar {
+  display: flex; align-items: center; gap: var(--s-4);
+  padding: var(--s-3) var(--s-3) var(--s-3) var(--s-5);
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--void-lift);
+}
+.win__title { display: flex; align-items: center; gap: var(--s-2); margin-right: auto; font-size: var(--t-sm); min-width: 0; }
+.win__title b { font-weight: 600; }
+.win__title span { color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.win__out { font-size: var(--t-xs); letter-spacing: 0.06em; color: var(--ink-soft); white-space: nowrap; }
+.win__close {
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit; font-size: var(--t-xs);
+  letter-spacing: 0.1em; text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 120ms var(--ease), border-color var(--fast) var(--ease);
+}
+.win__close:active { transform: scale(0.97); }
+.win iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+
+/* ---- write to me ---------------------------------------------- */
+.win--compose { width: min(560px, 94vw); height: fit-content; max-height: 90svh; }
+.win--compose[open] { display: block; overflow: auto; }
+.compose__body { display: grid; gap: var(--s-4); padding: var(--s-5); }
+.compose__about { display: flex; flex-wrap: wrap; gap: var(--s-2); margin: 0; padding: 0; border: 0; }
+.compose__about legend { width: 100%; margin-bottom: var(--s-2); font-size: var(--t-sm); color: var(--ink-soft); }
+.compose__about label { position: relative; cursor: pointer; }
+.compose__about input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+.compose__about span {
+  display: inline-flex;
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: var(--t-sm);
+  transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.compose__about input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--void-lift); }
+.compose__about input:focus-visible + span { outline: 2px solid var(--signal); outline-offset: 2px; }
+.field { display: grid; gap: var(--s-2); font-size: var(--t-sm); color: var(--ink-soft); }
+.field input, .field textarea {
+  width: 100%;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: calc(var(--r) - 2px);
+  background: var(--void-lift);
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;               /* under 16px, iOS zooms the page on focus */
+  resize: vertical;
+}
+.field input:focus, .field textarea:focus { outline: 2px solid var(--signal); outline-offset: 1px; border-color: transparent; }
+.field__err { font-style: normal; color: #A3321F; font-size: var(--t-sm); }
+.compose__act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
+.compose__note { font-size: var(--t-xs); color: var(--ink-soft); }
 
 /* =============================================================
    CASES
@@ -598,7 +586,26 @@ figcaption {
 .also__head p { max-width: 52ch; color: var(--ink-soft); }
 
 .also__list { list-style: none; padding: 0; }
-.also__list li { border-bottom: 1px solid var(--line-soft); }
+.also__list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--s-4);
+  border-bottom: 1px solid var(--line-soft);
+}
+.also__run {
+  padding: var(--s-2) var(--s-4);
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--void-lift);
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 120ms var(--ease), background var(--fast) var(--ease);
+}
+.also__run:active { transform: scale(0.97); }
 .also__list li:first-child { border-top: 1px solid var(--line); }
 .also__row {
   display: grid;
@@ -968,25 +975,37 @@ figcaption {
   .also__row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: var(--s-4); }
   .also__host { grid-column: 2; }
 
+  .top { gap: var(--s-3); }
+  .top__nav { display: none; }
+  .top__live { margin-left: auto; }
+  .top__mark { margin-right: auto; }
+  .top__live:not([hidden]) ~ .top__cta { margin-left: 0; }
+
+  /* the desk on top, the headline and the way in below it, in the flow */
+  .desk { display: flex; flex-direction: column; padding-bottom: 5rem; }
+  /* the desk takes what the headline block leaves, so the two actions always
+     clear the view switch at the foot of the screen, even on a short phone */
+  .desk__stage { position: relative; height: clamp(12rem, calc(100svh - 30rem), 50svh); margin-top: 64px; }
+  .lede { position: static; padding: var(--s-4) var(--gutter) 0; max-width: none; }
   .lede h1 { font-size: var(--t-2xl); }
-  .lede { bottom: calc(clamp(1.5rem, 4vh, 3rem) + 3.25rem); left: var(--gutter); right: var(--gutter); }
-  .vitrine { left: var(--gutter); right: var(--gutter); bottom: 51%; }
-  /* the no-WebGL posters stack rather than sit side by side at stamp size */
-  .vitrine:not([data-ready]) .panel { width: 78%; top: auto; transform: none; }
-  .vitrine:not([data-ready]) .panel:nth-of-type(1) { left: 0; top: 2%; }
-  .vitrine:not([data-ready]) .panel:nth-of-type(2) { right: 0; bottom: 2%; top: auto; }
+  .desk__menu { padding: var(--s-5) var(--gutter) 0; }
+  .desk__stage[data-fallback] { display: none; }
+  .desk__stage[data-fallback] ~ .desk__menu { position: static; }
+
+  .also__list li { grid-template-columns: 1fr; gap: 0; padding-bottom: var(--s-4); }
+  .also__run { justify-self: start; margin-left: calc(6.5rem + var(--s-4) + var(--s-2)); }
+
+  .win { width: 100vw; height: 100svh; max-width: none; max-height: none; border-radius: 0; border: 0; }
+  .win--compose { height: 100svh; }
 }
 
 /* =============================================================
    Reduced motion: the room stays, the travel goes.
    ============================================================= */
 @media (prefers-reduced-motion: reduce) {
-  /* The room stays. Only the travel goes: no orbit, no scrub, one static
-     frame. Hiding the scene here meant everyone with the OS setting on saw a
-     different, plainer page, which is not what reducing motion should cost. */
-  .go span, .end__cta, .rail__list i, .case__site a, .also__host span { transition: none; }
-  .panel__go, .vitrine[data-ready] .panel::before { transition: opacity var(--fast) var(--ease); }
-  .vitrine[data-ready] .panel::before { transform: none; }
+  /* The desk stays and still opens everything. What goes is travel: the
+     camera cuts instead of flying and windows fade instead of growing. */
+  .go span, .end__cta, .case__site a, .also__host span { transition: none; }
 }
 
 /* =============================================================
@@ -999,10 +1018,12 @@ figcaption {
   .lnk:hover { color: var(--signal); }
   .go:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 50%, transparent); }
   .go:hover span { transform: translate(3px, -3px); }
-  .rail__list a:hover { color: var(--ink); }
-  .rail__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
-  .panel:hover .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .vitrine[data-ready]:not([data-dragging]) .panel:hover::before { opacity: 1; transform: none; }
+  .top__nav a:hover { color: var(--ink); }
+  .top__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
+  .desk__menu a:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
+  .also__run:hover { background: var(--signal); }
+  .win__close:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
+  .win__out:hover { color: var(--ink); }
   .btn:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
   .btn--hot:hover { background: color-mix(in oklab, var(--signal-hot) 86%, var(--ink)); }
   .mode a:not([aria-current]):hover { color: var(--ink); }

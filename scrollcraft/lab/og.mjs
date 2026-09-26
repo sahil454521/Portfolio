@@ -4,7 +4,7 @@ const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrom
 const p = await b.newPage({ viewport: { width: 1440, height: 756 }, deviceScaleFactor: 1200 / 1440 });
 await p.goto(process.argv[2] || 'http://localhost:4500', { waitUntil: 'load' });
 await p.evaluate(() => document.fonts.ready);
-await p.waitForSelector('[data-vitrine][data-ready]', { timeout: 15000 });
+await p.waitForSelector('[data-desk][data-ready]', { timeout: 15000 });
 await p.waitForTimeout(1200);
 await p.screenshot({ path: 'assets/og.jpg', type: 'jpeg', quality: 86 });
 await b.close();
