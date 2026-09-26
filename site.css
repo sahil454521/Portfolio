@@ -78,7 +78,7 @@ html {
 /* fire click immediately: nothing here double-tap zooms */
 a, button { touch-action: manipulation; }
 /* controls, not content: a long press should not select their label */
-.panel, .rail a, .go, .end__cta, .also__row, .skip {
+.panel, .rail a, .go, .end__cta, .also__row, .skip, .btn, .mode a, .net__sig, .copy {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -357,6 +357,33 @@ p { margin: 0; text-wrap: pretty; }
   outline: 2px solid var(--signal);
   outline-offset: 4px;
 }
+/* A hovered project gets corner brackets (the move basement.studio uses on the
+   objects in its room), so the row says what is clickable without drawing a
+   button over the work. Eight hairlines, no markup. */
+.vitrine[data-ready] .panel::before {
+  --b: var(--ink);
+  content: '';
+  position: absolute; inset: -9px;
+  background:
+    linear-gradient(var(--b) 0 0) 0 0 / 18px 1.5px,
+    linear-gradient(var(--b) 0 0) 0 0 / 1.5px 18px,
+    linear-gradient(var(--b) 0 0) 100% 0 / 18px 1.5px,
+    linear-gradient(var(--b) 0 0) 100% 0 / 1.5px 18px,
+    linear-gradient(var(--b) 0 0) 0 100% / 18px 1.5px,
+    linear-gradient(var(--b) 0 0) 0 100% / 1.5px 18px,
+    linear-gradient(var(--b) 0 0) 100% 100% / 18px 1.5px,
+    linear-gradient(var(--b) 0 0) 100% 100% / 1.5px 18px;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transform: scale(1.04);
+  transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
+  pointer-events: none;
+}
+.vitrine[data-ready] .panel:focus-visible::before { opacity: 1; transform: none; }
+/* the row can be flicked sideways; vertical swipes and pinch stay the page's */
+.vitrine[data-ready] { touch-action: pan-y pinch-zoom; }
+.vitrine[data-ready] canvas { cursor: grab; }
+.vitrine[data-dragging], .vitrine[data-dragging] * { cursor: grabbing !important; }
 
 /* Names whichever site currently has the frame. It sits with the room, not
    with the headline, because it labels the object rather than the page. */
@@ -387,6 +414,8 @@ p { margin: 0; text-wrap: pretty; }
 @media (max-width: 900px) {
   .showing { top: auto; bottom: -2.2rem; right: auto; left: 0; gap: var(--s-2); flex-wrap: wrap; }
   .showing em { flex-basis: 100%; }
+  /* the sections below say client or personal; here the tag would crowd the headline */
+  .showing u { display: none; }
 }
 
 .lede {
@@ -743,15 +772,194 @@ figcaption {
 .end__meta dd { margin: 0; font-size: var(--t-sm); color: var(--ink-soft); }
 
 /* =============================================================
+   THE HIRING PATH
+   Someone deciding whether to hire moves in one order: who is
+   this, can they do the job, where is the proof, how do I reach
+   them. So the hero carries the two actions, the research sits
+   right after the client work, and the résumé is one tap away
+   from anywhere through the view switch.
+   ============================================================= */
+.lede__act { display: flex; flex-wrap: wrap; gap: var(--s-3); margin-top: var(--s-2); }
+.btn {
+  display: inline-flex; align-items: center;
+  padding: var(--s-3) var(--s-5);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--void-lift);
+  color: var(--ink);
+  font-size: var(--t-sm);
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 120ms var(--ease), border-color var(--fast) var(--ease), background var(--fast) var(--ease);
+}
+.btn--hot { background: var(--signal-hot); border-color: transparent; color: var(--signal-ink); }
+.btn:active { transform: scale(0.97); }
+
+/* The view switch. basement.studio pins a Human / Machine toggle to the
+   foot of every page; here the second view is the résumé, because that is
+   the document a hiring process actually files. */
+.mode {
+  position: fixed;
+  left: 50%;
+  bottom: calc(var(--s-4) + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex; gap: 2px;
+  padding: 3px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--void-lift) 80%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: 0 12px 30px -18px rgb(14 21 25 / 0.4);
+}
+.mode a {
+  padding: var(--s-2) var(--s-4);
+  border-radius: 999px;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-decoration: none;
+  transition: color var(--fast) var(--ease), background var(--fast) var(--ease), transform 120ms var(--ease);
+}
+.mode a[aria-current="page"] { background: var(--ink); color: var(--void-lift); }
+.mode a:active { transform: scale(0.97); }
+@media (prefers-reduced-transparency: reduce) {
+  .mode { background: var(--void-lift); -webkit-backdrop-filter: none; backdrop-filter: none; }
+}
+
+/* ---- research ---------------------------------------------- */
+.research {
+  padding: var(--pad) var(--gutter);
+  padding-left: calc(var(--rail-w) + var(--gutter));
+}
+.research > * { max-width: var(--maxw); margin-inline: auto; }
+.research__head { display: grid; gap: var(--s-4); margin-bottom: var(--s-7); }
+.research__head h2 {
+  font-size: var(--t-3xl);
+  font-variation-settings: "wdth" 92, "opsz" 96;
+  letter-spacing: -0.036em;
+}
+.research__head p { max-width: 60ch; }
+.research__head p:not(.story) { color: color-mix(in oklab, var(--ink) 74%, var(--void)); }
+
+/* The mechanism, drawn in markup so every input is a real button. */
+.net { margin-block: 0 var(--s-7); }
+.net__flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.4fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: var(--s-4);
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+}
+.net__col { display: grid; gap: var(--s-2); margin: 0; padding: 0; list-style: none; }
+.net__sig {
+  display: flex; align-items: center; gap: var(--s-3);
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--void-lift);
+  color: var(--ink);
+  font: inherit;
+  font-size: var(--t-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: color var(--fast) var(--ease), background var(--fast) var(--ease), border-color var(--fast) var(--ease), transform 120ms var(--ease);
+}
+.net__sig::before {
+  content: '';
+  width: 8px; height: 8px; flex: none;
+  border-radius: 50%;
+  background: var(--signal-hot);
+  transition: background var(--fast) var(--ease);
+}
+.net__sig[aria-pressed="false"] {
+  background: transparent;
+  color: var(--ink-soft);
+  border-style: dashed;
+}
+.net__sig[aria-pressed="false"]::before { background: var(--line); }
+.net__sig:active { transform: scale(0.97); }
+.net__arrow {
+  display: grid; justify-items: center; gap: 2px;
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+.net__arrow::before { content: '\2192'; font-size: var(--t-lg); line-height: 1; color: var(--ink); }
+.net__arrow i { font-style: normal; }
+.net__core {
+  display: grid; gap: var(--s-2);
+  padding: var(--s-4);
+  border-radius: var(--r);
+  background: var(--ink);
+  color: var(--void-lift);
+}
+.net__stage {
+  display: grid; gap: 2px;
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid color-mix(in oklab, var(--void) 16%, transparent);
+  border-radius: calc(var(--r) - 2px);
+}
+.net__stage b { font-weight: 600; font-size: var(--t-sm); }
+.net__stage span { font-size: var(--t-xs); line-height: 1.45; color: color-mix(in oklab, var(--void) 72%, transparent); }
+.net__count {
+  padding: var(--s-1) var(--s-4) 0;
+  font-size: var(--t-xs);
+  letter-spacing: 0.08em;
+  color: var(--signal-hot);
+}
+.net__out li {
+  padding: var(--s-3) var(--s-4);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--r);
+  background: var(--void-lift);
+  font-size: var(--t-sm);
+  transition: opacity var(--base) var(--ease);
+}
+.net[data-empty] .net__out li { opacity: 0.35; }
+.research__spec { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* the numbers are the evidence, so they read at a glance */
+.research__spec dd { font-family: var(--font-display); font-size: var(--t-lg); letter-spacing: -0.012em; }
+
+/* ---- contact ------------------------------------------------ */
+.end__act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-4); }
+.copy {
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: var(--t-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color var(--fast) var(--ease), border-color var(--fast) var(--ease), transform 120ms var(--ease);
+}
+.copy[data-done] { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 50%, transparent); }
+.copy:active { transform: scale(0.97); }
+.end__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-6); margin: 0; padding: 0; list-style: none; }
+/* clear the view switch at the very bottom of the page */
+.end { padding-bottom: calc(var(--s-8) + 3.5rem); }
+
+/* =============================================================
    Narrow frames. Art-directed, not shrunk.
    ============================================================= */
 @media (max-width: 900px) {
-  .case__head { grid-template-columns: 1fr; }
-  .case__kind { grid-column: 1; }
   .case__body, .build, .me { grid-template-columns: 1fr; }
   .build__head { position: static; }
   .build__list li { grid-template-columns: 1fr; gap: var(--s-2); }
-  .spec { grid-template-columns: 1fr; }
+  .spec, .research__spec { grid-template-columns: 1fr; }
+  .net__flow { grid-template-columns: 1fr; }
+  .net__in { grid-template-columns: 1fr 1fr; }
+  .net__arrow { grid-auto-flow: column; justify-content: center; gap: var(--s-2); }
+  .net__arrow::before { content: '\2193'; }
 
   .case__photos { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
   .case__photos figure:first-child { grid-row: auto; grid-column: span 2; }
@@ -761,8 +969,8 @@ figcaption {
   .also__host { grid-column: 2; }
 
   .lede h1 { font-size: var(--t-2xl); }
-  .lede { bottom: clamp(1.5rem, 4vh, 3rem); left: var(--gutter); right: var(--gutter); }
-  .vitrine { left: var(--gutter); right: var(--gutter); bottom: 46%; }
+  .lede { bottom: calc(clamp(1.5rem, 4vh, 3rem) + 3.25rem); left: var(--gutter); right: var(--gutter); }
+  .vitrine { left: var(--gutter); right: var(--gutter); bottom: 51%; }
   /* the no-WebGL posters stack rather than sit side by side at stamp size */
   .vitrine:not([data-ready]) .panel { width: 78%; top: auto; transform: none; }
   .vitrine:not([data-ready]) .panel:nth-of-type(1) { left: 0; top: 2%; }
@@ -777,7 +985,8 @@ figcaption {
      frame. Hiding the scene here meant everyone with the OS setting on saw a
      different, plainer page, which is not what reducing motion should cost. */
   .go span, .end__cta, .rail__list i, .case__site a, .also__host span { transition: none; }
-  .panel__go { transition: opacity var(--fast) var(--ease); }
+  .panel__go, .vitrine[data-ready] .panel::before { transition: opacity var(--fast) var(--ease); }
+  .vitrine[data-ready] .panel::before { transform: none; }
 }
 
 /* =============================================================
@@ -793,6 +1002,12 @@ figcaption {
   .rail__list a:hover { color: var(--ink); }
   .rail__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
   .panel:hover .panel__go { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .vitrine[data-ready]:not([data-dragging]) .panel:hover::before { opacity: 1; transform: none; }
+  .btn:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
+  .btn--hot:hover { background: color-mix(in oklab, var(--signal-hot) 86%, var(--ink)); }
+  .mode a:not([aria-current]):hover { color: var(--ink); }
+  .net__sig:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
+  .copy:hover { color: var(--ink); border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
   .case__site a:hover {
     transform: translateY(-4px);
     box-shadow: 0 2px 6px rgb(14 21 25 / 0.06), 0 52px 100px -52px rgb(14 21 25 / 0.55);
