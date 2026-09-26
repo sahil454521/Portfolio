@@ -11,7 +11,8 @@
 
    Scroll rotates the row. Whichever project reaches the centre
    comes forward and takes the room; the others sit back beside
-   it, angled away. Clicking any one opens that site.
+   it, angled away. Clicking any one opens that site; dragging
+   sideways flicks the row.
 
    Every panel is fully opaque at all times. Nothing dissolves
    into anything else, so no site is ever seen through another.
@@ -316,15 +317,70 @@
   /* ---- keyboard: tabbing rotates the row ---------------------------
      Focus has to bring its panel to the centre, or a keyboard user lands on
      a link for something they cannot see. */
+  // the scroll position at which panel i holds the centre (fractional i is fine)
+  function stopFor(i) {
+    const top = act.getBoundingClientRect().top + scrollY;
+    const travel = act.offsetHeight - innerHeight;
+    return travel > 0 ? top + (clamp(i, 0, N - 1) / (N - 1)) * travel : null;
+  }
+
   function centreOn(i) {
     if (!act) return;
-    const r = act.getBoundingClientRect();
-    const top = r.top + scrollY;
-    const travel = act.offsetHeight - innerHeight;
-    if (travel <= 0) return;
-    const target = top + (i / (N - 1)) * travel;
+    const target = stopFor(i);
     // instant: a keyboard action should never wait on an animation
-    scrollTo({ top: target, behavior: 'auto' });
+    if (target !== null) scrollTo({ top: target, behavior: 'auto' });
+  }
+
+  /* ---- drag: flick the row -----------------------------------------
+     The row is driven by scroll, so a drag drives scroll too and the two can
+     never disagree. It commits only after 8px of mostly sideways travel, so a
+     click still opens a site and a vertical swipe still scrolls the page. On
+     release it projects the flick forward (Apple's deceleration model) and
+     settles on whichever project that lands nearest. */
+  if (act) {
+    const PX_PER_PANEL = () => Math.max(W * 0.38, 160);
+    let down = null, dragged = false;
+
+    root.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;
+      down = { x: e.clientX, y: e.clientY, id: e.pointerId, at: pS * (N - 1), trail: [], live: false };
+    });
+    root.addEventListener('pointermove', (e) => {
+      if (!down || e.pointerId !== down.id) return;
+      const dx = e.clientX - down.x, dy = e.clientY - down.y;
+      if (!down.live) {
+        if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy)) return;
+        down.live = true;
+        root.setPointerCapture(e.pointerId);
+        root.setAttribute('data-dragging', '');
+      }
+      down.trail.push({ x: e.clientX, t: e.timeStamp });
+      if (down.trail.length > 6) down.trail.shift();
+      const target = stopFor(down.at - dx / PX_PER_PANEL());
+      if (target !== null) scrollTo({ top: target, behavior: 'auto' });
+    });
+    const release = (e) => {
+      if (!down || e.pointerId !== down.id) return;
+      const d = down;
+      down = null;
+      if (!d.live) return;
+      dragged = true;
+      setTimeout(() => { dragged = false; }, 0);   // only the click this release makes
+      root.removeAttribute('data-dragging');
+      const a = d.trail[0], b = d.trail[d.trail.length - 1];
+      const v = a && b && b.t > a.t ? ((b.x - a.x) / (b.t - a.t)) * 1000 : 0;   // px/s
+      const thrown = (v / 1000) * 0.998 / (1 - 0.998);
+      const land = d.at - (e.clientX - d.x + thrown) / PX_PER_PANEL();
+      const target = stopFor(Math.round(clamp(land, 0, N - 1)));
+      if (target !== null) scrollTo({ top: target, behavior: still ? 'auto' : 'smooth' });
+    };
+    root.addEventListener('pointerup', release);
+    root.addEventListener('pointercancel', release);
+    // a drag that ends over a panel must not also open it
+    root.addEventListener('click', (e) => {
+      if (dragged) { e.preventDefault(); e.stopPropagation(); }
+    }, true);
+    root.addEventListener('dragstart', (e) => e.preventDefault());
   }
 
   PANELS.forEach((p) => {

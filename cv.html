@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sahil Pathak · Résumé</title>
+<meta name="description" content="Résumé of Sahil Pathak, AI/ML and full-stack engineer in Pune: experience, research, projects, education and skills, as plain text.">
+<meta name="theme-color" content="#EAEDEF">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080B0E'/><circle cx='16' cy='16' r='6' fill='%23FFB03B'/></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
+
+<!-- The site's tokens and controls, so this reads as the same person; the
+     résumé's own layout is below. No scripts: this page is the one a hiring
+     tool, a screen reader or a printer gets, so it is plain on purpose. -->
+<link rel="stylesheet" href="site.css">
+<style>
+  .cv { max-width: 54rem; margin-inline: auto; padding: clamp(2rem, 6vw, 4.5rem) var(--gutter) 7rem; }
+  .cv h1, .cv h2, .cv h3 { text-wrap: pretty; }
+
+  .cv__top { display: grid; gap: var(--s-3); padding-bottom: var(--s-6); border-bottom: 1px solid var(--line); }
+  .cv h1 { font-size: var(--t-2xl); letter-spacing: -0.03em; font-variation-settings: "wdth" 92, "opsz" 72; }
+  .cv__role { font-size: var(--t-lg); color: var(--ink-soft); }
+  .cv__links { display: flex; flex-wrap: wrap; gap: var(--s-2) var(--s-5); margin: 0; padding: 0; list-style: none; font-size: var(--t-sm); }
+  .cv__dl { margin-top: var(--s-3); }
+
+  .cv section {
+    display: grid;
+    grid-template-columns: 10rem minmax(0, 1fr);
+    gap: var(--s-5);
+    padding: var(--s-6) 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .cv h2 {
+    padding-top: 3px;
+    font-family: var(--font-text);
+    font-size: var(--t-xs);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    font-variation-settings: normal;
+  }
+  .cv h3 { font-family: var(--font-text); font-size: var(--t-base); font-weight: 600; letter-spacing: 0; line-height: 1.4; font-variation-settings: normal; }
+  .cv article + article { margin-top: var(--s-5); }
+  .cv__when { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 var(--s-4); }
+  .cv__when span { font-size: var(--t-sm); color: var(--ink-soft); }
+  .cv p, .cv li, .cv dd { font-size: var(--t-sm); line-height: 1.6; }
+  .cv__pts { display: grid; gap: var(--s-1); margin: var(--s-2) 0 0; padding-left: 1.1em; }
+  .cv__skills { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: var(--s-2) var(--s-4); margin: 0; }
+  .cv__skills dt { font-size: var(--t-sm); font-weight: 600; }
+  .cv__skills dd { margin: 0; }
+
+  @media (max-width: 700px) {
+    .cv section { grid-template-columns: 1fr; gap: var(--s-3); }
+    .cv__skills { grid-template-columns: 1fr; gap: 0; }
+    .cv__skills dd { margin-bottom: var(--s-2); }
+  }
+
+  /* Print is the copy that gets parsed. Applicant tracking systems read the
+     PDF's text layer, and a variable web font with tracked capitals comes out
+     as "S UMMARY" and merged words there, so the file uses Calibri, no tracking,
+     one full-width column, and fits a single A4 page. Chrome writes no space
+     characters into a PDF, so readers infer spaces from gaps: the extra word
+     spacing keeps them from merging words. */
+  @media print {
+    @page { size: A4; margin: 12mm 14mm; }
+    html, body { background: #fff; }
+    body::before, body::after, .mode, .cv__dl { display: none !important; }
+    .cv, .cv * { font-family: Calibri, Carlito, "Segoe UI", sans-serif !important; letter-spacing: normal !important; word-spacing: 0.14em; font-variation-settings: normal !important; }
+    .cv { max-width: none; padding: 0; color: #111; }
+    .cv__top { gap: 1.2mm; padding-bottom: 2.6mm; }
+    .cv h1 { font-size: 19pt; font-weight: 700; }
+    .cv__role { font-size: 10.5pt; color: #333; }
+    .cv__links { gap: 0 5mm; }
+    .cv section { display: block; padding: 2.4mm 0; break-inside: avoid; }
+    .cv h2 { padding: 0; margin-bottom: 1.2mm; font-size: 8.6pt; font-weight: 700; color: #111; }
+    .cv h3, .cv b { font-weight: 700; }
+    .cv p, .cv li, .cv dd, .cv dt, .cv__links, .cv__when span { font-size: 8.6pt; line-height: 1.34; }
+    .cv__when span { color: #444; }
+    .cv__pts { gap: 0.4mm; margin-top: 0.8mm; }
+    .cv article + article { margin-top: 1.8mm; }
+    .cv__skills { grid-template-columns: 27mm minmax(0, 1fr); gap: 0.6mm 3mm; }
+    .cv a { color: inherit; text-decoration: none; }
+  }
+</style>
+</head>
+<body>
+
+<main class="cv">
+  <header class="cv__top">
+    <h1>Sahil Pathak</h1>
+    <p class="cv__role">AI/ML and full-stack engineer</p>
+    <ul class="cv__links">
+      <li>Pune, India</li>
+      <li><a class="lnk" href="mailto:sahilpathak2005@gmail.com">sahilpathak2005@gmail.com</a></li>
+      <li><a class="lnk" href="https://www.linkedin.com/in/sahil-pathak-98a523202" target="_blank" rel="noopener">linkedin.com/in/sahil-pathak-98a523202</a></li>
+      <li><a class="lnk" href="https://github.com/sahil454521" target="_blank" rel="noopener">github.com/sahil454521</a></li>
+      <li><a class="lnk" href="https://portfolio-q38w.vercel.app/">portfolio-q38w.vercel.app</a></li>
+    </ul>
+    <p class="cv__dl"><a class="btn btn--hot" href="assets/Sahil_Pathak_Resume.pdf" download>Download PDF</a></p>
+  </header>
+
+  <section aria-labelledby="cv-summary">
+    <h2 id="cv-summary">Summary</h2>
+    <p>
+      Final-year computer science undergraduate specialising in AI and data
+      science, with deep learning research and production full-stack work.
+      Co-developed a PyTorch multimodal model that reached 91.24% accuracy in
+      depression detection, and cut a production MERN app's load time by 50 to
+      80%. Core stack: Python, JavaScript, TypeScript, React, Next.js, Node.js,
+      TensorFlow, Hugging Face.
+    </p>
+  </section>
+
+  <section aria-labelledby="cv-exp">
+    <h2 id="cv-exp">Experience</h2>
+    <div>
+      <article>
+        <p class="cv__when"><b>Research intern, Vellore Institute of Technology (VIT)</b> <span>May 2026 to Jul 2026</span></p>
+        <ul class="cv__pts">
+          <li>Analysed 20+ research papers (2020 to 2026) and led end-to-end assembly of a model fusing text, EEG, wearable and audio/video data.</li>
+          <li>Co-developed the PPEMDD framework in PyTorch, pairing a gated fusion network (DGN) with multi-head cross-attention (MHCA) to perform three tasks in one model: depression classification, PHQ-9 severity regression and DSM-5 symptom recognition.</li>
+          <li>Achieved 91.24% accuracy, 79.23% recall and a 0.7809 F1-score on a 2,250-sample held-out test set (Reddit and WU3D corpora), using a leakage-aware protocol with no test-set threshold tuning.</li>
+          <li>Engineered availability-aware fusion that handles missing modalities.</li>
+        </ul>
+      </article>
+      <article>
+        <p class="cv__when"><b>Software developer, AMG Turnkey Projects LLP</b> <span>Jan 2025 to Jun 2025</span></p>
+        <ul class="cv__pts">
+          <li>Owned development of the live production website (React, Vite, Tailwind CSS, Node.js, Express, MongoDB), built to make the company's construction services findable across three states.</li>
+          <li>Worked with the operations team for six months to deliver civil accounting modules and REST APIs for project workflows.</li>
+          <li>Diagnosed performance bottlenecks and optimised the application, cutting load time by 50 to 80% and improving reliability.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="cv-research">
+    <h2 id="cv-research">Research</h2>
+    <p>
+      <b>PPEMDD</b>, an IEEE-format research paper (2026) proposing an adaptive
+      multimodal deep learning framework for depression detection with gated
+      cross-modal attention fusion.
+    </p>
+  </section>
+
+  <section aria-labelledby="cv-projects">
+    <h2 id="cv-projects">Projects</h2>
+    <div>
+      <article>
+        <p class="cv__when"><b>AI code editor (NeuraCraft)</b> <span>Next.js, FastAPI, scikit-learn, Convex, Clerk</span></p>
+        <ul class="cv__pts">
+          <li>Built a full-stack AI code editor (Monaco) with real-time inline suggestions for four Python ML libraries. Live at <a class="lnk" href="https://ai-compiler-eta.vercel.app" target="_blank" rel="noopener">ai-compiler-eta.vercel.app</a>.</li>
+          <li>Trained a scikit-learn model to predict the ML framework in use, served through FastAPI on Render with a Next.js client on Vercel.</li>
+          <li>Implemented Clerk authentication and Convex real-time storage; curated a growing coding-error dataset to retrain the model.</li>
+        </ul>
+      </article>
+      <article>
+        <p class="cv__when"><b>Desi Totes e-commerce platform (client project)</b> <span>React, Node.js, Express, MongoDB, Razorpay</span></p>
+        <ul class="cv__pts">
+          <li>Launched a live store for a client with Razorpay payments in two currencies (INR and USD) and persistent carts. Live at <a class="lnk" href="https://desitotes.com" target="_blank" rel="noopener">desitotes.com</a>.</li>
+        </ul>
+      </article>
+      <article>
+        <p class="cv__when"><b>AI image generator</b> <span>Python, PyTorch, Hugging Face Diffusers, Transformers</span></p>
+        <ul class="cv__pts">
+          <li>Fine-tuned and deployed a diffusion image-generation pipeline, speeding up inference by 25% and reducing memory use by 30%.</li>
+        </ul>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="cv-edu">
+    <h2 id="cv-edu">Education</h2>
+    <div>
+      <article>
+        <p class="cv__when"><b>B.Tech, Computer Science and Engineering, DY Patil International University, Pune</b> <span>Aug 2023 to Aug 2027</span></p>
+      </article>
+      <article>
+        <p class="cv__when"><b>B.Sc. (Hons.), Data Science and Artificial Intelligence, IIT Guwahati</b> <span>Aug 2023 to Aug 2027</span></p>
+        <p>Coursework: data structures and algorithms, OOP, DBMS, operating systems, computer networks, machine learning.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="cv-skills">
+    <h2 id="cv-skills">Skills</h2>
+    <dl class="cv__skills">
+      <dt>Languages</dt><dd>Python, JavaScript, TypeScript, SQL, C++, C, HTML, CSS</dd>
+      <dt>AI and ML</dt><dd>Machine learning, deep learning, NLP, multimodal learning, generative AI, diffusion models, model evaluation</dd>
+      <dt>ML libraries</dt><dd>PyTorch, TensorFlow, Keras, scikit-learn, Hugging Face Transformers, Diffusers, Pandas, NumPy</dd>
+      <dt>Web</dt><dd>React, Next.js, Node.js, Express, FastAPI, Flask, Redux, Tailwind CSS, Vite, REST APIs</dd>
+      <dt>Data and tools</dt><dd>MongoDB, Firebase Firestore, Convex, Git, GitHub, Postman, VS Code, Vercel, Render, CI/CD</dd>
+    </dl>
+  </section>
+
+  <section aria-labelledby="cv-awards">
+    <h2 id="cv-awards">Achievements</h2>
+    <ul class="cv__pts">
+      <li>Smart India Hackathon: top 15 teams in the college round, in a six-member team.</li>
+      <li>FOSS Hackathon 2025: collaborated on an open-source AI coding assistant that improved automated code correction.</li>
+      <li>SharkIndia (Avenyou Club): won a prize for an AI-based solution.</li>
+      <li>Deloitte Australia technology job simulation (Forage, May 2025): assessed a client scenario and proposed a custom dashboard.</li>
+      <li>Generative AI certification.</li>
+    </ul>
+  </section>
+</main>
+
+<nav class="mode" aria-label="View">
+  <a href="./">Site</a>
+  <a href="cv.html" aria-current="page">Résumé</a>
+</nav>
+
+</body>
+</html>

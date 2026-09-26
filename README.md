@@ -1,6 +1,6 @@
 # Sahil Pathak
 
-Portfolio. A dark, lit room holding two live commercial sites, in motion.
+Portfolio of an AI/ML and full-stack engineer. A bright, lit room holding five live products, then the research, then the résumé, in the order someone hiring asks for them.
 
 **The work**, all live
 
@@ -41,9 +41,11 @@ npx serve . -l 4500
 | Path | What it is |
 |---|---|
 | `index.html` | The page |
+| `cv.html` | The résumé as plain, printable HTML: the page's second view |
+| `assets/Sahil_Pathak_Resume.pdf` | Printed from `cv.html` by `scrollcraft/lab/cv-pdf.mjs`; re-run it after editing the résumé |
 | `site.css` | The design system: one palette, two faces, the room |
-| `site.js` | The rail, the closing clip, and the state the harness verifies |
-| `vitrine.js` | The WebGL scene: two live sites as objects, scrubbed by scroll |
+| `site.js` | The rail, the closing clip, the harness state, the pointer effects, the research diagram, copy-to-clipboard |
+| `vitrine.js` | The WebGL scene: five live sites as objects, scrubbed by scroll, flickable by drag |
 | `scrollcraft.css` / `scrollcraft.js` | Scroll engine. Not edited, themed by tokens |
 | `assets/work/` | Stills of both client sites, captured from production |
 | `assets/amg`, `assets/desi` | Real client photography |
@@ -58,6 +60,7 @@ npx serve . -l 4500
 node scrollcraft/lab/sheet.mjs http://localhost:4500
 node scrollcraft/lab/sheet.mjs http://localhost:4500 --mobile
 node scrollcraft/lab/a11y.mjs http://localhost:4500
+node scrollcraft/lab/hire.mjs http://localhost:4500
 ```
 
 `sheet.mjs` walks the page and tiles the frames into one contact sheet, so the

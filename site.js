@@ -2,13 +2,15 @@
    Page code. The engine is untouched, and the vitrine lives in
    its own file.
 
-   Four small things:
+   Six small things:
      1. the rail       (where you are)
      2. the plate      (the closing clip, scrubbed by scroll)
      3. verify state   (so the pinned hero is visible to the
                         verification harness, which compares
                         engine state rather than pixels)
      4. bits           (three React Bits components, ported)
+     5. net            (the research diagram, switchable inputs)
+     6. copy           (the email address, to the clipboard)
    ============================================================= */
 (() => {
   'use strict';
@@ -313,12 +315,56 @@
     }
   }
 
+  /* ===========================================================
+     5 · THE RESEARCH DIAGRAM
+     ---------------------------------------------------------
+     Every input is a real toggle. Switching one off makes the
+     paper's point by hand: the model still answers from what is
+     left. With nothing left, there is nothing to answer from.
+     =========================================================== */
+  function net() {
+    const fig = document.querySelector('[data-net]');
+    if (!fig) return;
+    const sigs = [...fig.querySelectorAll('.net__sig')];
+    const count = fig.querySelector('[data-net-count]');
+    sigs.forEach((b) => b.addEventListener('click', () => {
+      b.setAttribute('aria-pressed', String(b.getAttribute('aria-pressed') !== 'true'));
+      const on = sigs.filter((s) => s.getAttribute('aria-pressed') === 'true').length;
+      count.textContent = on ? `${on} of ${sigs.length} signals in` : 'Needs at least one signal';
+      fig.toggleAttribute('data-empty', !on);
+    }));
+  }
+
+  /* ===========================================================
+     6 · COPY THE ADDRESS
+     Recruiters paste an address into their own tools more often
+     than they click mailto. Failure is silent: the address is
+     printed right beside the button anyway.
+     =========================================================== */
+  function copy() {
+    document.querySelectorAll('[data-copy]').forEach((b) => {
+      const label = b.textContent;
+      let timer = 0;
+      b.addEventListener('click', () => {
+        if (!navigator.clipboard) return;
+        navigator.clipboard.writeText(b.dataset.copy).then(() => {
+          b.textContent = 'Copied';
+          b.setAttribute('data-done', '');
+          clearTimeout(timer);
+          timer = setTimeout(() => { b.textContent = label; b.removeAttribute('data-done'); }, 1600);
+        }, () => {});
+      });
+    });
+  }
+
   const boot = () => {
     document.documentElement.classList.add('js-ready');
     rail();
     plate();
     verifyState();
     bits();
+    net();
+    copy();
   };
 
   if (document.readyState === 'loading') {
