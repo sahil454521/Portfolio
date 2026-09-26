@@ -127,8 +127,10 @@
      if the check fails, nothing claims anything: the page keeps
      its plain "Live" and the bar stays hidden.
      =========================================================== */
-  function status() {
-    fetch('/api/status')
+  // `fresh` asks the server to check again rather than answer from its
+  // minute-long cache; the status board's button uses it
+  function status(fresh) {
+    return fetch('/api/status' + (fresh ? '?fresh=' + Date.now() : ''))
       .then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
       .then((d) => {
         const byHost = {};
@@ -152,6 +154,7 @@
       })
       .catch(() => { /* no claim is better than a wrong one */ });
   }
+  window.checkStatus = status;
 
   /* ===========================================================
      4 · THREE BITS FROM REACT BITS

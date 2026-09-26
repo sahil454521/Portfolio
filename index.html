@@ -94,6 +94,11 @@
       <li><a href="#research" data-thing="paper" data-label="Read the research">The research</a></li>
       <li><a href="cv.html" data-thing="cv" data-label="Open the résumé">Résumé</a></li>
       <li><a href="mailto:sahilpathak2005@gmail.com" data-thing="phone" data-compose data-label="Email me">Email me</a></li>
+      <li><a href="#status" data-thing="rack" data-live-board data-label="Check every site">Live status</a></li>
+      <li><a href="#me" data-thing="photo" data-label="About me">About me</a></li>
+      <li><a href="cv.html#cv-edu" data-thing="books" data-label="Education">Education</a></li>
+      <li><a href="cv.html#cv-awards" data-thing="trophy" data-label="Hackathons and prizes">Prizes</a></li>
+      <li><a href="https://desitotes.com" target="_blank" rel="noopener" data-thing="tote" data-host="desitotes.com" data-label="Visit the Desi Totes shop">The shop</a></li>
     </ul>
   </section>
 
@@ -332,6 +337,22 @@
   </div>
   <div class="win__view" data-win-view>
     <iframe title="Live app" allow="clipboard-write; fullscreen; autoplay" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+  </div>
+</dialog>
+
+<!-- Every live site, checked from the server just now. The five small
+     boards on the desk are these five sites; each light is one of them. -->
+<dialog class="win win--board" data-live-board aria-labelledby="board-h">
+  <div class="win__bar">
+    <p class="win__title"><b id="board-h">Every site, checked from the server</b></p>
+    <button class="win__close" type="button" data-win-close autofocus>Close</button>
+  </div>
+  <div class="board">
+    <ul class="board__list" data-board-list></ul>
+    <div class="board__foot">
+      <p data-board-when></p>
+      <button class="btn" type="button" data-board-again>Check again</button>
+    </div>
   </div>
 </dialog>
 
