@@ -5,10 +5,27 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import { MENU, THINGS } from '../data.js';
 import { useWindows } from '../lib/windows.jsx';
+import { useStatus } from '../lib/status.jsx';
 import { useVariableProximity } from '../lib/motion.js';
 import ThingLink from './ThingLink.jsx';
 
 const HEADLINE = 'Everything here is in production.';
+
+// Behind the desk, the server's latest reading of every site runs past in
+// type the desk stands in front of. It appears when the reading arrives; the
+// status board says the same thing to screen readers.
+function Ticker() {
+  const { status } = useStatus();
+  const sites = (status && status.sites) || [];
+  const run = sites.map((x) => (
+    <span key={x.host}><i data-up={x.up ? '' : undefined} />{x.host} <b>{x.up ? `${x.ms} ms` : 'down'}</b></span>
+  ));
+  return (
+    <div className="desk__ticker" aria-hidden="true" data-on={sites.length ? '' : undefined}>
+      <p>{run}{run}</p>
+    </div>
+  );
+}
 
 export default function Desk() {
   const { go, scene, openFromHash } = useWindows();
@@ -35,6 +52,7 @@ export default function Desk() {
   return (
     <section className="desk" aria-labelledby="lede-h">
       <div className="desk__stage" data-desk ref={root} data-fallback={fallback ? '' : undefined}>
+        <Ticker />
         <canvas ref={canvas} aria-hidden="true" />
         <div className="desk__frame" data-desk-frame aria-hidden="true"><p><b /><span /></p></div>
       </div>
