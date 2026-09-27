@@ -30,6 +30,12 @@ const opened = () => popup ? Promise.resolve('new tab: ' + popup) : /\/cv(\.html
   if (c && c.open) return 'compose';
   return 'nothing (' + location.hash + ', y=' + Math.round(scrollY) + ')';
 });
+// the app zoom flies for 1.8s before its window shows, longer on a slow
+// machine, so wait for something to open rather than a fixed time
+const settle = async () => {
+  await p.waitForFunction(() => document.querySelector('dialog[open]') || /\/cv/.test(location.pathname), null, { timeout: 6000 }).catch(() => {});
+  await p.waitForTimeout(400);
+};
 const reset = async () => {
   popup = null;
   await p.goto(url, { waitUntil: 'load' });
@@ -38,7 +44,7 @@ const reset = async () => {
   await p.waitForTimeout(2200);
 };
 
-if (!mobile) {
+if (!mobile && !process.argv.includes('--list')) {
   const c = await p.locator('.desk__stage canvas').boundingBox();
   const spots = new Map();
   for (let y = 0.2; y <= 0.9; y += 0.035) {
@@ -53,7 +59,7 @@ if (!mobile) {
     await p.waitForTimeout(250);
     const now = await p.evaluate(() => { const f = document.querySelector('.desk__frame[data-on] b'); return f && f.textContent; });
     await p.mouse.click(at.x, at.y);
-    await p.waitForTimeout(1800);
+    await settle();
     console.log(`canvas  label "${label}" (still "${now}")  ->  ${await opened()}`);
     await reset();
   }
@@ -64,7 +70,7 @@ for (const id of ['desi', 'amg', 'quest', 'term', 'neura', 'paper', 'phone', 'ra
   const text = (await a.textContent()).trim();
   if (mobile) await a.tap(); else { await a.focus(); await p.keyboard.press('Enter'); }
   if (id === 'tote') await p.waitForTimeout(1500);
-  await p.waitForTimeout(1800);
+  await settle();
   console.log(`list    "${text}"  ->  ${await opened()}`);
   await reset();
 }
