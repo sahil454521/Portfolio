@@ -8,7 +8,7 @@ import TopBar, { ModeSwitch } from './components/TopBar.jsx';
 import Desk from './components/Desk.jsx';
 import { Case, Carry } from './components/Work.jsx';
 import Research from './components/Research.jsx';
-import { About, AlsoLive, Build, Contact } from './components/More.jsx';
+import { About, AlsoLive, Build, Contact, RunsOn } from './components/More.jsx';
 import Windows from './components/Windows.jsx';
 
 export default function App() {
@@ -30,6 +30,7 @@ export default function App() {
         <ModeSwitch current="site" />
         <main id="top">
           <Desk />
+          <RunsOn />
           <Case c={CASES[0]} />
           <Case c={CASES[1]} />
           <Carry />

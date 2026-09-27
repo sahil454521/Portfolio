@@ -3,6 +3,7 @@ import { lazy, Suspense, useRef } from 'react';
 import { CARRY, CASES } from '../data.js';
 import { useStatus } from '../lib/status.jsx';
 import { useNearView, useTilt } from '../lib/motion.js';
+import GlareHover from './reactbits/GlareHover.jsx';
 
 // React Bits' DriftWall, loaded only as the wall nears the screen: its
 // animation runs every frame, so it should not exist until it can be seen.
@@ -34,7 +35,11 @@ export function Case({ c }) {
 
       <figure className="case__site" data-sc-reveal="up" data-sc-reveal-at="0.02 0.4">
         <a ref={site} href={c.href} target="_blank" rel="noopener" tabIndex={-1} aria-hidden="true">
-          <img src={c.still} alt={c.stillAlt} width="1680" height="1080" loading="lazy" />
+          {/* React Bits' GlareHover: light crosses the capture as it would the glass of a screen */}
+          <GlareHover width="100%" height="auto" background="transparent" borderColor="transparent" borderRadius="0"
+                      glareOpacity={0.4} glareAngle={-35} glareSize={320} transitionDuration={900}>
+            <img src={c.still} alt={c.stillAlt} width="1680" height="1080" loading="lazy" />
+          </GlareHover>
         </a>
         <figcaption>{c.host}, captured from the live site.</figcaption>
       </figure>

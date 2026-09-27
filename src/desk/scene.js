@@ -566,8 +566,9 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     });
   }
 
-  // where the camera has to be for a screen to fill a share of the frame
-  function poseFor(t, fill = 0.7) {
+  // where the camera has to be for a screen to fill a share of the frame;
+  // `cover` fills the whole frame with it, edges running past the sides
+  function poseFor(t, fill = 0.7, cover = false) {
     if (!t.face) return poseForObject(t.group, fill);
     const f = t.face;
     f.updateWorldMatrix(true, false);
@@ -579,7 +580,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     const hf = 2 * Math.atan(Math.tan(vf / 2) * camera.aspect);
     const dH = (gp.height * s.y / 2) / Math.tan(vf / 2) / fill;
     const dW = (gp.width * s.x / 2) / Math.tan(hf / 2) / fill;
-    return { pos: P.clone().addScaledVector(N, Math.max(dH, dW)), at: P, ox: 0, oy: 0 };
+    return { pos: P.clone().addScaledVector(N, cover ? Math.min(dH, dW) : Math.max(dH, dW)), at: P, ox: 0, oy: 0 };
   }
 
   // an object with no screen is approached along the home direction until
@@ -608,6 +609,20 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     }
     return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
   }
+
+  // a screen's own four corners, not its box in the room: from close up, the
+  // corners of a box around a tilted screen project far wider than the screen
+  function rectOfFace(f) {
+    const { width: w, height: h } = f.geometry.parameters;
+    f.updateWorldMatrix(true, false);
+    let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+    for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+      const p = toScreen(new THREE.Vector3((sx * w) / 2, (sy * h) / 2, 0).applyMatrix4(f.matrixWorld));
+      x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y);
+    }
+    return { left: x0, top: y0, width: x1 - x0, height: y1 - y0 };
+  }
+  const rectOfThing = (t) => (t.face ? rectOfFace(t.face) : rectOfObject(t.group));
 
   /* ---- hover: the frame and its label -------------------------------- */
   const frame = root.querySelector('[data-desk-frame]');
@@ -760,9 +775,9 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     onScreen: () => inView,
     rectOf(id) {
       const t = things[id];
-      return t ? rectOfObject(t.face || t.group) : null;
+      return t ? rectOfThing(t) : null;
     },
-    async flyTo(id, fill, ms) {
+    async flyTo(id, fill, ms, cover) {
       const t = things[id];
       if (!t || !(t.face || t.group)) return null;
       setHover(null);
@@ -770,8 +785,8 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
       // the headline steps back while the camera goes in, so the object
       // being entered has the screen to itself
       stage.setAttribute('data-flying', '');
-      await tweenTo(poseFor(t, fill), ms, glide);
-      return rectOfObject(t.face || t.group);
+      await tweenTo(poseFor(t, fill, cover), ms, glide);
+      return rectOfThing(t);
     },
     home() { stage.removeAttribute('data-flying'); tweenTo(homePose, 820, glide); },
     // React sets this while a window covers the desk: nothing is drawn then
