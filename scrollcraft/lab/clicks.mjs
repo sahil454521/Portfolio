@@ -3,7 +3,7 @@
 // or a local server. Also clicks each link in the desk's list.
 import { chromium } from 'playwright-core';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const mobile = process.argv.includes('--mobile');
 const b = await chromium.launch({ executablePath: CHROME });

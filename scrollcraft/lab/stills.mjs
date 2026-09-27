@@ -4,7 +4,7 @@ import { chromium } from 'playwright-core';
 import { mkdirSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const FF = 'C:/Users/sahil/AppData/Local/Microsoft/WinGet/Packages/Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe/ffmpeg-9.0.1-full_build/bin/ffmpeg.exe';
 
 // Captured narrower than a full desktop window on purpose. Each still holds a

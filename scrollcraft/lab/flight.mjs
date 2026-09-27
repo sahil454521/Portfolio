@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 const url = process.argv[2] || 'http://localhost:4500';
 const target = process.argv[3] || 'quest';
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
 await p.goto(url, { waitUntil: 'load' });
 await p.waitForSelector('[data-desk][data-ready]');

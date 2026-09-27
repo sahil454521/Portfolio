@@ -2,7 +2,7 @@
 // element widens the whole layout and the browser zooms the page out.
 import { chromium } from 'playwright-core';
 const url = process.argv[2] || 'http://localhost:4500';
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 for (const w of [360, 390, 768, 1280]) {
   const p = await b.newPage({ viewport: { width: w, height: 844 }, isMobile: w < 500, hasTouch: w < 500 });
   await p.goto(url, { waitUntil: 'load' });

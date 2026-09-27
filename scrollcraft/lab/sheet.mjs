@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 import { mkdirSync, writeFileSync, readdirSync } from 'node:fs';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const mobile = process.argv.includes('--mobile');
 const reduced = process.argv.includes('--reduced');

@@ -3,7 +3,7 @@
 // never sits on top of the hero's two actions.
 import { chromium } from 'playwright-core';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const b = await chromium.launch({ executablePath: CHROME });
 const errors = [];

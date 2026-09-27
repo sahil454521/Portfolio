@@ -26,7 +26,7 @@ const dataUrl = (buf, type) => `data:${type};base64,${buf.toString('base64')}`;
 const poster = fs.readFileSync('public/assets/me/colophon-poster.jpg');
 
 // ---- paint, in a page that has the site's fonts
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const p = await b.newPage();
 await p.goto(url + '/cv.html', { waitUntil: 'load' });
 const out = await p.evaluate(async ({ atlasUrl, posterUrl }) => {
