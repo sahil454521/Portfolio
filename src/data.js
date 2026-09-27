@@ -65,7 +65,7 @@ export const CASES = [
     href: 'https://amgprojectsllp.com', host: 'amgprojectsllp.com',
     still: '/assets/work/amg-1.jpg',
     stillAlt: 'The AMG Turnkey Projects site: the Where Quality Meets Swiftness hero',
-    story: 'Twenty five years old, based in Pune, and they build the factory and then fit out the inside of it. Six service lines across three states.',
+    story: 'A Pune firm, twenty-five years in, that builds the factory and then fits out the inside of it. Six service lines across three states.',
     body: [
       'The brief was findability. Somebody who needs a hospital block built should reach the right service, the right past project and a way to ask, inside one pass of the page, on a site office connection.',
       'Behind the site I built the civil accounting modules and REST APIs their operations team runs projects on, then found where the app was slow and cut its load time by 50 to 80 percent.',
