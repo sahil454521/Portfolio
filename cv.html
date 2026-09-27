@@ -8,13 +8,13 @@
 <meta name="theme-color" content="#EAEDEF">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23080B0E'/><circle cx='16' cy='16' r='6' fill='%23FFB03B'/></svg>">
 
-<link rel="preload" href="assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/bricolage-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/archivo-latin.woff2" as="font" type="font/woff2" crossorigin>
 
 <!-- The site's tokens and controls, so this reads as the same person; the
      résumé's own layout is below. No scripts: this page is the one a hiring
      tool, a screen reader or a printer gets, so it is plain on purpose. -->
-<link rel="stylesheet" href="site.css">
+<link rel="stylesheet" href="/src/styles/site.css">
 <style>
   .cv { max-width: 54rem; margin-inline: auto; padding: clamp(2rem, 6vw, 4.5rem) var(--gutter) 7rem; }
   .cv h1, .cv h2, .cv h3 { text-wrap: pretty; }
@@ -99,7 +99,7 @@
       <li><a class="lnk" href="https://github.com/sahil454521" target="_blank" rel="noopener">github.com/sahil454521</a></li>
       <li><a class="lnk" href="https://portfolio-q38w.vercel.app/">portfolio-q38w.vercel.app</a></li>
     </ul>
-    <p class="cv__dl"><a class="btn btn--hot" href="assets/Sahil_Pathak_Resume.pdf" download>Download PDF</a></p>
+    <p class="cv__dl"><a class="btn btn--hot" href="/assets/Sahil_Pathak_Resume.pdf" download>Download PDF</a></p>
   </header>
 
   <section aria-labelledby="cv-summary">
@@ -209,8 +209,8 @@
 </main>
 
 <nav class="mode" aria-label="View">
-  <a href="./">Site</a>
-  <a href="cv.html" aria-current="page">Résumé</a>
+  <a href="/">Site</a>
+  <a href="/cv.html" aria-current="page">Résumé</a>
 </nav>
 
 </body>

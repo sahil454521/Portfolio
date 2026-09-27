@@ -7,6 +7,6 @@ await p.evaluate(() => document.fonts.ready);
 await p.waitForSelector('[data-desk][data-ready]', { timeout: 15000 });
 await p.mouse.move(5, 5);
 await p.waitForTimeout(2600);
-await p.screenshot({ path: 'assets/og.jpg', type: 'jpeg', quality: 86 });
+await p.screenshot({ path: 'public/assets/og.jpg', type: 'jpeg', quality: 86 });
 await b.close();
-console.log('assets/og.jpg');
+console.log('public/assets/og.jpg');

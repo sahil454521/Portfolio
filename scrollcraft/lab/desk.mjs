@@ -1,19 +1,16 @@
 // Drives the desk the way a visitor would: arrive, hover each object, open a
 // live app from the arcade, close it, open the compose window, and read the
-// state after each step. /api/status only exists on Vercel, so the real
-// endpoint is run here in-process and served to the page.
+// state after each step. The real status check is run here in-process and
+// served to the page, so the result does not depend on the network timing.
 import { chromium } from 'playwright-core';
-import { createRequire } from 'node:module';
 import { mkdirSync } from 'node:fs';
-
-const require = createRequire(import.meta.url);
-const statusFn = require('../../api/status.js');
+import { checkAll } from '../../server/status.js';
 const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const out = 'scrollcraft/lab/desk/';
 mkdirSync(out, { recursive: true });
 
-const body = await new Promise((done) => statusFn({}, { setHeader() {}, status() { return this; }, json: (o) => done(JSON.stringify(o)) }));
+const body = JSON.stringify(await checkAll());
 const b = await chromium.launch({ executablePath: CHROME });
 const errors = [];
 

@@ -6,6 +6,6 @@ const p = await b.newPage();
 await p.goto((process.argv[2] || 'http://localhost:4500') + '/cv.html', { waitUntil: 'load' });
 await p.evaluate(() => document.fonts.ready);
 await p.emulateMedia({ media: 'print' });
-await p.pdf({ path: 'assets/Sahil_Pathak_Resume.pdf', preferCSSPageSize: true, printBackground: false });
+await p.pdf({ path: 'public/assets/Sahil_Pathak_Resume.pdf', preferCSSPageSize: true, printBackground: false });
 await b.close();
-console.log('assets/Sahil_Pathak_Resume.pdf');
+console.log('public/assets/Sahil_Pathak_Resume.pdf');

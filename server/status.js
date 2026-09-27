@@ -1,12 +1,8 @@
-// GET /api/status
-//
 // The page's headline is "Everything here is in production". This is the
-// proof, checked live: every project is fetched from here and timed, and the
-// page lights each one up with what came back. Cached at Vercel's edge for a
-// minute, so however many people visit, each site is asked at most once a
-// minute.
+// proof, checked live: every project is fetched from the server and timed,
+// and the page lights each one up with what came back.
 
-const SITES = [
+export const SITES = [
   'https://desitotes.com',
   'https://amgprojectsllp.com',
   'https://ai-compiler-eta.vercel.app',
@@ -14,7 +10,7 @@ const SITES = [
   'https://gamifyport.vercel.app',
 ];
 
-async function check(url) {
+export async function check(url) {
   const started = Date.now();
   try {
     const res = await fetch(url, {
@@ -30,10 +26,6 @@ async function check(url) {
   }
 }
 
-module.exports = async (req, res) => {
-  const sites = await Promise.all(SITES.map(check));
-  res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=300');
-  res.status(200).json({ checked: new Date().toISOString(), sites });
-};
-
-module.exports.check = check;
+export async function checkAll() {
+  return { checked: new Date().toISOString(), sites: await Promise.all(SITES.map(check)) };
+}
