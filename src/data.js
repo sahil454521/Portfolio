@@ -24,6 +24,23 @@ export const THINGS = {
   trophy: { label: 'Hackathons and prizes', menu: 'Prizes', href: '/cv.html#cv-awards' },
   tote: { label: 'Visit the Desi Totes shop', menu: 'The shop', href: 'https://desitotes.com', external: true, host: 'desitotes.com' },
 };
+// "Hiring for": each role walks the desk's frame through the objects that
+// make its case, with the reason each one is there. Every reason is a fact
+// stated elsewhere on the page.
+export const ROLES = [
+  ['AI/ML', [
+    ['neura', 'A scikit-learn model I trained, served from FastAPI'],
+    ['paper', 'Multimodal deep learning research'],
+    ['term', 'A terminal-style front end for a language model'],
+    ['trophy', 'SharkIndia prize for an AI solution'],
+  ]],
+  ['Full-stack', [
+    ['desi', 'React, Node and MongoDB, taking payments through Razorpay'],
+    ['amg', 'REST APIs for a client, load time cut 50 to 80%'],
+    ['rack', 'This site runs a Node API that checks every one'],
+    ['quest', 'This portfolio as a pixel-art game, live'],
+  ]],
+];
 export const MENU = ['desi', 'amg', 'quest', 'term', 'neura', 'paper', 'cv', 'phone', 'rack', 'photo', 'books', 'trophy', 'tote'];
 
 export const CASES = [

@@ -3,7 +3,7 @@
 // it a canvas, hands its clicks to go(id), and renders the headline and the
 // list that names the same things for keyboards, screen readers and phones.
 import { Fragment, useEffect, useRef, useState } from 'react';
-import { MENU, THINGS } from '../data.js';
+import { MENU, ROLES, THINGS } from '../data.js';
 import { useWindows } from '../lib/windows.jsx';
 import { useStatus } from '../lib/status.jsx';
 import { useVariableProximity } from '../lib/motion.js';
@@ -33,6 +33,7 @@ export default function Desk() {
   const canvas = useRef(null);
   const h1 = useRef(null);
   const [fallback, setFallback] = useState(false);
+  const [said, setSaid] = useState('');
   useVariableProximity(h1);
 
   useEffect(() => {
@@ -74,6 +75,19 @@ export default function Desk() {
           I am Sahil, final year at IIT Guwahati. Everything on this desk is
           something I built, all of it live.
         </p>
+        {/* one question, a few answers to tap, the way an agent's prompt
+            offers its tasks: the desk then shows the proof for that role */}
+        <p className="lede__roles">
+          <span>Hiring for</span>
+          {ROLES.map(([role, steps]) => (
+            <button key={role} type="button" onClick={() => {
+              if (scene.current) scene.current.tour(steps);
+              // the same tour, read out
+              setSaid(`${role}: ` + steps.map(([id, why]) => `${THINGS[id].menu}, ${why}`).join('. '));
+            }}>{role}</button>
+          ))}
+        </p>
+        <p className="sr" aria-live="polite">{said}</p>
         <p className="lede__act">
           <ThingLink id="phone" className="btn btn--hot">Email me</ThingLink>
           <a className="btn" href="/cv.html">Résumé</a>

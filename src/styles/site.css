@@ -375,6 +375,7 @@ html { scroll-padding-top: 5rem; }
 .lede > :nth-child(2) { animation-delay: 60ms; }
 .lede > :nth-child(3) { animation-delay: 120ms; }
 .lede > :nth-child(4) { animation-delay: 180ms; }
+.lede > :nth-child(5) { animation-delay: 240ms; }
 @media (prefers-reduced-motion: reduce) {
   .lede > * { animation-name: lede-fade; animation-duration: 300ms; }
 }
@@ -412,6 +413,21 @@ html { scroll-padding-top: 5rem; }
   transition: border-color var(--fast) var(--ease), transform 120ms var(--ease);
 }
 .desk__menu a:active { transform: scale(0.97); }
+
+/* "Hiring for": one question and its answers, as chips */
+.lede__roles { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2); margin: 0; font-size: var(--t-sm); color: var(--ink-soft); }
+.lede__roles span { margin-right: var(--s-1); }
+.lede__roles button {
+  padding: var(--s-2) var(--s-4);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--void-lift);
+  font: inherit; color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--fast) var(--ease), transform 120ms var(--ease);
+}
+.lede__roles button:active { transform: scale(0.97); }
+.desk__stage[data-fallback] ~ .lede .lede__roles { display: none; }
 @media (min-width: 901px) {
   .lede {
     right: var(--gutter);
@@ -424,6 +440,8 @@ html { scroll-padding-top: 5rem; }
   .lede h1 { max-width: none; white-space: nowrap; font-size: clamp(2.8rem, 1rem + 4vw, 5.4rem); }
   .lede__p { max-width: 40rem; }
   .lede__act { margin-top: 0; justify-self: start; }
+  .lede__act { grid-row: 3; grid-column: 2; }
+  .lede__roles { grid-row: 4; grid-column: 1 / -1; }
   .desk__stage:not([data-fallback]) ~ .desk__menu {
     position: absolute; right: var(--gutter); top: 80px;
     z-index: 2;
@@ -889,6 +907,26 @@ figcaption {
 }
 .end__cta:active { transform: scale(0.97); transition-duration: 120ms; }
 
+/* the badge hangs from the section's top edge. Its first fall is a swing,
+   so with reduced motion it is not there at all; the button beside it is. */
+.end__inner { position: relative; }
+.end__badge { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .end__badge {
+    display: block; order: -1;
+    height: 26rem; margin-top: calc(-1 * var(--pad));
+  }
+  .end__badge .lanyard-wrapper { height: 100%; }
+  @media (max-width: 899px) { .end__badge { height: 23rem; } }
+  .end__badge canvas { touch-action: pan-y; }
+}
+@media (prefers-reduced-motion: no-preference) and (min-width: 900px) {
+  .end__badge {
+    position: absolute; top: 0; right: var(--gutter);
+    width: min(32rem, 44%); height: 38rem;
+  }
+}
+
 .end__meta {
   margin: var(--s-6) 0 0;
   padding-top: var(--s-5);
@@ -1157,7 +1195,7 @@ figcaption {
   .go:hover span { transform: translate(3px, -3px); }
   .top__nav a:hover { color: var(--ink); }
   .top__cta:hover { color: var(--signal); border-color: color-mix(in oklab, var(--signal) 55%, transparent); }
-  .desk__menu a:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
+  .desk__menu a:hover, .lede__roles button:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
   .also__run:hover { background: var(--signal); }
   .win__close:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
   .win__out:hover { color: var(--ink); }

@@ -80,7 +80,8 @@ address the mail should reach), then in Vercel add the environment variable
 | `src/lib/windows.jsx` | Every action, and the app, status and email windows |
 | `src/lib/status.jsx` | Live status from the API, shared by the page |
 | `src/lib/motion.js` | Pointer effects (Variable Proximity, Tilted Card, Magnet), the video scrub, section tracking |
-| `src/components/` | The sections; `reactbits/` holds the React Bits pieces: DriftWall (the carry wall), FolderFloat (the stack), and in the windows SplitFlapText (status board times), StatusMark (per-site check) and JellyRadio (email topic). The last two use Motion and load after first paint |
+| `src/components/` | The sections; `reactbits/` holds the React Bits pieces: DriftWall (the carry wall), FolderFloat (the stack), Lanyard (the 3D badge in the contact section, React Three Fiber and Rapier, loaded only near it and skipped on saved-data plans), and in the windows SplitFlapText (status board times), StatusMark (per-site check) and JellyRadio (email topic) |
+| `scrollcraft/lab/badge.mjs` | Paints the badge and its strap from React Bits' `card.glb` into `public/assets/badge/` |
 | `src/styles/` | The design system, and the scroll engine's styles |
 | `server/` | The Express app and the status checker |
 | `api/index.js` | The Vercel function that runs the Express app |
