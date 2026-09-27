@@ -1,13 +1,46 @@
 // The rest of the page: the personal projects, how I build, who I am, and
 // how to reach me.
-import { lazy, Suspense, useRef, useState } from 'react';
+import { Component, lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { ALSO, EMAIL, GITHUB, LINKEDIN, STACK, THINGS } from '../data.js';
-import { useMagnet, useScrub } from '../lib/motion.js';
+import { useMagnet, useNearView, useScrub } from '../lib/motion.js';
+import { useWindows } from '../lib/windows.jsx';
 import ThingLink from './ThingLink.jsx';
 
 // React Bits' FolderFloat carries matter-js for its weightless pills, so it
 // arrives as its own chunk rather than with the first paint.
 const FolderFloat = lazy(() => import('./reactbits/FolderFloat.jsx'));
+// React Bits' Lanyard brings React Three Fiber and a physics engine, so it
+// loads only when the contact section comes near.
+const Lanyard = lazy(() => import('./reactbits/Lanyard.jsx'));
+
+// Without WebGL the badge just is not there; the email button beside it is.
+class Quiet extends Component {
+  state = { failed: false };
+  static getDerivedStateFromError() { return { failed: true }; }
+  render() { return this.state.failed ? null : this.props.children; }
+}
+
+// The badge a new hire is issued, already made out: pull it, throw it, or
+// click it to write to me. It draws only while it is on screen.
+function Badge() {
+  const { go } = useWindows();
+  const box = useRef(null);
+  const near = useNearView(box, '20% 0px');
+  const [seen, setSeen] = useState(false);
+  // about a megabyte, most of it the physics engine: not on a saved-data plan
+  useEffect(() => { if (near && !(navigator.connection && navigator.connection.saveData)) setSeen(true); }, [near]);
+  return (
+    <div className="end__badge" ref={box} aria-hidden="true">
+      {seen && (
+        <Quiet>
+          <Suspense fallback={null}>
+            <Lanyard active={near} position={[0, 0, 16]} gravity={[0, -40, 0]} onSelect={() => go('phone')} />
+          </Suspense>
+        </Quiet>
+      )}
+    </div>
+  );
+}
 
 export function AlsoLive() {
   return (
@@ -139,6 +172,7 @@ export function Contact() {
   return (
     <footer className="end" id="contact">
       <div className="end__inner" data-sc-in data-sc-stagger="60">
+        <Badge />
         <h2>Hiring, or building something that has to stay live?</h2>
         <div className="end__act">
           <ThingLink id="phone" className="end__cta" ref={cta}>

@@ -15,7 +15,10 @@
    Status lights are real: the page dispatches 'site-status' with
    what /api/status found, and the lights follow it.
    ============================================================= */
-import * as THREE from 'three';
+// three's source modules rather than its single build file: the badge in
+// the contact section brings React Three Fiber, which keeps every export of
+// the build file, and the desk should not wait for what it never uses
+import * as THREE from 'three/src/Three.js';
 
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
@@ -624,13 +627,14 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     if (!st) return '';
     return st.up ? `live, ${st.ms} ms` : 'not answering right now';
   }
-  function setHover(id) {
-    if (id === hovered) return;
+  // `why` replaces the status line while a role's tour is showing it
+  function setHover(id, why) {
+    if (id === hovered && !why) return;
     hovered = id;
     canvas.style.cursor = id ? 'pointer' : '';
     if (id) {
       fName.textContent = (DATA[id] && DATA[id].label) || things[id].label;
-      fNote.textContent = note(id);
+      fNote.textContent = why || note(id);
       fNote.hidden = !fNote.textContent;
       labW = label.offsetWidth; labH = label.offsetHeight;   // read once per change, not per frame
     }
@@ -773,6 +777,13 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     // React sets this while a window covers the desk: nothing is drawn then
     setCovered(v) { covered = v; if (!v) wake(); },
     // the page's links name the same things: pointing at one frames it here
+    // "Hiring for": the frame walks the objects that make the case, slowly
+    // enough to read each reason; any pointer on the desk takes over
+    tour(steps) {
+      if (!inView) return;
+      attract = { i: 0, t: 0, steps };
+      wake();
+    },
     highlight(id) {
       if (id && things[id] && inView) { attract = null; setHover(id); } else if (!id && !pointerIn) setHover(null);
     },
@@ -823,10 +834,17 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
       if (Math.abs(lean.tx - lean.x) + Math.abs(lean.ty - lean.y) > 1e-3) busy = true;
     }
 
-    // attract: step the frame through the objects once
+    // attract: step the frame through the objects once, or through one
+    // role's objects, each with the reason it is there
     if (attract && now > attract.t) {
-      if (attract.i >= ORDER.length) { attract = null; setHover(null); }
-      else { setHover(ORDER[attract.i]); attract.i++; attract.t = now + 520; }
+      const steps = attract.steps || ORDER;
+      if (attract.i >= steps.length) { attract = null; setHover(null); }
+      else {
+        const [id, why] = [].concat(steps[attract.i]);
+        setHover(id, why);
+        attract.i++;
+        attract.t = now + (attract.steps ? 1900 : 520);
+      }
     }
     if (attract) busy = true;
 
