@@ -667,85 +667,122 @@ html { scroll-padding-top: 5rem; }
 .case--cotton { --tint: var(--cotton); }
 .case > * { max-width: var(--maxw); margin-inline: auto; }
 
-.case__head {
-  display: grid;
-  row-gap: var(--s-3);
-  margin-bottom: var(--s-7);
+/* ---- the head: what it is, then the name, set large and tight ---- */
+.case__head { display: grid; row-gap: var(--s-3); margin-bottom: var(--s-6); }
+.case__kind {
+  font-size: var(--t-xs);
+  letter-spacing: 0.14em;            /* small caps want air */
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--tint) 80%, var(--ink));
 }
 .case__head h2 {
   font-size: var(--t-3xl);
-  font-variation-settings: "wdth" 92, "opsz" 96;
-  letter-spacing: -0.036em;
-}
-.case__kind {
-  display: flex; flex-wrap: wrap; align-items: baseline;
-  gap: var(--s-2) var(--s-5);
-  color: var(--ink-soft);
+  line-height: 0.94;                 /* large type, tight leading */
+  font-weight: 600;
+  font-variation-settings: "wdth" 88, "opsz" 96;
+  letter-spacing: -0.04em;           /* and tight tracking */
+  text-wrap: balance;
 }
 
-/* ---- the site, opening as you scroll into it: React Bits' ScrollExpand -- */
-/* full bleed, out of the section's padding */
-.case > .case__expand {
-  max-width: none;
-  margin: calc(-1 * var(--pad)) calc(-1 * var(--gutter)) var(--s-8) calc(-1 * (var(--rail-w) + var(--gutter)));
-  width: auto;
+/* ---- the story beside the facts ---- */
+.case__intro {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 4fr);
+  gap: var(--s-6) clamp(2rem, 6vw, 6rem);
+  align-items: end;
+  margin-bottom: var(--s-7);
 }
-/* the name sits above the resting frame, in ink on the page, and lifts away */
-.case__expand .scroll-expand__title {
-  align-items: flex-start;
-  padding-top: max(5.5rem, 9vh);
-  color: var(--ink);
-  text-shadow: none;
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-variation-settings: "wdth" 92, "opsz" 96;
-  letter-spacing: -0.036em;
-}
-.case__expand .scroll-expand__hint { color: var(--ink-soft); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; }
-.case__expand .scroll-expand__media { object-position: center top; }
-.case__expand .scroll-expand__overlay { align-items: flex-start; justify-content: flex-end; text-align: left; padding: 0 0 max(5rem, 9vh) max(var(--gutter), 5vw); }
-/* the story on its own dark panel: the capture under it is a busy page */
-.case__over {
-  display: grid; justify-items: start; gap: var(--s-3);
-  max-width: min(34rem, calc(100vw - 2 * var(--gutter)));
-  padding: var(--s-5) var(--s-6);
-  border-radius: var(--r);
-  background: color-mix(in oklab, var(--ink) 88%, transparent);
-  backdrop-filter: blur(10px);
-  color: var(--void-lift);
-}
-.case__over-kind { font-size: var(--t-xs); letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; }
-.case__over-story {
-  max-width: 30ch;
+.case__story {
+  max-width: 26ch;
   font-family: var(--font-display);
   font-size: var(--t-xl);
-  line-height: 1.18;
+  line-height: 1.16;
   letter-spacing: -0.024em;
-  font-variation-settings: "wdth" 92, "opsz" 48;
+  font-variation-settings: "wdth" 94, "opsz" 48;
   text-wrap: pretty;
+  color: var(--ink);
 }
-.case__over-go {
-  margin-top: var(--s-2);
-  padding: var(--s-3) var(--s-5);
-  border-radius: 999px;
-  background: var(--void-lift); color: var(--ink);
-  font-size: var(--t-sm); font-weight: 600;
-  text-decoration: none;
-  transition: transform 120ms var(--ease);
-}
-.case__over-go:active { transform: scale(0.97); }
-/* the photographs stack on a phone, where one panel opens at a time */
-@media (max-width: 520px) { .case__gallery .accordion-gallery { height: 34rem !important; } }
+.case__spec { grid-template-columns: 1fr; }
 
-.case__body {
+/* ---- the site, in its own window. Held in the page, never full bleed:
+   the capture is somebody else's page, with its own nav and headline,
+   and it must not be mistaken for this one. ---- */
+.case__window {
+  margin: 0 auto var(--s-8);
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.8) inset,
+    0 2px 4px -2px rgba(14, 21, 25, 0.08),
+    0 30px 60px -30px color-mix(in oklab, var(--tint) 45%, rgba(14, 21, 25, 0.5));
+}
+.case__bar {
+  display: flex; align-items: center; gap: var(--s-4);
+  padding: 0.6rem 0.75rem 0.6rem 1rem;
+  background: var(--void-lift);
+  border-bottom: 1px solid var(--line-soft);
+  font-size: var(--t-xs);
+  transition: background-color 200ms ease;
+}
+.case__lights { display: flex; gap: 6px; }
+.case__lights i { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in oklab, var(--ink) 14%, var(--void-lift)); }
+.case__url {
+  flex: 1 1 auto; min-width: 0;
+  display: flex; align-items: center; gap: var(--s-2);
+  max-width: 26rem; margin-inline: auto;
+  padding: 0.38rem 0.8rem;
+  border-radius: 7px;
+  background: var(--surface);
+  border: 1px solid var(--line-soft);
+  color: var(--ink);
+  letter-spacing: 0.01em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* a padlock, drawn: the shackle and the body */
+.case__lock { position: relative; flex: none; width: 8px; height: 6px; margin-top: 4px; border-radius: 1.5px; background: var(--ink-soft); }
+.case__lock::before { content: ''; position: absolute; left: 1.5px; bottom: 5px; width: 5px; height: 5px; border: 1.5px solid var(--ink-soft); border-bottom: 0; border-radius: 3px 3px 0 0; box-sizing: border-box; }
+.case__live {
+  display: inline-flex; align-items: center; gap: 0.45em;
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.case__dot { width: 7px; height: 7px; border-radius: 50%; background: color-mix(in oklab, var(--ink) 25%, transparent); }
+.case__live[data-state="up"] .case__dot { background: var(--signal-hot); box-shadow: 0 0 0 3px color-mix(in oklab, var(--signal-hot) 25%, transparent); }
+.case__live[data-state="down"] .case__dot { background: var(--ink-soft); }
+.case__live[data-state="checking"] .case__dot { animation: case-check 1s ease-in-out infinite alternate; }
+@keyframes case-check { from { opacity: 0.35; } to { opacity: 1; } }
+.case__visit {
+  flex: none;
+  padding: 0.42rem 0.9rem;
+  border-radius: 999px;
+  background: var(--ink); color: var(--void-lift);
+  font-weight: 600; letter-spacing: 0.02em;
+  text-decoration: none;
+  transition: transform 120ms var(--ease), background-color 200ms ease;
+}
+.case__visit:active { transform: scale(0.97); }
+.case__shot { display: block; aspect-ratio: 1680 / 1080; background: var(--void); }
+.case__shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+@media (hover: hover) and (pointer: fine) {
+  .case__window:hover .case__bar { background: color-mix(in oklab, var(--tint) 7%, var(--void-lift)); }
+  .case__visit:hover { background: color-mix(in oklab, var(--tint) 55%, var(--ink)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .case__live[data-state="checking"] .case__dot { animation: none; opacity: 0.6; }
+}
+
+/* ---- the notes beside the client's photographs ---- */
+.case__more {
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
   gap: clamp(2rem, 5vw, 5rem);
-  align-items: start;
-  margin-bottom: var(--s-8);
+  align-items: center;
 }
 .case__copy { display: grid; gap: var(--s-4); }
-.case__copy p { max-width: 58ch; color: color-mix(in oklab, var(--ink) 74%, var(--void)); }
+.case__copy p { max-width: 44ch; color: color-mix(in oklab, var(--ink) 74%, var(--void)); }
 .story {
   font-family: var(--font-display);
   font-size: var(--t-lg);
@@ -755,9 +792,14 @@ html { scroll-padding-top: 5rem; }
   color: var(--ink) !important;
 }
 
-/* the client's photographs: React Bits' AccordionGallery */
-.case__gallery { min-height: 440px; }
-.case__gallery .ag-panel { background: var(--ink); }
+/* the client's photographs: React Bits' Stack */
+.case__gallery { min-height: 20rem; padding-top: var(--s-2); }
+@media (max-width: 520px) {
+  /* the bar keeps what it says and drops what it only looks like */
+  .case__lights { display: none; }
+  .case__bar { gap: var(--s-3); padding-left: 0.6rem; }
+  .case__url { margin-inline: 0; padding-inline: 0.6rem; }
+}
 
 figcaption {
   margin-top: var(--s-3);
@@ -1203,7 +1245,7 @@ figcaption {
    Narrow frames. Art-directed, not shrunk.
    ============================================================= */
 @media (max-width: 900px) {
-  .case__body, .build, .me { grid-template-columns: 1fr; }
+  .case__intro, .case__more, .build, .me { grid-template-columns: 1fr; }
   .build__head { position: static; }
   .build__list li { grid-template-columns: 1fr; gap: var(--s-2); }
   .spec, .research__spec { grid-template-columns: 1fr; }
@@ -1212,7 +1254,6 @@ figcaption {
   .net__arrow { grid-auto-flow: column; justify-content: center; gap: var(--s-2); }
   .net__arrow::before { content: '\2193'; }
 
-  .case__gallery { min-height: 34rem; }
 
   .also__row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: var(--s-4); }
   .also__host { grid-column: 2; }

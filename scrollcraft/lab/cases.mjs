@@ -1,33 +1,48 @@
-// The case studies: the site at rest in its frame, opened full bleed, and
-// the photographs, into lab/shots/case-*.png.
+// The case studies: the head, the site in its window with a live address
+// bar, and the photographs as a pile you deal through (by Next, by a tap and
+// by a flick). Shots into lab/shots/case-*.png; add --mobile for a phone.
 import { chromium } from 'playwright-core';
-const url = process.argv[2] || 'http://localhost:4500';
-const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const url = process.argv.find((a) => /^https?:/.test(a)) || 'http://localhost:4500';
 const mobile = process.argv.includes('--mobile');
 const sfx = mobile ? '-m' : '';
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const p = await b.newPage(mobile
   ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }
   : { viewport: { width: 1440, height: 900 } });
-const vh = mobile ? 844 : 900;
 const errors = [];
 p.on('pageerror', (e) => errors.push(String(e)));
 await p.goto(url, { waitUntil: 'load' });
 await p.waitForTimeout(1500);
-const top = await p.$eval('#work .scroll-expand__track', (e) => e.getBoundingClientRect().top + scrollY);
-for (const [n, k] of [['rest', 0], ['half', 0.5], ['open', 1.15]]) {
-  await p.evaluate((y) => scrollTo({ top: y, behavior: 'instant' }), top + k * vh);
-  await p.waitForTimeout(900);
-  await p.screenshot({ path: `scrollcraft/lab/shots/case-${n}${sfx}.png` });
-  // what sits outside the screen at this stage: the title, the frame, the story panel
-  console.log(n, JSON.stringify(await p.evaluate(() => {
-    const box = (sel) => { const e = document.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return [Math.round(r.left), Math.round(r.top), Math.round(r.width), Math.round(r.height)]; };
-    return { vw: innerWidth, sw: document.documentElement.scrollWidth, title: box('#work .scroll-expand__title'), frame: box('#work .scroll-expand__frame'), overlay: box('#work .scroll-expand__overlay') };
-  })));
+
+for (const id of ['work', 'amg']) {
+  const sec = `#${id}`;
+  await p.evaluate((s) => document.querySelector(s).scrollIntoView({ behavior: 'instant' }), sec);
+  await p.waitForTimeout(1500);
+  await p.screenshot({ path: `scrollcraft/lab/shots/case-${id}-head${sfx}.png` });
+  await p.evaluate((s) => document.querySelector(`${s} .case__window`).scrollIntoView({ behavior: 'instant', block: 'center' }), sec);
+  await p.waitForTimeout(1500);
+  await p.screenshot({ path: `scrollcraft/lab/shots/case-${id}-window${sfx}.png` });
+  const bar = await p.$eval(`${sec} .case__bar`, (e) => e.innerText.replace(/\s+/g, ' ').trim());
+  await p.evaluate((s) => document.querySelector(`${s} .case__gallery`).scrollIntoView({ behavior: 'instant', block: 'center' }), sec);
+  await p.waitForSelector(`${sec} .prints__card`, { timeout: 10000 });
+  await p.waitForTimeout(1200);
+  await p.screenshot({ path: `scrollcraft/lab/shots/case-${id}-photos${sfx}.png` });
+  const cap = () => p.$eval(`${sec} .prints__cap`, (e) => e.textContent);
+  const caps = [await cap()];
+  await p.click(`${sec} .prints__next`); await p.waitForTimeout(700); caps.push(await cap());
+  const top = await p.locator(`${sec} .prints__card:not([aria-hidden])`).boundingBox();
+  if (mobile) await p.locator(`${sec} .prints__card:not([aria-hidden])`).tap();
+  else await p.mouse.click(top.x + top.width / 2, top.y + top.height / 2);
+  await p.waitForTimeout(700); caps.push(await cap());
+  // a flick: short and fast
+  await p.mouse.move(top.x + top.width / 2, top.y + top.height / 2);
+  await p.mouse.down();
+  await p.mouse.move(top.x + top.width / 2 + 60, top.y + top.height / 2, { steps: 2 });
+  await p.mouse.move(top.x + top.width / 2 + 180, top.y + top.height / 2 - 20, { steps: 2 });
+  await p.mouse.up();
+  await p.waitForTimeout(900); caps.push(await cap());
+  await p.screenshot({ path: `scrollcraft/lab/shots/case-${id}-photos-dealt${sfx}.png` });
+  console.log(`${id}: bar "${bar}"\n  captions: ${caps.join(' -> ')}`);
 }
-await p.evaluate(() => document.querySelector('#work .case__gallery').scrollIntoView({ behavior: 'instant', block: 'center' }));
-await p.waitForTimeout(1500);
-const g = await p.$('#work .ag-panel:nth-child(3)');
-if (g) { await (mobile ? g.tap() : g.hover()); await p.waitForTimeout(900); }
-await p.screenshot({ path: `scrollcraft/lab/shots/case-photos${sfx}.png` });
-console.log('panels:', await p.$$eval('#work .ag-panel', (a) => a.length), '| errors:', errors.length ? errors : 'none');
+console.log('page width:', await p.evaluate(() => document.documentElement.scrollWidth), '| errors:', errors.length ? errors : 'none');
 await b.close();
