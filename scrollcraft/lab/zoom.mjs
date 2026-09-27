@@ -34,17 +34,17 @@ const handover = await p.evaluate(() => {
 console.log('hand-over: still at', handover.still.join(','), '| top bar opacity', handover.top);
 await p.waitForTimeout(700);
 await shot('3-settled');
-await p.waitForFunction(() => document.querySelector('.zoom__app[data-loaded]'), null, { timeout: 20000 }).catch(() => {});
+await p.waitForFunction(() => document.querySelector('.zoom[data-loaded]'), null, { timeout: 20000 }).catch(() => {});
 await p.waitForTimeout(600);
 await shot('4-live');
 console.log('live:', await p.evaluate(() => ({
   src: document.querySelector('.zoom__app').getAttribute('src'),
-  loaded: !!document.querySelector('.zoom__app[data-loaded]'),
+  loaded: !!document.querySelector('.zoom[data-loaded]'),
   bar: document.querySelector('.zoom__bar').innerText.replace(/\s+/g, ' '),
   hash: location.hash,
   scroll: document.documentElement.scrollTop,
 })));
-await p.click('.zoom__back');
+await p.click('.zoom__back');           // a real click: nothing may sit over it
 await p.waitForTimeout(350);
 await shot('5-leaving');
 await p.waitForFunction(() => !document.querySelector('dialog[data-win]').open, null, { timeout: 5000 });
