@@ -1,9 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "framework": null,
-  "buildCommand": "",
-  "outputDirectory": ".",
+  "framework": "vite",
+  "buildCommand": "vite build",
+  "outputDirectory": "dist",
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",

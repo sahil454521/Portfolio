@@ -45,34 +45,54 @@ says how fast it answered. Cached at the edge for a minute.
 
 ## Running it
 
-Static site. No build step, no bundler, no framework.
+A React front end over a Node and Express API, built with Vite.
 
 ```bash
-npx serve . -l 4500
+npm install
+npm run dev        # the site and the API together, http://localhost:4500
+npm run build      # production build into dist/
+npm run preview    # serve the production build, API included
 ```
+
+On Vercel the front end is the Vite build and the API is one serverless
+function (`api/index.js`) running the same Express app.
+
+### The API
+
+| Route | What it does |
+|---|---|
+| `GET /api/status` | Fetches every live project from the server and times it; cached at the edge for a minute |
+| `POST /api/contact` | Sends the email form. Needs `RESEND_API_KEY` set on Vercel; without it the page opens the visitor's own email app with the message written |
+| `GET /api/health` | Whether the API is up, and whether mail is configured |
+
+To turn on real sending: create a free key at resend.com (sign up with the
+address the mail should reach), then in Vercel add the environment variable
+`RESEND_API_KEY`. Optional: `CONTACT_TO` (defaults to my address) and
+`CONTACT_FROM` (defaults to Resend's test sender).
 
 ## What is in here
 
 | Path | What it is |
 |---|---|
-| `index.html` | The page |
-| `cv.html` | The résumé as plain, printable HTML: the page's second view |
-| `assets/Sahil_Pathak_Resume.pdf` | Printed from `cv.html` by `scrollcraft/lab/cv-pdf.mjs`; re-run it after editing the résumé |
-| `site.css` | The design system: one palette, two faces, the room |
-| `site.js` | Section tracking in the top bar, the closing clip, live status, the pointer effects, the research diagram, copy-to-clipboard |
-| `desk.js` | The desk: the scene, hover frames, camera flights, the app and compose windows |
-| `api/status.js` | Checks every live site from the server; the page lights up with the answer |
-| `scrollcraft.css` / `scrollcraft.js` | Scroll engine. Not edited, themed by tokens |
-| `assets/work/` | Stills of both client sites, captured from production |
-| `assets/amg`, `assets/desi` | Real client photography |
-| `scrollcraft/BRIEF.md` | Why the page is shaped this way |
-| `scrollcraft/lab/` | Recording, verification and audit scripts |
-| `legacy/` | The previous React and Vite portfolio, kept intact |
+| `index.html`, `src/main.jsx`, `src/App.jsx` | The React app |
+| `src/data.js` | Every object, link and project the page names, in one place |
+| `src/desk/scene.js` | The Three.js desk, driven by React |
+| `src/lib/windows.jsx` | Every action, and the app, status and email windows |
+| `src/lib/status.jsx` | Live status from the API, shared by the page |
+| `src/lib/motion.js` | Pointer effects (Variable Proximity, Tilted Card, Magnet), the video scrub, section tracking |
+| `src/components/` | The sections; `reactbits/` holds DriftWall and FolderFloat from React Bits |
+| `src/styles/` | The design system, and the scroll engine's styles |
+| `server/` | The Express app and the status checker |
+| `api/index.js` | The Vercel function that runs the Express app |
+| `cv.html` | The résumé as plain, printable HTML |
+| `public/assets/` | Photos, site stills, fonts, the résumé PDF |
+| `scrollcraft/lab/` | Browser tests and capture scripts |
+| `legacy/` | The first React portfolio, kept intact |
 
 ## Verifying a change
 
 ```bash
-npx serve . -l 4500
+npm run preview
 node scrollcraft/lab/sheet.mjs http://localhost:4500
 node scrollcraft/lab/sheet.mjs http://localhost:4500 --mobile
 node scrollcraft/lab/a11y.mjs http://localhost:4500

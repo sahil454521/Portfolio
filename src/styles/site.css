@@ -24,7 +24,7 @@
   font-weight: 300 800;
   font-stretch: 75% 100%;
   font-display: swap;
-  src: url("assets/fonts/bricolage-latin.woff2") format("woff2");
+  src: url("/assets/fonts/bricolage-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 @font-face {
@@ -33,7 +33,7 @@
   font-weight: 100 900;
   font-stretch: 62% 125%;
   font-display: swap;
-  src: url("assets/fonts/archivo-latin.woff2") format("woff2");
+  src: url("/assets/fonts/archivo-latin.woff2") format("woff2");
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
@@ -478,6 +478,22 @@ html { scroll-padding-top: 5rem; }
 }
 .win__view[data-loaded]::after { opacity: 0; }
 
+/* ---- what the two sites carry: React Bits' DriftWall ---------- */
+.carry { padding: var(--pad) 0 calc(var(--pad) * 0.6); }
+.carry__head {
+  display: grid; gap: var(--s-3);
+  max-width: var(--maxw);
+  margin: 0 auto var(--s-6);
+  padding: 0 var(--gutter);
+}
+.carry__head h2 { font-size: var(--t-3xl); font-variation-settings: "wdth" 92, "opsz" 96; letter-spacing: -0.036em; }
+.carry__head p { max-width: 52ch; color: var(--ink-soft); }
+.carry__wall { height: clamp(24rem, 62vh, 40rem); }
+
+/* ---- the stack: React Bits' FolderFloat --------------------------- */
+/* room above the folder for the cloud of tools it opens into */
+.stack { padding-top: 15rem; margin-top: var(--s-4); display: flex; justify-content: center; }
+
 /* ---- the status board ------------------------------------------ */
 .win--board { width: min(520px, 94vw); height: fit-content; max-height: 90svh; }
 .win--board[open] { display: block; overflow: auto; }
@@ -529,6 +545,9 @@ html { scroll-padding-top: 5rem; }
 .field__err { font-style: normal; color: #A3321F; font-size: var(--t-sm); }
 .compose__act { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-3); }
 .compose__note { font-size: var(--t-xs); color: var(--ink-soft); }
+.compose__sent { padding-block: var(--s-7); }
+/* the field only bots fill in */
+.compose__trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
 
 /* =============================================================
    CASES
