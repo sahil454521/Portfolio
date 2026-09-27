@@ -456,7 +456,66 @@ html { scroll-padding-top: 5rem; }
   max-width: 34rem; justify-content: flex-end;
 }
 
-/* ---- the window the live apps open in ------------------------ */
+/* ---- a live app, entered through its screen on the desk ------------ */
+.zoom {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%; max-width: none; max-height: none;
+  margin: 0; padding: 0; border: 0;
+  background: transparent;
+  overflow: hidden;
+}
+.zoom::backdrop { background: transparent; }
+/* its still: placed over the screen by script, the whole view otherwise */
+.zoom__still {
+  position: absolute; inset: 0;
+  background: var(--void-lift) no-repeat center top / cover;
+}
+.zoom__app {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  border: 0;
+  background: #fff;
+  opacity: 0;
+  transition: opacity 320ms var(--ease);
+}
+.zoom__app[data-loaded] { opacity: 1; }
+.zoom__bar {
+  position: absolute; left: 50%;
+  bottom: max(var(--s-4), env(safe-area-inset-bottom));
+  translate: -50% 0;
+  display: flex; align-items: center; gap: var(--s-1);
+  max-width: calc(100% - 2 * var(--s-4));
+  padding: var(--s-1);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--ink) 88%, transparent);
+  backdrop-filter: blur(12px);
+  color: var(--void-lift);
+  font-size: var(--t-xs);
+  white-space: nowrap;
+  box-shadow: 0 14px 40px -14px rgb(14 21 25 / 0.55);
+  animation: zoom-bar 280ms var(--ease) 160ms both;
+}
+@keyframes zoom-bar { from { opacity: 0; translate: -50% 8px; } }
+.zoom__back {
+  padding: var(--s-2) var(--s-4);
+  border: 0; border-radius: 999px;
+  background: var(--void-lift); color: var(--ink);
+  font: inherit; font-weight: 600;
+  cursor: pointer;
+  transition: transform 120ms var(--ease);
+}
+.zoom__back:active { transform: scale(0.97); }
+.zoom__name { display: flex; align-items: center; gap: var(--s-2); margin: 0; padding: 0 var(--s-2) 0 var(--s-3); min-width: 0; }
+.zoom__name b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.zoom__name span { color: #9AA7AF; }
+.zoom__out { padding: var(--s-2) var(--s-3); color: var(--void-lift); text-decoration: none; }
+@media (max-width: 480px) { .zoom__name { display: none; } }
+@media (prefers-reduced-motion: reduce) { .zoom__bar { animation-name: none; } }
+/* while the camera goes into a screen, the bar and the view switch step aside */
+.top, .mode { transition: opacity 300ms var(--ease); }
+[data-zoomed] .top, [data-zoomed] .mode { opacity: 0; pointer-events: none; }
+
+/* ---- the windows the email form and the status board open in ------- */
 .win {
   width: min(1280px, 92vw);
   height: min(820px, 86svh);
@@ -493,33 +552,6 @@ html { scroll-padding-top: 5rem; }
   transition: transform 120ms var(--ease), border-color var(--fast) var(--ease);
 }
 .win__close:active { transform: scale(0.97); }
-.win__view {
-  position: relative;
-  min-height: 0;
-  background: var(--void-lift) no-repeat center top / cover;
-}
-.win__view iframe {
-  display: block;
-  width: 100%; height: 100%;
-  border: 0;
-  background: #fff;
-  opacity: 0;
-  transition: opacity 250ms var(--ease);
-}
-.win__view[data-loaded] iframe { opacity: 1; }
-/* until the live app answers, say so over its still */
-.win__view::after {
-  content: "Connecting to the live app";
-  position: absolute; left: var(--s-4); bottom: var(--s-4);
-  padding: var(--s-2) var(--s-4);
-  border-radius: 999px;
-  background: var(--ink);
-  color: var(--void-lift);
-  font-size: var(--t-xs);
-  letter-spacing: 0.04em;
-  transition: opacity 200ms var(--ease);
-}
-.win__view[data-loaded]::after { opacity: 0; }
 
 /* ---- what the two sites carry: React Bits' DriftWall ---------- */
 .carry { padding: var(--pad) 0 calc(var(--pad) * 0.6); }
@@ -532,6 +564,41 @@ html { scroll-padding-top: 5rem; }
 .carry__head h2 { font-size: var(--t-3xl); font-variation-settings: "wdth" 92, "opsz" 96; letter-spacing: -0.036em; }
 .carry__head p { max-width: 52ch; color: var(--ink-soft); }
 .carry__wall { height: clamp(24rem, 62vh, 40rem); }
+
+/* ---- runs on: React Bits' LogoLoop, right under the desk ------------ */
+.band {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center;
+  gap: var(--s-6);
+  padding: var(--s-5) 0 var(--s-5) calc(var(--rail-w) + var(--gutter));
+  border-block: 1px solid var(--line-soft);
+}
+.band__label {
+  font-family: inherit; font-size: var(--t-xs); font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-soft); white-space: nowrap;
+}
+.band__loop { min-height: 1.75rem; min-width: 0; }
+.band .logoloop__list { margin: 0; padding: 0; list-style: none; }   /* React Bits assumes a reset */
+.band__tool {
+  display: inline-flex; align-items: center; gap: 0.55em;
+  color: var(--ink); text-decoration: none;
+  font-size: var(--t-sm); white-space: nowrap;
+  transition: color var(--fast) var(--ease);
+}
+.band__tool svg { width: 1.3em; height: 1.3em; flex: none; }
+@media (max-width: 900px) {
+  .band { grid-template-columns: minmax(0, 1fr); gap: var(--s-3); padding-left: 0; }
+  .band__label { padding-left: var(--gutter); }
+}
+
+/* ---- Also live: React Bits' SpotlightCard on each row ---------------- */
+.also .card-spotlight { border: 0; border-radius: 0; background: none; padding: 0; overflow: visible; }
+.also__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s-4); }
+.also__item > * { position: relative; }      /* above the light */
+/* the light and the glare answer a pointer; a tap would leave them stuck */
+@media not all and (hover: hover) and (pointer: fine) {
+  .card-spotlight::before, .glare-hover::before { display: none; }
+}
 
 /* ---- the stack: React Bits' FolderFloat --------------------------- */
 /* room above the folder for the cloud of tools it opens into */
@@ -730,13 +797,7 @@ figcaption {
 .also__head p { max-width: 52ch; color: var(--ink-soft); }
 
 .also__list { list-style: none; padding: 0; }
-.also__list li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: var(--s-4);
-  border-bottom: 1px solid var(--line-soft);
-}
+.also__list li { border-bottom: 1px solid var(--line-soft); }
 .also__run {
   padding: var(--s-2) var(--s-4);
   border-radius: 999px;
@@ -1166,7 +1227,8 @@ figcaption {
   .desk__stage[data-fallback] { display: none; }
   .desk__stage[data-fallback] ~ .desk__menu { position: static; }
 
-  .also__list li { grid-template-columns: 1fr; gap: 0; padding-bottom: var(--s-4); }
+  .also__list li { padding-bottom: var(--s-4); }
+  .also__item { grid-template-columns: 1fr; gap: 0; }
   .also__run { justify-self: start; margin-left: calc(6.5rem + var(--s-4) + var(--s-2)); }
 
   .win { width: 100vw; height: 100svh; max-width: none; max-height: none; border-radius: 0; border: 0; }
@@ -1208,7 +1270,7 @@ figcaption {
     transform: translateY(-4px);
     box-shadow: 0 2px 6px rgb(14 21 25 / 0.06), 0 52px 100px -52px rgb(14 21 25 / 0.55);
   }
-  .also__row:hover { background: color-mix(in oklab, var(--ink) 3.5%, transparent); }
+  .band__tool:hover { color: var(--signal); }
   .also__row:hover strong { color: var(--signal); }
   .also__row:hover .also__host span { transform: translate(3px, -3px); }
   .end__cta:hover { transform: translateY(-2px); box-shadow: 0 24px 48px -18px color-mix(in oklab, var(--signal-hot) 85%, transparent); }

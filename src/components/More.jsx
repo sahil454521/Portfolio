@@ -5,6 +5,9 @@ import { ALSO, EMAIL, GITHUB, LINKEDIN, STACK, THINGS } from '../data.js';
 import { useMagnet, useNearView, useScrub } from '../lib/motion.js';
 import { useWindows } from '../lib/windows.jsx';
 import ThingLink from './ThingLink.jsx';
+import LogoLoop from './reactbits/LogoLoop.jsx';
+import SpotlightCard from './reactbits/SpotlightCard.jsx';
+import { SiFastapi, SiHuggingface, SiMongodb, SiNextdotjs, SiNodedotjs, SiPytorch, SiRazorpay, SiReact, SiScikitlearn, SiThreedotjs } from 'react-icons/si';
 
 // React Bits' FolderFloat carries matter-js for its weightless pills, so it
 // arrives as its own chunk rather than with the first paint.
@@ -42,6 +45,40 @@ function Badge() {
   );
 }
 
+// Right under the desk, what it all runs on: React Bits' LogoLoop, each
+// tool linking to the place on this page where it is running. It pauses
+// under the pointer, and exists only while it is near the screen, since it
+// moves every frame.
+const ICONS = {
+  PyTorch: SiPytorch, React: SiReact, 'Node and Express': SiNodedotjs, FastAPI: SiFastapi, MongoDB: SiMongodb,
+  'scikit-learn': SiScikitlearn, Razorpay: SiRazorpay, 'Three.js': SiThreedotjs, 'Hugging Face': SiHuggingface, 'Next.js': SiNextdotjs,
+};
+export function RunsOn() {
+  const box = useRef(null);
+  const near = useNearView(box);
+  return (
+    <section className="band" ref={box} aria-labelledby="band-h">
+      <h2 className="band__label" id="band-h">Runs on</h2>
+      <div className="band__loop">
+        {near && (
+          <LogoLoop
+            logos={STACK} speed={36} gap={44} logoHeight={16} pauseOnHover fadeOut fadeOutColor="#EAEDEF" ariaLabel="Tools, each linking to where it runs"
+            // the loop repeats the row to fill the width; only the first copy is reachable by keyboard
+            renderItem={({ label, value }, key) => {
+              const Icon = ICONS[label];
+              return (
+                <a className="band__tool" href={value} tabIndex={String(key).startsWith('0-') ? undefined : -1}>
+                  {Icon && <Icon aria-hidden="true" />}{label}
+                </a>
+              );
+            }}
+          />
+        )}
+      </div>
+    </section>
+  );
+}
+
 export function AlsoLive() {
   return (
     <section className="also" id="also" aria-labelledby="also-h">
@@ -54,12 +91,15 @@ export function AlsoLive() {
           const t = THINGS[id];
           return (
             <li key={id}>
-              <a className="also__row" href={t.app} target="_blank" rel="noopener">
-                <img src={t.still} alt="" width="1680" height="1080" loading="lazy" />
-                <span className="also__text"><strong>{name}</strong><span>{desc}</span></span>
-                <span className="also__host">{t.host} <span aria-hidden="true">↗</span></span>
-              </a>
-              <ThingLink id={id} className="also__run">{verb}</ThingLink>
+              {/* React Bits' SpotlightCard: a warm light follows the pointer along the row */}
+              <SpotlightCard className="also__item" spotlightColor="rgba(255, 176, 59, 0.2)">
+                <a className="also__row" href={t.app} target="_blank" rel="noopener">
+                  <img src={t.still} alt="" width="1680" height="1080" loading="lazy" />
+                  <span className="also__text"><strong>{name}</strong><span>{desc}</span></span>
+                  <span className="also__host">{t.host} <span aria-hidden="true">↗</span></span>
+                </a>
+                <ThingLink id={id} className="also__run">{verb}</ThingLink>
+              </SpotlightCard>
             </li>
           );
         })}

@@ -1,4 +1,5 @@
-// The three windows: a live app, the status board, and the email form.
+// What the desk opens: a live app, entered through its screen, and two
+// windows, the status board and the email form.
 import { lazy, Suspense, useState } from 'react';
 import { EMAIL } from '../data.js';
 import { useStatus } from '../lib/status.jsx';
@@ -22,26 +23,33 @@ function useDialogProps(ref) {
   };
 }
 
+// No window: the app is the whole view, reached by flying into its screen
+// on the desk (see lib/windows.jsx). Its still is laid over that screen and
+// the live app fades in over the still; the one control floats at the foot.
 function AppWindow() {
   const { app, setApp, refs, shut } = useWindows();
   const props = useDialogProps(refs.appRef);
   return (
-    <dialog className="win" data-win aria-labelledby="win-name" {...props}>
-      <div className="win__bar">
-        <p className="win__title"><i className="dot dot--live" /> <b id="win-name" data-win-name>{app.name}</b> <span data-win-host>{app.host}</span></p>
-        <a className="win__out" data-win-out href={app.href || '#'} target="_blank" rel="noopener">Open in a new tab <span aria-hidden="true">↗</span></a>
-        <button className="win__close" type="button" data-autofocus onClick={() => shut(refs.appRef.current)}>Close</button>
-      </div>
-      {/* the app's own still covers the wait; the live app fades in over it */}
-      <div className="win__view" data-win-view data-loaded={app.loaded ? '' : undefined}
-           style={{ backgroundImage: app.still ? `url("${app.still}")` : undefined }}>
-        <iframe
-          title={app.name ? `${app.name}, running live` : 'Live app'}
-          src={app.src || 'about:blank'}
-          allow="clipboard-write; fullscreen; autoplay"
-          referrerPolicy="strict-origin-when-cross-origin"
-          onLoad={(e) => { if (e.currentTarget.getAttribute('src') !== 'about:blank') setApp((a) => ({ ...a, loaded: true })); }}
-        />
+    <dialog className="zoom" data-win aria-labelledby="win-name" {...props}>
+      <div className="zoom__still" data-win-still style={{ backgroundImage: app.still ? `url("${app.still}")` : undefined }} />
+      <iframe
+        className="zoom__app"
+        data-loaded={app.loaded ? '' : undefined}
+        title={app.name ? `${app.name}, running live` : 'Live app'}
+        src={app.src || 'about:blank'}
+        allow="clipboard-write; fullscreen; autoplay"
+        referrerPolicy="strict-origin-when-cross-origin"
+        onLoad={(e) => { if (e.currentTarget.getAttribute('src') !== 'about:blank') setApp((a) => ({ ...a, loaded: true })); }}
+      />
+      <div className="zoom__bar">
+        <button className="zoom__back" type="button" data-autofocus onClick={() => shut(refs.appRef.current)}>
+          <span aria-hidden="true">←</span> Back to the desk
+        </button>
+        <p className="zoom__name">
+          <i className={app.loaded ? 'dot dot--live' : 'dot'} /> <b id="win-name" data-win-name>{app.name}</b>
+          <span role="status">{app.loaded ? 'live' : 'starting'}</span>
+        </p>
+        <a className="zoom__out" data-win-out href={app.href || '#'} target="_blank" rel="noopener">New tab <span aria-hidden="true">↗</span></a>
       </div>
     </dialog>
   );
