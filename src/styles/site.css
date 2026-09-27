@@ -99,7 +99,7 @@ html {
 /* fire click immediately: nothing here double-tap zooms */
 a, button { touch-action: manipulation; }
 /* controls, not content: a long press should not select their label */
-.top a, .go, .end__cta, .also__row, .also__run, .skip, .btn, .mode a, .net__sig, .copy, .desk__menu a, .win__close, .compose__about span {
+.top a, .go, .end__cta, .also__row, .also__run, .skip, .btn, .mode a, .net__sig, .copy, .desk__menu a, .win__close {
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
@@ -507,7 +507,12 @@ html { scroll-padding-top: 5rem; }
   font-size: var(--t-sm);
 }
 .board__list b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.board__list span { color: var(--ink-soft); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.board__mark { display: inline-flex; }
+/* each reading on its own flaps, as a departures board shows a time */
+.board__ms { display: inline-flex; align-items: center; gap: var(--s-1); color: var(--ink-soft); white-space: nowrap; }
+.board__ms small { width: 2ch; font-size: var(--t-xs); }
+.board .split-flap-text { font-family: inherit; font-weight: 600; letter-spacing: 0; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .board__foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--s-3); }
 .board__foot p { font-size: var(--t-xs); color: var(--ink-soft); max-width: 34ch; }
 
@@ -515,20 +520,11 @@ html { scroll-padding-top: 5rem; }
 .win--compose { width: min(560px, 94vw); height: fit-content; max-height: 90svh; }
 .win--compose[open] { display: block; overflow: auto; }
 .compose__body { display: grid; gap: var(--s-4); padding: var(--s-5); }
-.compose__about { display: flex; flex-wrap: wrap; gap: var(--s-2); margin: 0; padding: 0; border: 0; }
-.compose__about legend { width: 100%; margin-bottom: var(--s-2); font-size: var(--t-sm); color: var(--ink-soft); }
-.compose__about label { position: relative; cursor: pointer; }
-.compose__about input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
-.compose__about span {
-  display: inline-flex;
-  padding: var(--s-2) var(--s-4);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  font-size: var(--t-sm);
-  transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
-}
-.compose__about input:checked + span { background: var(--ink); border-color: var(--ink); color: var(--void-lift); }
-.compose__about input:focus-visible + span { outline: 2px solid var(--signal); outline-offset: 2px; }
+/* the chips swell into the choice and nudge their neighbours aside */
+.compose__about { display: grid; gap: var(--s-1); min-height: 4.25rem; font-size: var(--t-sm); color: var(--ink-soft); }
+.compose__about .jelly-radio { justify-self: start; margin-inline: calc(-1 * var(--jr-pad-x)); }
+.compose__about .jelly-radio__skin { box-shadow: inset 0 0 0 1px var(--line); font-family: inherit; }
+.compose__about .jelly-radio__chip:focus-visible .jelly-radio__skin { outline: 2px solid var(--signal); outline-offset: 2px; }
 .field { display: grid; gap: var(--s-2); font-size: var(--t-sm); color: var(--ink-soft); }
 .field input, .field textarea {
   width: 100%;

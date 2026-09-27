@@ -1,9 +1,15 @@
 // The three windows: a live app, the status board, and the email form.
-import { useState } from 'react';
+import { lazy, Suspense, useState } from 'react';
 import { EMAIL } from '../data.js';
 import { useStatus } from '../lib/status.jsx';
 import { useWindows } from '../lib/windows.jsx';
 import { CopyButton } from './More.jsx';
+import SplitFlapText from './reactbits/SplitFlapText.jsx';
+
+// These two need Motion, so they arrive in their own chunk just after the
+// page paints; the windows they sit in are there from the start.
+const StatusMark = lazy(() => import('./reactbits/StatusMark.jsx'));
+const JellyRadio = lazy(() => import('./reactbits/JellyRadio.jsx'));
 
 // Escape and a click on the backdrop both close, with the same animation as
 // the Close button.
@@ -45,6 +51,7 @@ function Board() {
   const { refs, shut } = useWindows();
   const { status, check } = useStatus();
   const [checking, setChecking] = useState(false);
+  const [shown, setShown] = useState(false);
   const props = useDialogProps(refs.boardRef);
   const sites = status && status.sites;
   const again = () => { setChecking(true); check(true).then(() => setChecking(false)); };
@@ -54,7 +61,10 @@ function Board() {
     when = `${up} of ${sites.length} up, checked from the server at ${new Date(status.checked).toLocaleTimeString()}.`;
   }
   return (
-    <dialog className="win win--board" data-live-board aria-labelledby="board-h" {...props}>
+    // Opening the board (focus lands on Close) rolls each reading onto its
+    // flaps; checking again blanks them and rolls the new ones in.
+    <dialog className="win win--board" data-live-board aria-labelledby="board-h" {...props}
+            onFocus={() => setShown(true)} onClose={() => setShown(false)}>
       <div className="win__bar">
         <p className="win__title"><b id="board-h">Every site, checked from the server</b></p>
         <button className="win__close" type="button" data-autofocus onClick={() => shut(refs.boardRef.current)}>Close</button>
@@ -63,9 +73,20 @@ function Board() {
         <ul className="board__list" data-board-list>
           {(sites || []).map((x) => (
             <li key={x.host}>
-              <i className={x.up ? 'dot dot--live' : 'dot'} />
+              <Suspense fallback={<i className={x.up ? 'dot dot--live' : 'dot'} />}>
+                <span aria-hidden="true" className="board__mark">
+                  <StatusMark status={checking ? 'running' : x.up ? 'done' : 'failed'} strike={false} size={18}
+                              color="#566772" doneColor="#9C5A08" errorColor="#566772" />
+                </span>
+              </Suspense>
               <b>{x.host}</b>
-              <span>{x.up ? `answered in ${x.ms} ms` : 'not answering right now'}</span>
+              <span className="board__ms" aria-hidden="true">
+                <SplitFlapText text={!shown || checking ? '    ' : x.up ? String(x.ms).padStart(4) : 'DOWN'} padTo={4}
+                               charset="numeric" flipsPerChar={6} flipDuration={0.07} stagger={0.05}
+                               fontSize={19} gap={2} tileRadius={3} tileColor="#0E1519" textColor="#F4F6F7" />
+                <small>{x.up ? 'ms' : ''}</small>
+              </span>
+              <span className="sr">{checking ? 'checking' : x.up ? `answered in ${x.ms} ms` : 'not answering right now'}</span>
             </li>
           ))}
         </ul>
@@ -137,12 +158,14 @@ function Compose() {
           </div>
         ) : (
           <div className="compose__body">
-            <fieldset className="compose__about">
-              <legend>It is about</legend>
-              {ABOUTS.map((a) => (
-                <label key={a}><input type="radio" name="about" value={a} checked={f.about === a} onChange={set('about')} /> <span>{a}</span></label>
-              ))}
-            </fieldset>
+            <div className="compose__about">
+              <span>It is about</span>
+              <Suspense fallback={null}>
+                <JellyRadio items={ABOUTS} value={f.about} onChange={(about) => setF((v) => ({ ...v, about }))}
+                            ariaLabel="It is about" size="md" radius={999} swell={0.08} barge={3} jelly={0.8}
+                            chipColor="#F4F6F7" activeColor="#0E1519" textColor="#0E1519" activeTextColor="#F4F6F7" />
+              </Suspense>
+            </div>
             <label className="field"><span>Your name</span><input name="name" autoComplete="name" value={f.name} onChange={set("name")} data-autofocus /></label>
             <label className="field"><span>Your email</span>
               <input name="email" type="email" inputMode="email" autoComplete="email" value={f.email} onChange={set('email')}
