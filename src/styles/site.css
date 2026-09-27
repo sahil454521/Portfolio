@@ -465,20 +465,28 @@ html { scroll-padding-top: 5rem; }
   overflow: hidden;
 }
 .zoom::backdrop { background: transparent; }
-/* its still: placed over the screen by script, the whole view otherwise */
+/* its still: placed over the screen by script, the whole view otherwise;
+   cropped the way the desk crops it, so the two are the same picture */
 .zoom__still {
   position: absolute; inset: 0;
-  background: var(--void-lift) no-repeat center top / cover;
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: center top;
+  background: var(--ink);
+  transition: filter 240ms var(--ease) 180ms;
 }
+/* Picture and live app never show at once: laid out at different widths,
+   they double up. The picture dips to dark, then the app comes up out of
+   it, like a screen changing input; leaving runs the other way. */
+.zoom[data-loaded] .zoom__still { filter: brightness(0.06); transition: filter 180ms var(--ease); }
 .zoom__app {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
   border: 0;
-  background: #fff;
+  background: var(--ink);
   opacity: 0;
-  transition: opacity 320ms var(--ease);
+  transition: opacity 180ms var(--ease);
 }
-.zoom__app[data-loaded] { opacity: 1; }
+.zoom[data-loaded] .zoom__app { opacity: 1; transition: opacity 340ms var(--ease) 260ms; }
 .zoom__bar {
   position: absolute; left: 50%;
   bottom: max(var(--s-4), env(safe-area-inset-bottom));
@@ -505,9 +513,8 @@ html { scroll-padding-top: 5rem; }
   transition: transform 120ms var(--ease);
 }
 .zoom__back:active { transform: scale(0.97); }
-.zoom__name { display: flex; align-items: center; gap: var(--s-2); margin: 0; padding: 0 var(--s-2) 0 var(--s-3); min-width: 0; }
-.zoom__name b { font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
-.zoom__name span { color: #9AA7AF; }
+.zoom__load { padding: 0 var(--s-1) 0 var(--s-3); }
+.zoom__name { padding: 0 var(--s-1); font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
 .zoom__out { padding: var(--s-2) var(--s-3); color: var(--void-lift); text-decoration: none; }
 @media (max-width: 480px) { .zoom__name { display: none; } }
 @media (prefers-reduced-motion: reduce) { .zoom__bar { animation-name: none; } }
@@ -553,17 +560,6 @@ html { scroll-padding-top: 5rem; }
 }
 .win__close:active { transform: scale(0.97); }
 
-/* ---- what the two sites carry: React Bits' DriftWall ---------- */
-.carry { padding: var(--pad) 0 calc(var(--pad) * 0.6); }
-.carry__head {
-  display: grid; gap: var(--s-3);
-  max-width: var(--maxw);
-  margin: 0 auto var(--s-6);
-  padding: 0 var(--gutter);
-}
-.carry__head h2 { font-size: var(--t-3xl); font-variation-settings: "wdth" 92, "opsz" 96; letter-spacing: -0.036em; }
-.carry__head p { max-width: 52ch; color: var(--ink-soft); }
-.carry__wall { height: clamp(24rem, 62vh, 40rem); }
 
 /* ---- runs on: React Bits' LogoLoop, right under the desk ------------ */
 .band {
@@ -577,7 +573,7 @@ html { scroll-padding-top: 5rem; }
   letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--ink-soft); white-space: nowrap;
 }
-.band__loop { min-height: 1.75rem; min-width: 0; }
+.band__loop { min-height: 1.75rem; min-width: 0; overflow: hidden; }   /* the loop runs wider than the page */
 .band .logoloop__list { margin: 0; padding: 0; list-style: none; }   /* React Bits assumes a reset */
 .band__tool {
   display: inline-flex; align-items: center; gap: 0.55em;
@@ -595,9 +591,9 @@ html { scroll-padding-top: 5rem; }
 .also .card-spotlight { border: 0; border-radius: 0; background: none; padding: 0; overflow: visible; }
 .also__item { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--s-4); }
 .also__item > * { position: relative; }      /* above the light */
-/* the light and the glare answer a pointer; a tap would leave them stuck */
+/* the light answers a pointer; a tap would leave it stuck */
 @media not all and (hover: hover) and (pointer: fine) {
-  .card-spotlight::before, .glare-hover::before { display: none; }
+  .card-spotlight::before { display: none; }
 }
 
 /* ---- the stack: React Bits' FolderFloat --------------------------- */
@@ -687,18 +683,59 @@ html { scroll-padding-top: 5rem; }
   color: var(--ink-soft);
 }
 
-.case__site { margin-block: 0 var(--s-8); perspective: 1600px; }
-.case__site a {
-  display: block;
-  border-radius: var(--r);
-  overflow: hidden;
-  border: 1px solid var(--line-soft);
-  box-shadow:
-    0 2px 6px rgb(14 21 25 / 0.06),
-    0 40px 90px -52px rgb(14 21 25 / 0.5);
-  transition: transform var(--base) var(--ease), box-shadow var(--base) var(--ease);
+/* ---- the site, opening as you scroll into it: React Bits' ScrollExpand -- */
+/* full bleed, out of the section's padding */
+.case > .case__expand {
+  max-width: none;
+  margin: calc(-1 * var(--pad)) calc(-1 * var(--gutter)) var(--s-8) calc(-1 * (var(--rail-w) + var(--gutter)));
+  width: auto;
 }
-.case__site img { display: block; width: 100%; height: auto; }
+/* the name sits above the resting frame, in ink on the page, and lifts away */
+.case__expand .scroll-expand__title {
+  align-items: flex-start;
+  padding-top: max(5.5rem, 9vh);
+  color: var(--ink);
+  text-shadow: none;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-variation-settings: "wdth" 92, "opsz" 96;
+  letter-spacing: -0.036em;
+}
+.case__expand .scroll-expand__hint { color: var(--ink-soft); font-size: var(--t-xs); letter-spacing: 0.08em; text-transform: uppercase; }
+.case__expand .scroll-expand__media { object-position: center top; }
+.case__expand .scroll-expand__overlay { align-items: flex-start; justify-content: flex-end; text-align: left; padding: 0 0 max(5rem, 9vh) max(var(--gutter), 5vw); }
+/* the story on its own dark panel: the capture under it is a busy page */
+.case__over {
+  display: grid; justify-items: start; gap: var(--s-3);
+  max-width: min(34rem, calc(100vw - 2 * var(--gutter)));
+  padding: var(--s-5) var(--s-6);
+  border-radius: var(--r);
+  background: color-mix(in oklab, var(--ink) 88%, transparent);
+  backdrop-filter: blur(10px);
+  color: var(--void-lift);
+}
+.case__over-kind { font-size: var(--t-xs); letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.8; }
+.case__over-story {
+  max-width: 30ch;
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  line-height: 1.18;
+  letter-spacing: -0.024em;
+  font-variation-settings: "wdth" 92, "opsz" 48;
+  text-wrap: pretty;
+}
+.case__over-go {
+  margin-top: var(--s-2);
+  padding: var(--s-3) var(--s-5);
+  border-radius: 999px;
+  background: var(--void-lift); color: var(--ink);
+  font-size: var(--t-sm); font-weight: 600;
+  text-decoration: none;
+  transition: transform 120ms var(--ease);
+}
+.case__over-go:active { transform: scale(0.97); }
+/* the photographs stack on a phone, where one panel opens at a time */
+@media (max-width: 520px) { .case__gallery .accordion-gallery { height: 34rem !important; } }
 
 .case__body {
   display: grid;
@@ -718,27 +755,9 @@ html { scroll-padding-top: 5rem; }
   color: var(--ink) !important;
 }
 
-/* one large, two beside it: not three equal tiles */
-.case__photos {
-  display: grid;
-  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
-  grid-template-rows: repeat(2, clamp(10rem, 17vw, 16rem));
-  gap: clamp(0.75rem, 1.6vw, 1.25rem);
-}
-.case__photos figure {
-  margin: 0;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
-  min-height: 0;
-}
-.case__photos figure:first-child { grid-row: span 2; }
-.case__photos img {
-  display: block;
-  width: 100%; height: 100%;
-  min-height: 0;
-  object-fit: cover;
-  border-radius: var(--r);
-}
+/* the client's photographs: React Bits' AccordionGallery */
+.case__gallery { min-height: 440px; }
+.case__gallery .ag-panel { background: var(--ink); }
 
 figcaption {
   margin-top: var(--s-3);
@@ -1193,9 +1212,7 @@ figcaption {
   .net__arrow { grid-auto-flow: column; justify-content: center; gap: var(--s-2); }
   .net__arrow::before { content: '\2193'; }
 
-  .case__photos { grid-template-columns: 1fr 1fr; grid-template-rows: none; }
-  .case__photos figure:first-child { grid-row: auto; grid-column: span 2; }
-  .case__photos img { height: auto; aspect-ratio: 4 / 3; }
+  .case__gallery { min-height: 34rem; }
 
   .also__row { grid-template-columns: 6.5rem minmax(0, 1fr); gap: var(--s-4); }
   .also__host { grid-column: 2; }
@@ -1241,7 +1258,7 @@ figcaption {
 @media (prefers-reduced-motion: reduce) {
   /* The desk stays and still opens everything. What goes is travel: the
      camera cuts instead of flying and windows fade instead of growing. */
-  .go span, .end__cta, .case__site a, .also__host span { transition: none; }
+  .go span, .end__cta, .also__host span { transition: none; }
   .desk__ticker p { animation: none; }
 }
 
@@ -1266,10 +1283,6 @@ figcaption {
   .mode a:not([aria-current]):hover { color: var(--ink); }
   .net__sig:hover { border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
   .copy:hover { color: var(--ink); border-color: color-mix(in oklab, var(--ink) 38%, transparent); }
-  .case__site a:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 2px 6px rgb(14 21 25 / 0.06), 0 52px 100px -52px rgb(14 21 25 / 0.55);
-  }
   .band__tool:hover { color: var(--signal); }
   .also__row:hover strong { color: var(--signal); }
   .also__row:hover .also__host span { transform: translate(3px, -3px); }

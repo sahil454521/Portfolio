@@ -24,6 +24,7 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 const lerp = (a, b, t) => a + (b - a) * t;
 const inOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2);
 const out = (t) => 1 - (1 - t) ** 4;     // the arrival: fast start, long settle
+const sine = (t) => (1 - Math.cos(Math.PI * t)) / 2;   // into and out of a screen: moves at once, lands softly
 // A CSS cubic-bezier as a function of time, solved by bisection (x(t) is
 // monotonic, so this never misses), so flights use the page's own curves.
 function bezier(x1, y1, x2, y2) {
@@ -62,7 +63,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   gl.setClearAlpha(0);
   gl.outputColorSpace = THREE.SRGBColorSpace;
   gl.toneMapping = THREE.ACESFilmicToneMapping;
-  gl.toneMappingExposure = 1.0;
+  gl.toneMappingExposure = 0.86;       // screens are exempt (toneMapped: false), so they stay true
   gl.shadowMap.enabled = true;
   gl.shadowMap.type = THREE.PCFSoftShadowMap;
   // Nothing on the desk moves during a flight, so the shadows are drawn
@@ -76,8 +77,30 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   const world = new THREE.Group();
   s3.add(world);
 
-  s3.add(new THREE.HemisphereLight(0xffffff, 0xc9d2d8, 1.9));
-  const sun = new THREE.DirectionalLight(0xfff4e6, 2.6);
+  // A small studio, blurred once into an environment map: a pale room, a
+  // softbox overhead, a warm window on the left and a cool fill on the right.
+  // It is what gives metal, glass and lacquer something to reflect, so the
+  // desk reads as made of things rather than of one grey clay.
+  {
+    const room = new THREE.Scene();
+    const cube = new THREE.BoxGeometry(1, 1, 1);
+    const walls = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color: 0xdfe4e8, side: THREE.BackSide }));
+    walls.scale.setScalar(24);
+    room.add(walls);
+    const panel = (hex, k, x, y, z, sx, sy, sz) => {
+      const m = new THREE.Mesh(cube, new THREE.MeshBasicMaterial({ color: new THREE.Color(hex).multiplyScalar(k) }));
+      m.position.set(x, y, z); m.scale.set(sx, sy, sz);
+      room.add(m);
+    };
+    panel(0xffffff, 5, 0, 10, 1, 9, 0.1, 6);
+    panel(0xfff0d8, 3.5, -11, 4, 4, 0.1, 5, 7);
+    panel(0xe4eeff, 2, 10, 3, -3, 0.1, 4, 6);
+    const pm = new THREE.PMREMGenerator(gl);
+    s3.environment = pm.fromScene(room, 0.04).texture;
+    pm.dispose();
+  }
+  s3.add(new THREE.HemisphereLight(0xf4f8fb, 0xb8a78f, 0.7));
+  const sun = new THREE.DirectionalLight(0xfff2e2, 2.3);
   sun.position.set(-3.5, 7, 5);
   sun.castShadow = true;
   sun.shadow.mapSize.set(2048, 2048);
@@ -90,17 +113,50 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   s3.add(rim);
 
   // The floor only catches shadow, so the desk stands on the page itself.
-  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ opacity: 0.13 }));
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 40), new THREE.ShadowMaterial({ color: 0x1c2a33, opacity: 0.16 }));
   floor.rotation.x = -Math.PI / 2;
   floor.receiveShadow = true;
   world.add(floor);
 
-  /* ---- materials: clay, ink, one accent ----------------------- */
-  const clay = new THREE.MeshStandardMaterial({ color: 0xf1f3f4, roughness: 0.86, metalness: 0 });
-  const clayDim = new THREE.MeshStandardMaterial({ color: 0xdde2e5, roughness: 0.9, metalness: 0 });
-  const inkM = new THREE.MeshStandardMaterial({ color: 0x1b2227, roughness: 0.5, metalness: 0.08 });
-  const hotM = new THREE.MeshStandardMaterial({ color: 0xffb03b, emissive: 0xffb03b, emissiveIntensity: 0.35, roughness: 0.45 });
+  /* ---- materials: what each thing is made of, and one accent ------ */
+  // Paper is white; the desk is birch on steel legs; the machines are
+  // aluminium, the old terminal is putty plastic and the arcade is steel
+  // blue. The palette is the page's own: steel, ink, amber.
   const aniso = gl.capabilities.getMaxAnisotropy();
+  const clay = new THREE.MeshStandardMaterial({ color: 0xf4f5f5, roughness: 0.8, metalness: 0 });
+  const clayDim = new THREE.MeshStandardMaterial({ color: 0xdde2e5, roughness: 0.9, metalness: 0 });
+  const inkM = new THREE.MeshStandardMaterial({ color: 0x1b2227, roughness: 0.38, metalness: 0.1 });
+  const hotM = new THREE.MeshStandardMaterial({ color: 0xffb03b, emissive: 0xffb03b, emissiveIntensity: 0.35, roughness: 0.4 });
+  const steelM = new THREE.MeshStandardMaterial({ color: 0x3f5c6c, roughness: 0.34, metalness: 0.45 });
+  const aluM = new THREE.MeshStandardMaterial({ color: 0xd3d9dd, roughness: 0.28, metalness: 0.8 });
+  const aluDim = new THREE.MeshStandardMaterial({ color: 0xa9b2b8, roughness: 0.4, metalness: 0.7 });
+  const putty = new THREE.MeshStandardMaterial({ color: 0xd4cab4, roughness: 0.62, metalness: 0 });
+  const puttyDim = new THREE.MeshStandardMaterial({ color: 0xbfb49c, roughness: 0.7, metalness: 0 });
+  // birch, with a fine grain painted once: long pale lines, a few darker
+  const birch = new THREE.MeshStandardMaterial({ roughness: 0.55, metalness: 0 });
+  {
+    const c = document.createElement('canvas');
+    c.width = 1024; c.height = 512;
+    const x = c.getContext('2d');
+    x.fillStyle = '#d9c19b'; x.fillRect(0, 0, 1024, 512);
+    let seed = 7;
+    const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 260; i++) {
+      const y = rnd() * 512, dark = rnd() < 0.3;
+      x.strokeStyle = dark ? `rgba(132, 98, 58, ${0.14 + rnd() * 0.16})` : `rgba(250, 236, 208, ${0.12 + rnd() * 0.18})`;
+      x.lineWidth = 0.6 + rnd() * (dark ? 1.6 : 2.4);
+      x.beginPath();
+      x.moveTo(0, y);
+      for (let px = 0; px <= 1024; px += 64) x.lineTo(px, y + Math.sin(px / 170 + i) * (1 + rnd() * 2));
+      x.stroke();
+    }
+    const t = new THREE.CanvasTexture(c);
+    t.colorSpace = THREE.SRGBColorSpace;
+    t.wrapS = t.wrapT = THREE.RepeatWrapping;
+    t.repeat.set(0.6, 1.2);
+    t.anisotropy = aniso;
+    birch.map = t;
+  }
 
   // a box with every edge rounded: a bevelled extrusion of an inset rectangle
   function rbox(w, h, d, r) {
@@ -161,13 +217,27 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   }
 
   const TOP = 0.74;
+  const MAT = 0.004;            // the felt mat the front row stands on
 
   /* ---- the desk -------------------------------------------------- */
   const desk = new THREE.Group();
   world.add(desk);
-  add(desk, rbox(3.46, 0.05, 1.16, 0.022), clay, -0.08, TOP - 0.025, 0);
-  add(desk, rbox(0.05, TOP - 0.05, 1.04, 0.02), clay, -1.76, (TOP - 0.05) / 2, 0);
-  add(desk, rbox(0.05, TOP - 0.05, 1.04, 0.02), clay, 1.6, (TOP - 0.05) / 2, 0);
+  add(desk, rbox(3.46, 0.05, 1.16, 0.022), birch, -0.08, TOP - 0.025, 0);
+  add(desk, rbox(0.05, TOP - 0.05, 1.04, 0.02), steelM, -1.76, (TOP - 0.05) / 2, 0);
+  add(desk, rbox(0.05, TOP - 0.05, 1.04, 0.02), steelM, 1.6, (TOP - 0.05) / 2, 0);
+  // a felt mat under the front row: it gathers the paper things into one
+  // place and gives the pale desk a dark middle to hold the eye
+  {
+    const w = 1.62, d = 0.42, r = 0.03, sh = new THREE.Shape();
+    sh.moveTo(-w / 2 + r, -d / 2);
+    sh.lineTo(w / 2 - r, -d / 2); sh.quadraticCurveTo(w / 2, -d / 2, w / 2, -d / 2 + r);
+    sh.lineTo(w / 2, d / 2 - r); sh.quadraticCurveTo(w / 2, d / 2, w / 2 - r, d / 2);
+    sh.lineTo(-w / 2 + r, d / 2); sh.quadraticCurveTo(-w / 2, d / 2, -w / 2, d / 2 - r);
+    sh.lineTo(-w / 2, -d / 2 + r); sh.quadraticCurveTo(-w / 2, -d / 2, -w / 2 + r, -d / 2);
+    const geo = new THREE.ExtrudeGeometry(sh, { depth: MAT, bevelEnabled: false, curveSegments: 6 });
+    geo.rotateX(-Math.PI / 2);
+    add(desk, geo, new THREE.MeshStandardMaterial({ color: 0x2b3a42, roughness: 1, metalness: 0 }), -0.22, TOP, 0.33);
+  }
 
   /* ---- monitors: the two client sites ----------------------------- */
   function monitor(id, src, x, z, ry) {
@@ -175,8 +245,8 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     g.position.set(x, TOP, z); g.rotation.y = ry;
     world.add(g);
     const W = 0.86, H = W * (1080 / 1680);
-    add(g, rbox(0.26, 0.018, 0.17, 0.008), clay, 0, 0.009, 0);
-    add(g, rbox(0.05, 0.3, 0.028, 0.01), clay, 0, 0.165, -0.04);
+    add(g, rbox(0.26, 0.018, 0.17, 0.008), aluM, 0, 0.009, 0);
+    add(g, rbox(0.05, 0.3, 0.028, 0.01), aluM, 0, 0.165, -0.04);
     const cy = 0.26 + H / 2;
     add(g, rbox(W + 0.036, H + 0.036, 0.032, 0.012), inkM, 0, cy, -0.012);
     const face = new THREE.Mesh(new THREE.PlaneGeometry(W, H), screen(still(src, W / H)));
@@ -194,8 +264,8 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     g.position.set(-1.3, TOP, 0.24); g.rotation.y = 0.46;
     world.add(g);
     const W = 0.44, D = 0.3, LH = 0.3;
-    add(g, rbox(W, 0.018, D, 0.008), clay, 0, 0.009, 0);
-    const deck = add(g, new THREE.PlaneGeometry(W * 0.84, D * 0.46), clayDim, 0, 0.0185, -0.02);
+    add(g, rbox(W, 0.018, D, 0.008), aluM, 0, 0.009, 0);
+    const deck = add(g, new THREE.PlaneGeometry(W * 0.84, D * 0.46), inkM, 0, 0.0185, -0.02);
     deck.rotation.x = -Math.PI / 2;
     const hinge = new THREE.Group();
     hinge.position.set(0, 0.018, -D / 2 + 0.006);
@@ -215,15 +285,15 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     const g = new THREE.Group();
     g.position.set(1.12, TOP, -0.12); g.rotation.y = -0.36;
     world.add(g);
-    add(g, rbox(0.3, 0.02, 0.26, 0.01), clayDim, 0, 0.01, -0.04);
-    add(g, rbox(0.44, 0.37, 0.4, 0.05), clay, 0, 0.205, -0.04);
+    add(g, rbox(0.3, 0.02, 0.26, 0.01), puttyDim, 0, 0.01, -0.04);
+    add(g, rbox(0.44, 0.37, 0.4, 0.05), putty, 0, 0.205, -0.04);
     add(g, rbox(0.37, 0.29, 0.02, 0.018), inkM, 0, 0.215, 0.165);
     const sw = 0.31, sh = 0.232;
     const face = new THREE.Mesh(new THREE.PlaneGeometry(sw, sh), screen(still('/assets/work/terminal.jpg', sw / sh)));
     face.position.set(0, 0.215, 0.1756);
     g.add(face);
-    add(g, rbox(0.36, 0.018, 0.13, 0.008), clay, 0, 0.009, 0.33);
-    const keys = add(g, new THREE.PlaneGeometry(0.32, 0.095), clayDim, 0, 0.0185, 0.33);
+    add(g, rbox(0.36, 0.018, 0.13, 0.008), putty, 0, 0.009, 0.33);
+    const keys = add(g, new THREE.PlaneGeometry(0.32, 0.095), puttyDim, 0, 0.0185, 0.33);
     keys.rotation.x = -Math.PI / 2;
     const led = add(g, new THREE.SphereGeometry(0.007, 12, 8), ledMat(), 0.17, 0.05, 0.161);
     thing('term', g, face, led);
@@ -234,16 +304,16 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     const g = new THREE.Group();
     g.position.set(1.98, 0, -0.18); g.rotation.y = -0.44;
     world.add(g);
-    add(g, rbox(0.56, 0.92, 0.56, 0.03), clay, 0, 0.46, 0);
+    add(g, rbox(0.56, 0.92, 0.56, 0.03), steelM, 0, 0.46, 0);
     add(g, rbox(0.46, 0.12, 0.02, 0.01), inkM, 0, 0.12, 0.28);
     const deckG = new THREE.Group();
     deckG.position.set(0, 0.95, 0.2); deckG.rotation.x = 0.2;
     g.add(deckG);
-    add(deckG, rbox(0.6, 0.05, 0.3, 0.02), clay, 0, 0, 0);
+    add(deckG, rbox(0.6, 0.05, 0.3, 0.02), inkM, 0, 0, 0);
     add(deckG, new THREE.CylinderGeometry(0.007, 0.007, 0.06, 10), inkM, -0.13, 0.05, 0.02);
     add(deckG, new THREE.SphereGeometry(0.02, 16, 12), hotM, -0.13, 0.085, 0.02);
     for (let i = 0; i < 3; i++) add(deckG, new THREE.CylinderGeometry(0.018, 0.018, 0.014, 16), hotM, 0.02 + i * 0.065, 0.03, 0.03 - (i % 2) * 0.03);
-    add(g, rbox(0.56, 0.66, 0.42, 0.03), clay, 0, 1.3, -0.07);
+    add(g, rbox(0.56, 0.66, 0.42, 0.03), steelM, 0, 1.3, -0.07);
     const bezel = add(g, rbox(0.5, 0.42, 0.02, 0.012), inkM, 0, 1.29, 0.15);
     bezel.rotation.x = -0.08;
     const sw = 0.44, sh = 0.33;
@@ -251,7 +321,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     face.position.set(0, 1.29, 0.1608);
     face.rotation.x = -0.08;
     g.add(face);
-    add(g, rbox(0.58, 0.17, 0.44, 0.03), clay, 0, 1.72, -0.06);
+    add(g, rbox(0.58, 0.17, 0.44, 0.03), steelM, 0, 1.72, -0.06);
     const marquee = new THREE.Mesh(new THREE.PlaneGeometry(0.52, 0.12), screen(painted(1040, 240, (c, w, h) => {
       c.fillStyle = hot; c.fillRect(0, 0, w, h);
       c.fillStyle = ink; c.textAlign = 'center'; c.textBaseline = 'middle';
@@ -266,7 +336,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   /* ---- papers: the research -------------------------------------- */
   {
     const g = new THREE.Group();
-    g.position.set(-0.36, TOP, 0.3); g.rotation.y = 0.18;
+    g.position.set(-0.36, TOP + MAT, 0.3); g.rotation.y = 0.18;
     world.add(g);
     for (let i = 0; i < 4; i++) {
       const s = add(g, rbox(0.3, 0.006, 0.42, 0.002), clay, (i % 2) * 0.006 - 0.003, 0.003 + i * 0.0065, 0);
@@ -308,7 +378,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   /* ---- clipboard: the résumé -------------------------------------- */
   {
     const g = new THREE.Group();
-    g.position.set(0.08, TOP, 0.32); g.rotation.y = -0.1;
+    g.position.set(0.08, TOP + MAT, 0.32); g.rotation.y = -0.1;
     world.add(g);
     add(g, rbox(0.25, 0.012, 0.35, 0.01), inkM, 0, 0.006, 0);
     const sheet = new THREE.Mesh(new THREE.PlaneGeometry(0.22, 0.3), screen(painted(440, 600, (c, w, h) => {
@@ -333,9 +403,9 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   /* ---- phone: write to me ------------------------------------------ */
   {
     const g = new THREE.Group();
-    g.position.set(0.44, TOP, 0.33); g.rotation.y = -0.3; g.scale.setScalar(1.25);
+    g.position.set(0.44, TOP + MAT, 0.33); g.rotation.y = -0.3; g.scale.setScalar(1.25);
     world.add(g);
-    add(g, rbox(0.11, 0.014, 0.09, 0.006), clay, 0, 0.007, 0);
+    add(g, rbox(0.11, 0.014, 0.09, 0.006), aluM, 0, 0.007, 0);
     const tilt = new THREE.Group();
     tilt.position.set(0, 0.014, 0.01); tilt.rotation.x = -0.34;
     g.add(tilt);
@@ -364,14 +434,14 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     const g = new THREE.Group();
     g.position.set(-1.62, TOP, -0.38); g.rotation.y = 0.7;
     world.add(g);
-    add(g, new THREE.CylinderGeometry(0.075, 0.085, 0.022, 28), clay, 0, 0.011, 0);
+    add(g, new THREE.CylinderGeometry(0.075, 0.085, 0.022, 28), inkM, 0, 0.011, 0);
     const arm1 = new THREE.Group(); arm1.position.set(0, 0.022, 0); arm1.rotation.z = -0.28; g.add(arm1);
-    add(arm1, new THREE.CylinderGeometry(0.009, 0.009, 0.36, 12), clay, 0, 0.18, 0);
+    add(arm1, new THREE.CylinderGeometry(0.009, 0.009, 0.36, 12), inkM, 0, 0.18, 0);
     const arm2 = new THREE.Group(); arm2.position.set(0, 0.36, 0); arm2.rotation.z = 1.25; arm1.add(arm2);
-    add(arm2, new THREE.SphereGeometry(0.016, 14, 10), clay, 0, 0, 0);
-    add(arm2, new THREE.CylinderGeometry(0.009, 0.009, 0.3, 12), clay, 0, 0.15, 0);
+    add(arm2, new THREE.SphereGeometry(0.016, 14, 10), aluM, 0, 0, 0);
+    add(arm2, new THREE.CylinderGeometry(0.009, 0.009, 0.3, 12), inkM, 0, 0.15, 0);
     const head = new THREE.Group(); head.position.set(0, 0.3, 0); head.rotation.z = 0.95; arm2.add(head);
-    add(head, new THREE.CylinderGeometry(0.045, 0.085, 0.11, 28, 1, true), clay, 0, -0.04, 0).material.side = THREE.DoubleSide;
+    add(head, new THREE.CylinderGeometry(0.045, 0.085, 0.11, 28, 1, true), new THREE.MeshStandardMaterial({ color: 0x1b2227, roughness: 0.38, metalness: 0.1, side: THREE.DoubleSide }), 0, -0.04, 0);
     const bulbMat = new THREE.MeshStandardMaterial({ color: 0xfff1d6, emissive: 0xffc877, emissiveIntensity: 1.6 });
     add(head, new THREE.SphereGeometry(0.03, 16, 12), bulbMat, 0, -0.07, 0);
     // a warm pool of light on the desk, no shadow of its own (that would
@@ -437,7 +507,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     const hosts = ['desitotes.com', 'amgprojectsllp.com', 'ai-compiler-eta.vercel.app', 'ai-chat-bot-gcar.vercel.app', 'gamifyport.vercel.app'];
     for (let i = 0; i < 5; i++) {
       const y = 0.02 + i * 0.045;
-      add(g, rbox(0.17, 0.014, 0.12, 0.004), i % 2 ? clayDim : clay, 0, y, 0);
+      add(g, rbox(0.17, 0.014, 0.12, 0.004), i % 2 ? aluDim : aluM, 0, y, 0);
       const led = add(g, new THREE.SphereGeometry(0.0065, 12, 8), ledMat(), 0.062, y + 0.012, 0.055);
       leds.push({ led, host: hosts[i] });
     }
@@ -448,7 +518,7 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
   /* ---- photo: about me --------------------------------------------------------- */
   {
     const g = new THREE.Group();
-    g.position.set(-0.84, TOP, 0.36); g.rotation.y = 0.32;
+    g.position.set(-0.84, TOP + MAT, 0.36); g.rotation.y = 0.32;
     world.add(g);
     const tilt = new THREE.Group(); tilt.rotation.x = -0.2; g.add(tilt);
     add(tilt, rbox(0.15, 0.19, 0.014, 0.006), inkM, 0, 0.095, 0);
@@ -559,9 +629,16 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
     }
     if (tween) tween.done(false);          // an interrupted flight gives way
     const from = { pos: pose.pos.clone(), at: pose.at.clone(), ox: pose.ox, oy: pose.oy };
+    // The camera keeps its eye on a point that glides from one target to the
+    // other, turns from one bearing to the other, and closes the distance in
+    // equal ratios. A straight line from the wide shot skimmed past the
+    // monitors on its way in, and closed the last metre in a rush.
+    const a = from.pos.clone().sub(from.at), b = target.pos.clone().sub(target.at);
+    const d0 = a.length(), d1 = b.length();
+    const turn = new THREE.Quaternion().setFromUnitVectors(a.normalize(), b.normalize());
     return new Promise((done) => {
       if (reduced || ms === 0) { copyPose(pose, target); dirty = true; wake(); done(true); return; }
-      tween = { from, to: target, t0: performance.now(), ms, done, curve };
+      tween = { from, to: target, t0: performance.now(), ms, done, curve, dir: a, d0, d1, turn, q: new THREE.Quaternion() };
       wake();
     });
   }
@@ -777,18 +854,25 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
       const t = things[id];
       return t ? rectOfThing(t) : null;
     },
-    async flyTo(id, fill, ms, cover) {
+    async flyTo(id, fill, ms, cover, slow) {
       const t = things[id];
       if (!t || !(t.face || t.group)) return null;
       setHover(null);
       attract = null;
+      // With reduced motion the camera does not travel at all. A jump cut
+      // to a close-up (never even drawn while a window covers the desk)
+      // read as broken; the page dissolves instead (lib/windows.jsx).
+      if (reduced) return rectOfThing(t);
       // the headline steps back while the camera goes in, so the object
       // being entered has the screen to itself
       stage.setAttribute('data-flying', '');
-      await tweenTo(poseFor(t, fill, cover), ms, glide);
+      await tweenTo(poseFor(t, fill, cover), ms, slow ? sine : glide);
       return rectOfThing(t);
     },
-    home() { stage.removeAttribute('data-flying'); tweenTo(homePose, 820, glide); },
+    // back to the wide shot; the headline returns once the camera is there
+    home(ms = 820, slow) {
+      return tweenTo(homePose, ms, slow ? sine : glide).then((arrived) => { if (arrived) stage.removeAttribute('data-flying'); });
+    },
     // React sets this while a window covers the desk: nothing is drawn then
     setCovered(v) { covered = v; if (!v) wake(); },
     // the page's links name the same things: pointing at one frames it here
@@ -826,8 +910,10 @@ export function createDesk({ root, canvas, things: DATA, onGo, onReady }) {
 
     if (tween) {
       const k = clamp((now - tween.t0) / tween.ms, 0, 1), e = tween.curve(k);
-      pose.pos.lerpVectors(tween.from.pos, tween.to.pos, e);
       pose.at.lerpVectors(tween.from.at, tween.to.at, e);
+      tween.q.identity().slerp(tween.turn, e);
+      pose.pos.copy(tween.dir).applyQuaternion(tween.q)
+        .multiplyScalar(tween.d0 * Math.pow(tween.d1 / tween.d0, e)).add(pose.at);
       pose.ox = lerp(tween.from.ox, tween.to.ox, e);
       pose.oy = lerp(tween.from.oy, tween.to.oy, e);
       if (k >= 1) { const d = tween.done; tween = null; d(true); }

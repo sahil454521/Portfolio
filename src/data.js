@@ -55,7 +55,9 @@ export const CASES = [
     photos: [
       ['/assets/desi/plain_pocket_tote_natural.jpg', 'A natural cotton canvas tote with a front pocket, standing on a wooden table', 686, 1024, 'Plain pocket tote, natural. 320 GSM.'],
       ['/assets/desi/hobo_black.jpg', 'Black canvas hobo tote', 600, 600, 'Hobo, black'],
-      ['/assets/desi/print_daisy_black.jpg', 'Printed tote, black canvas, with a daisy print', 600, 600, 'Daisy print'],
+      ['/assets/desi/print_daisy_black.jpg', 'Printed tote, black canvas, with a daisy print', 649, 807, 'Daisy print'],
+      ['/assets/desi/print_evil_eye_natural.jpg', 'Printed tote, natural canvas, with an evil eye print', 627, 836, 'Evil eye print'],
+      ['/assets/desi/print_emotionalbaggage_natural.jpg', 'Printed tote, natural canvas, printed Emotional Baggage', 627, 836, 'Emotional baggage print'],
     ],
   },
   {
@@ -73,21 +75,9 @@ export const CASES = [
       ['/assets/amg/eka.jpg', 'Inside a completed steel portal frame building, with electric buses on the assembly line below', 1280, 578, 'Pinnacle Mobility Solutions (EKA)'],
       ['/assets/amg/hdfc.jpg', 'A completed open plan office floor, workstations and screens installed', 1600, 1200, 'Corporate office, HDFC'],
       ['/assets/amg/po22.jpg', 'An industrial facility delivered for Plastic Omnium Auto Exteriors', 1280, 960, 'Plastic Omnium Auto Exteriors'],
+      ['/assets/amg/acl7.jpg', 'A delivered AMG Turnkey project', 1600, 1204, 'A delivered AMG project'],
     ],
   },
-];
-
-// What the two client sites carry: the drifting wall
-export const CARRY = [
-  { image: '/assets/desi/hobo_black.jpg', title: 'Hobo tote, black canvas', href: 'https://desitotes.com' },
-  { image: '/assets/amg/eka.jpg', title: 'Steel portal frame plant for Pinnacle Mobility (EKA)', href: 'https://amgprojectsllp.com' },
-  { image: '/assets/desi/print_daisy_black.jpg', title: 'Daisy print tote', href: 'https://desitotes.com' },
-  { image: '/assets/amg/hdfc.jpg', title: 'Corporate office fit-out for HDFC', href: 'https://amgprojectsllp.com' },
-  { image: '/assets/desi/plain_pocket_tote_natural.jpg', title: 'Plain pocket tote, natural cotton', href: 'https://desitotes.com' },
-  { image: '/assets/amg/po22.jpg', title: 'Industrial facility for Plastic Omnium', href: 'https://amgprojectsllp.com' },
-  { image: '/assets/desi/print_evil_eye_natural.jpg', title: 'Evil eye print tote', href: 'https://desitotes.com' },
-  { image: '/assets/amg/acl7.jpg', title: 'A delivered AMG project', href: 'https://amgprojectsllp.com' },
-  { image: '/assets/desi/print_emotionalbaggage_natural.jpg', title: 'Emotional baggage print tote', href: 'https://desitotes.com' },
 ];
 
 export const ALSO = [

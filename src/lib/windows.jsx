@@ -15,6 +15,7 @@ import { useStatus } from './status.jsx';
 const Ctx = createContext(null);
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
 const GLIDE = 'cubic-bezier(0.32, 0.72, 0, 1)';     // the camera's own curve (scene.js)
+const PUSH = 'cubic-bezier(0.65, 0, 0.35, 1)';      // a zoom that starts and stops gently
 
 // After the flight, an app's still is laid exactly over its screen: the same
 // picture with the same crop (the scene crops a still the way `cover` and
@@ -26,10 +27,13 @@ function zoomFrames(still, rect) {
   Object.assign(still.style, { left: rect.left + 'px', top: rect.top + 'px', width: rect.width + 'px', height: rect.height + 'px' });
   const c = document.querySelector('[data-desk] canvas').getBoundingClientRect();
   const r = rect.left + rect.width, b = rect.top + rect.height;
-  const cut = [Math.max(c.top, 0) - rect.top, r - Math.min(c.right, vw), b - Math.min(c.bottom, vh), Math.max(c.left, 0) - rect.left].map((n) => Math.max(0, n));
+  // clip only where an edge of the desk shows inside the window; what hangs
+  // off the window is not seen either way
+  const cut = [c.top > 0 ? c.top - rect.top : 0, c.right < vw ? r - c.right : 0, c.bottom < vh ? b - c.bottom : 0, c.left > 0 ? c.left - rect.left : 0].map((n) => Math.max(0, n));
+  // a screen that already covers the window has nowhere to go
+  if (rect.left <= 0.5 && rect.top <= 0.5 && r >= vw - 0.5 && b >= vh - 0.5 && cut.every((n) => n < 1)) return null;
   const k = Math.max(1, vw / rect.width, vh / rect.height);
   const dx = vw / 2 - (rect.left + rect.width / 2), dy = vh / 2 - (rect.top + rect.height / 2);
-  if (k < 1.01 && Math.abs(dx) < 2 && Math.abs(dy) < 2 && cut.every((n) => n < 1)) return null;
   return [
     { clipPath: `inset(${cut.map((n) => n + 'px').join(' ')})`, transform: 'none' },
     { clipPath: 'inset(0px 0px 0px 0px)', transform: `translate(${dx}px, ${dy}px) scale(${k})` },
@@ -105,14 +109,13 @@ export function WindowsProvider({ children }) {
       // shrinks back onto the screen, and the camera pulls back from there
       const still = dlg.querySelector('[data-win-still]');
       const reduce = reducedMotion();
-      setApp((a) => ({ ...a, loaded: false }));
-      zoomed(false);
+      setApp((a) => ({ ...a, loaded: false }));  // the app dips out and its picture comes back (site.css)
       // a scroll that ran on past the end of the app moved the page behind
       // it; the desk goes back exactly where the screen was
       if (scrollY !== s.y) scrollTo({ top: s.y, behavior: 'instant' });
-      leave = wait(reduce ? 0 : 200).then(() => (s.zoom && !reduce
-        ? still.animate([...s.zoom].reverse(), { duration: 420, easing: GLIDE, fill: 'forwards' }).finished
-        : dlg.animate([{ opacity: 1 }, { opacity: s.entered ? 1 : 0 }], { duration: s.entered ? 0 : 180, fill: 'forwards' }).finished));
+      leave = wait(reduce ? 0 : 420).then(() => (s.zoom && !reduce
+        ? still.animate([...s.zoom].reverse(), { duration: 700, easing: PUSH, fill: 'forwards' }).finished
+        : dlg.animate([{ opacity: 1 }, { opacity: s.entered ? 1 : 0 }], { duration: s.entered ? 0 : reduce ? 320 : 180, fill: 'forwards' }).finished));
     } else leave = grow(dlg, sc && sc.onScreen() ? sc.rectOf(s.openId) : null, true);
     leave.then(() => {
       dlg.close();
@@ -122,7 +125,13 @@ export function WindowsProvider({ children }) {
       const was = s.openId;
       s.openId = null;
       s.openDlg = null;
-      if (sc) { sc.setCovered(false); sc.home(); }
+      if (sc) {
+        sc.setCovered(false);
+        // out of an app the camera pulls back as slowly as it went in, and
+        // the bar returns with the headline once it is back
+        if (dlg === appRef.current && s.entered) sc.home(1400, true).then(() => zoomed(false));
+        else sc.home();
+      }
       // Clean the address in place. Stepping back would walk through the
       // history the app inside the window may have added, and land on a stale
       // #id that reopens a window nobody asked for.
@@ -140,11 +149,12 @@ export function WindowsProvider({ children }) {
     const my = ++s.seq;
     const sc = scene.current;
     let rect = null;
-    if (sc && sc.onScreen()) {
+    if (sc && sc.onScreen() && !reducedMotion()) {
       // the bar and the view switch step aside, and the camera goes in until
-      // the screen is the whole view
+      // the screen is the whole view; with reduced motion the app dissolves
+      // in over the desk instead
       zoomed(true);
-      rect = await sc.flyTo(id, 1.02, 1250, true);
+      rect = await sc.flyTo(id, 1.02, 1800, true, true);
       if (my !== s.seq) return;                  // a newer click took over
     }
     s.openId = id;
@@ -154,13 +164,16 @@ export function WindowsProvider({ children }) {
     s.entered = !!rect;                          // came in through the desk, leaves through it
     s.y = scrollY;
     s.zoom = rect && zoomFrames(still, rect);
+    // decoded before it is shown: an undecoded picture paints one blank frame
+    await still.decode().catch(() => {});
+    if (my !== s.seq) return;
     if (sc) sc.setCovered(true);
     dlg.showModal();
     dlg.querySelector('[data-autofocus]').focus();
     if (location.hash !== '#' + id) history.pushState({ open: id }, '', '#' + id);
     const reduce = reducedMotion();
-    if (s.zoom && !reduce) await still.animate(s.zoom, { duration: 520, easing: GLIDE, fill: 'forwards' }).finished;
-    else if (!rect) await dlg.animate([{ opacity: 0, transform: reduce ? 'none' : 'scale(0.98)' }, { opacity: 1, transform: 'none' }], { duration: 220, easing: GLIDE }).finished;
+    if (s.zoom && !reduce) await still.animate(s.zoom, { duration: 700, easing: PUSH, fill: 'forwards' }).finished;
+    else if (!rect) await dlg.animate([{ opacity: 0, transform: reduce ? 'none' : 'scale(0.98)' }, { opacity: 1, transform: 'none' }], { duration: reduce ? 320 : 220, easing: GLIDE }).finished;
     // The app starts loading only now, so nothing competes with the flight;
     // its still is the view until it answers.
     if (s.openId === id && !dlg.dataset.closing) setApp((a) => ({ ...a, src: t.app }));

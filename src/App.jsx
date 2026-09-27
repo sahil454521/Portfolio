@@ -6,7 +6,7 @@ import { StatusProvider } from './lib/status.jsx';
 import { WindowsProvider } from './lib/windows.jsx';
 import TopBar, { ModeSwitch } from './components/TopBar.jsx';
 import Desk from './components/Desk.jsx';
-import { Case, Carry } from './components/Work.jsx';
+import { Case } from './components/Work.jsx';
 import Research from './components/Research.jsx';
 import { About, AlsoLive, Build, Contact, RunsOn } from './components/More.jsx';
 import Windows from './components/Windows.jsx';
@@ -33,7 +33,6 @@ export default function App() {
           <RunsOn />
           <Case c={CASES[0]} />
           <Case c={CASES[1]} />
-          <Carry />
           <Research />
           <AlsoLive />
           <Build />

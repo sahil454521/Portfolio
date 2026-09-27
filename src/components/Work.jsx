@@ -1,13 +1,14 @@
-// The two client sites, then the wall of what they carry.
-import { lazy, Suspense, useRef } from 'react';
-import { CARRY, CASES } from '../data.js';
+// The two client sites. Each one opens up as you scroll into it, then the
+// story, the facts, and the client's own photographs.
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useStatus } from '../lib/status.jsx';
-import { useNearView, useTilt } from '../lib/motion.js';
-import GlareHover from './reactbits/GlareHover.jsx';
+import { useNearView } from '../lib/motion.js';
+import ScrollExpand from './reactbits/ScrollExpand.jsx';
 
-// React Bits' DriftWall, loaded only as the wall nears the screen: its
-// animation runs every frame, so it should not exist until it can be seen.
-const DriftWall = lazy(() => import('./reactbits/DriftWall.jsx'));
+// React Bits' AccordionGallery carries GSAP, so it loads as the photos near.
+const AccordionGallery = lazy(() => import('./reactbits/AccordionGallery.jsx'));
+
+const media = (q) => typeof matchMedia !== 'undefined' && matchMedia(q).matches;
 
 function Status({ host }) {
   const { status } = useStatus();
@@ -21,32 +22,35 @@ function Status({ host }) {
 }
 
 export function Case({ c }) {
-  const site = useRef(null);
-  useTilt(site);
+  const box = useRef(null);
+  const near = useNearView(box);
+  const [seen, setSeen] = useState(false);
+  useEffect(() => { if (near) setSeen(true); }, [near]);
+  const [narrow] = useState(() => media('(max-width: 700px)'));
+  const [still] = useState(() => media('(prefers-reduced-motion: reduce)'));
   return (
     <section className={`case case--${c.tint}`} id={c.id} aria-labelledby={`case-${c.n}`}>
-      <header className="case__head" data-sc-in data-sc-stagger="60">
-        <h2 id={`case-${c.n}`}>{c.name}</h2>
-        <p className="case__kind">
-          {c.kind}{' '}
-          <a className="go go--sm" href={c.href} target="_blank" rel="noopener">{c.host} <span aria-hidden="true">↗</span></a>
-        </p>
-      </header>
+      <h2 className="sr" id={`case-${c.n}`}>{c.name}</h2>
 
-      <figure className="case__site" data-sc-reveal="up" data-sc-reveal-at="0.02 0.4">
-        <a ref={site} href={c.href} target="_blank" rel="noopener" tabIndex={-1} aria-hidden="true">
-          {/* React Bits' GlareHover: light crosses the capture as it would the glass of a screen */}
-          <GlareHover width="100%" height="auto" background="transparent" borderColor="transparent" borderRadius="0"
-                      glareOpacity={0.4} glareAngle={-35} glareSize={320} transitionDuration={900}>
-            <img src={c.still} alt={c.stillAlt} width="1680" height="1080" loading="lazy" />
-          </GlareHover>
-        </a>
-        <figcaption>{c.host}, captured from the live site.</figcaption>
-      </figure>
+      {/* React Bits' ScrollExpand: the site starts as a screen in the page and
+          opens to the whole view as you scroll into it, the way the desk's
+          screens open when clicked. With reduced motion it is simply open. */}
+      <ScrollExpand
+        className="case__expand" useWindowScroll enabled={!still}
+        src={c.still} alt={c.stillAlt} title={c.name} scrollHint="Scroll into the site"
+        startWidth={narrow ? 88 : 62} startHeight={narrow ? 34 : 56} startRadius={10} endRadius={0}
+        mediaZoom={1} scrollDistance={still ? 0 : narrow ? 0.8 : 1} holdDistance={still ? 0 : 0.3}
+        smoothing={0.08} overlayScrim={0.4}
+      >
+        <div className="case__over">
+          <p className="case__over-kind">{c.kind}</p>
+          <p className="case__over-story">{c.story}</p>
+          <a className="case__over-go" href={c.href} target="_blank" rel="noopener">Visit {c.host} <span aria-hidden="true">↗</span></a>
+        </div>
+      </ScrollExpand>
 
       <div className="case__body" data-sc-in data-sc-stagger="60">
         <div className="case__copy">
-          <p className="story">{c.story}</p>
           {c.body.map((p) => <p key={p}>{p}</p>)}
         </div>
         <dl className="spec">
@@ -55,58 +59,19 @@ export function Case({ c }) {
         </dl>
       </div>
 
-      <div className="case__photos">
-        {c.photos.map(([src, alt, w, h, cap]) => (
-          <figure key={src}><img src={src} alt={alt} width={w} height={h} loading="lazy" /><figcaption>{cap}</figcaption></figure>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-export function Carry() {
-  const box = useRef(null);
-  const near = useNearView(box);
-  return (
-    <section className="carry" aria-labelledby="carry-h">
-      <div className="carry__head" data-sc-in data-sc-stagger="60">
-        <h2 id="carry-h">What the two sites carry.</h2>
-        <p>The bags sell through one, and the buildings are what the other exists to show. Each tile opens where it lives.</p>
-      </div>
-      <div className="carry__wall" ref={box}>
-        {near && (
+      {/* React Bits' AccordionGallery: the client's own photographs, one
+          opening at a time under the pointer, captioned */}
+      <div className="case__gallery" ref={box}>
+        {seen && (
           <Suspense fallback={null}>
-            <DriftWall
-              items={CARRY}
-              columns={5}
-              tileWidth={230}
-              tileHeight={156}
-              gap={18}
-              radius={8}
-              tilt={16}
-              turn={-12}
-              perspective={1200}
-              depth={120}
-              speed={34}
-              variance={0.45}
-              parallax={0.6}
-              lift={56}
-              fade={0.55}
-              dim={0.78}
-              overlayColor="#EAEDEF"
+            <AccordionGallery
+              items={c.photos.map(([src, alt, , , cap]) => ({ image: src, alt, label: cap }))}
+              defaultIndex={0} height={440} gap={10} radius={8} expandRatio={0.5} tilt={5} parallax={0.4}
+              grayscale overlayColor="#0E1519" accentColor="#F4F6F7" textColor="#F4F6F7" trigger="hover"
             />
           </Suspense>
         )}
       </div>
     </section>
-  );
-}
-
-export default function Work() {
-  return (
-    <>
-      {CASES.map((c) => <Case key={c.id} c={c} />)}
-      <Carry />
-    </>
   );
 }

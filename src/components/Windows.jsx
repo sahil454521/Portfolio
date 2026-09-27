@@ -6,6 +6,7 @@ import { useStatus } from '../lib/status.jsx';
 import { useWindows } from '../lib/windows.jsx';
 import { CopyButton } from './More.jsx';
 import SplitFlapText from './reactbits/SplitFlapText.jsx';
+import LatticeLoader from './reactbits/LatticeLoader.jsx';
 
 // These two need Motion, so they arrive in their own chunk just after the
 // page paints; the windows they sit in are there from the start.
@@ -30,11 +31,10 @@ function AppWindow() {
   const { app, setApp, refs, shut } = useWindows();
   const props = useDialogProps(refs.appRef);
   return (
-    <dialog className="zoom" data-win aria-labelledby="win-name" {...props}>
-      <div className="zoom__still" data-win-still style={{ backgroundImage: app.still ? `url("${app.still}")` : undefined }} />
+    <dialog className="zoom" data-win data-loaded={app.loaded ? '' : undefined} aria-labelledby="win-name" {...props}>
+      <img className="zoom__still" data-win-still src={app.still || undefined} alt="" />
       <iframe
         className="zoom__app"
-        data-loaded={app.loaded ? '' : undefined}
         title={app.name ? `${app.name}, running live` : 'Live app'}
         src={app.src || 'about:blank'}
         allow="clipboard-write; fullscreen; autoplay"
@@ -45,10 +45,15 @@ function AppWindow() {
         <button className="zoom__back" type="button" data-autofocus onClick={() => shut(refs.appRef.current)}>
           <span aria-hidden="true">←</span> Back to the desk
         </button>
-        <p className="zoom__name">
-          <i className={app.loaded ? 'dot dot--live' : 'dot'} /> <b id="win-name" data-win-name>{app.name}</b>
-          <span role="status">{app.loaded ? 'live' : 'starting'}</span>
-        </p>
+        {/* React Bits' LatticeLoader, mounted when the app starts loading: its
+            stopwatch is how long the live app took to answer, and the check
+            is amber because on this page amber means live */}
+        {app.src && (
+          <LatticeLoader key={app.id} className="zoom__load" status={app.loaded ? 'done' : 'working'}
+                         label="Starting" doneLabel="Live in" pattern="orbit" shape="round"
+                         color="#F4F6F7" doneColor="#FFB03B" cellSize={4} gap={2} fontSize={12} idleOpacity={0.2} />
+        )}
+        <b className="zoom__name" id="win-name" data-win-name>{app.name}</b>
         <a className="zoom__out" data-win-out href={app.href || '#'} target="_blank" rel="noopener">New tab <span aria-hidden="true">↗</span></a>
       </div>
     </dialog>
