@@ -7,7 +7,7 @@ import { chromium } from 'playwright-core';
 const url = process.argv[2] || 'http://localhost:4500';
 const id = process.argv.find((a) => /^(quest|term|neura)$/.test(a)) || 'quest';
 const mobile = process.argv.includes('--mobile');
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const vp = mobile ? { width: 390, height: 844 } : { width: 1280, height: 800 };
 const p = await b.newPage(mobile ? { viewport: vp, isMobile: true, hasTouch: true } : { viewport: vp });
 await p.goto(url, { waitUntil: 'load' });

@@ -80,7 +80,7 @@ address the mail should reach), then in Vercel add the environment variable
 | `src/lib/windows.jsx` | Every action, and the app, status and email windows |
 | `src/lib/status.jsx` | Live status from the API, shared by the page |
 | `src/lib/motion.js` | Pointer effects (Variable Proximity, Tilted Card, Magnet), the video scrub, section tracking |
-| `src/components/` | The sections; `reactbits/` holds the React Bits pieces: LogoLoop (the Runs on band under the desk, each tool linking to where it runs), GlareHover (the case captures), SpotlightCard (the Also live rows), DriftWall (the carry wall), FolderFloat (the stack), Lanyard (the 3D badge in the contact section, React Three Fiber and Rapier, loaded only near it and skipped on saved-data plans), and in the windows SplitFlapText (status board times), StatusMark (per-site check) and JellyRadio (email topic) |
+| `src/components/` | The sections; `reactbits/` holds the React Bits pieces: LogoLoop (the Runs on band under the desk, each tool linking to where it runs), ScrollExpand (each client case, opening from its frame to full bleed as you scroll, with the story on a dark panel), AccordionGallery (each client's photographs, GSAP, loaded lazily), CountUp (the research numbers, counting in once and landing on what the paper measured), SpotlightCard (the Also live rows), FolderFloat (the stack), Lanyard (the 3D badge in the contact section, React Three Fiber and Rapier, loaded only near it and skipped on saved-data plans), and in the windows LatticeLoader (the zoom bar, timing each app's start-up), SplitFlapText (status board times), StatusMark (per-site check) and JellyRadio (email topic) |
 | `scrollcraft/lab/badge.mjs` | Paints the badge and its strap from React Bits' `card.glb` into `public/assets/badge/` |
 | `src/styles/` | The design system, and the scroll engine's styles |
 | `server/` | The Express app and the status checker |
@@ -101,12 +101,28 @@ node scrollcraft/lab/hire.mjs http://localhost:4500
 node scrollcraft/lab/desk.mjs http://localhost:4500
 node scrollcraft/lab/clicks.mjs http://localhost:4500 1152x870
 node scrollcraft/lab/flight.mjs http://localhost:4500 quest
+node scrollcraft/lab/zoom.mjs http://localhost:4500 quest      # also term, neura; add --mobile
+node scrollcraft/lab/film.mjs http://localhost:4500
+node scrollcraft/lab/roles.mjs http://localhost:4500
+node scrollcraft/lab/cases.mjs http://localhost:4500
+node scrollcraft/lab/overflow.mjs http://localhost:4500
+node scrollcraft/lab/bits.mjs http://localhost:4500
+node scrollcraft/lab/bits2.mjs http://localhost:4500
+node scrollcraft/lab/badge-check.mjs http://localhost:4500
+node scrollcraft/lab/countup.mjs http://localhost:4500         # add --reduced
+node scrollcraft/lab/fps.mjs http://localhost:4500
 ```
+
+The scripts drive Chrome at its default Windows path; set `CHROME` to any other
+Chromium binary to run them elsewhere.
 
 `sheet.mjs` walks the page and tiles the frames into one contact sheet, so the
 composition can be read rather than guessed at. `a11y.mjs` checks tab order,
-focus visibility, the heading outline and alt text.
+focus visibility, the heading outline and alt text. `zoom.mjs` and `film.mjs`
+capture opening an app from the desk (stages, and a filmstrip), `roles.mjs`
+walks the Hiring for chips, `cases.mjs` shoots each case at rest, opened and
+its photographs, `countup.mjs` checks the research numbers settle on the paper's values
+without moving the row, and `overflow.mjs` checks nothing is wider than a phone.
 
 Re-capture the client stills with `node scrollcraft/lab/stills.mjs`, the personal ones with `more.mjs` (needs
-`ffmpeg` on the machine). `links.mjs` checks the panels are genuinely
-clickable, and `fps.mjs` measures the frame rate while scrolling the hero.
+`ffmpeg` on the machine). `fps.mjs` measures the frame rate while scrolling the hero.

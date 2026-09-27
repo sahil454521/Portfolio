@@ -1,8 +1,8 @@
-// Drives a real pointer through the three ported React Bits components and
+// Drives a real pointer through the ported pointer effects (the headline and the magnet) and
 // reports what each one actually did, plus whether the headline ever reflowed.
 import { chromium } from 'playwright-core';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const browser = await chromium.launch({ executablePath: CHROME });
 const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
@@ -33,18 +33,7 @@ for (let i = 0; i <= 24; i++) {
 console.log(`headline  peak wght ${maxW}  height rest ${restH.toFixed(1)} max ${maxH.toFixed(1)}  ${maxH - restH > 1 ? 'REFLOWED' : 'stable'}`);
 console.log('          aria-label:', await page.locator('.lede h1').getAttribute('aria-label'));
 
-// 2. tilt: scroll to the first client site, hover a corner
-await page.locator('.case__site a').first().scrollIntoViewIfNeeded();
-await page.waitForTimeout(900);
-const site = await page.locator('.case__site a').first().boundingBox();
-await page.mouse.move(site.x + site.width * 0.9, site.y + site.height * 0.2, { steps: 8 });
-await settle();
-console.log('tilt      over corner:', await page.locator('.case__site a').first().evaluate((e) => e.style.rotate || '(none)'));
-await page.mouse.move(site.x + site.width / 2, site.y - 200, { steps: 8 });
-await page.waitForTimeout(1500);
-console.log('          after leave:', await page.locator('.case__site a').first().evaluate((e) => e.style.rotate || '(none)'));
-
-// 3. magnet: approach the CTA from outside its box
+// 2. magnet: approach the CTA from outside its box
 await page.locator('.end__cta').scrollIntoViewIfNeeded();
 await page.waitForTimeout(900);
 const cta = await page.locator('.end__cta').boundingBox();

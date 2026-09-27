@@ -2,7 +2,7 @@
 // over the desk (a ray cast, a lean and a projected frame every frame), and a
 // scroll from the desk down into the page. An idle page is smooth by definition.
 import { chromium } from 'playwright-core';
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const ctx = await b.newContext({ viewport: { width: 1440, height: 900 }, reducedMotion: 'no-preference' });
 const page = await ctx.newPage();
 await page.goto(process.argv[2] || 'http://localhost:4500', { waitUntil: 'load' });

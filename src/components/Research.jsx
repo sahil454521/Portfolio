@@ -2,8 +2,19 @@
 // toggle: switching a signal off makes the paper's point by hand, the model
 // still answers from what is left.
 import { useState } from 'react';
+import CountUp from './reactbits/CountUp.jsx';
 
 const SIGNALS = ['Text', 'EEG', 'Wearables', 'Audio and video'];
+
+// what the paper measured: numbers count, words do not
+const RESULTS = [
+  ['Accuracy', { to: 91.24, suffix: '%' }],
+  ['Recall', { to: 79.23, suffix: '%' }],
+  ['F1', { to: 0.7809 }],
+  ['Held-out test', { to: 2250, separator: ',', suffix: ' samples, Reddit and WU3D' }],
+  ['Built with', 'PyTorch'],
+  ['Where', 'VIT, May to July 2026'],
+];
 
 export default function Research() {
   const [on, setOn] = useState(SIGNALS.map(() => true));
@@ -40,9 +51,15 @@ export default function Research() {
         <figcaption>PPEMDD, simplified. Switch a signal off: the gate reweights what is left and the model still answers, which is the availability-aware part of the paper.</figcaption>
       </figure>
 
+      {/* React Bits' CountUp: the four measured numbers count in as the
+          row arrives, one after another, so the eye lands on each */}
       <dl className="spec research__spec" data-sc-in data-sc-stagger="50">
-        {[['Accuracy', '91.24%'], ['Recall', '79.23%'], ['F1', '0.7809'], ['Held-out test', '2,250 samples, Reddit and WU3D'], ['Built with', 'PyTorch'], ['Where', 'VIT, May to July 2026']]
-          .map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+        {RESULTS.map(([k, v], i) => (
+          <div key={k}>
+            <dt>{k}</dt>
+            <dd>{typeof v === 'string' ? v : <CountUp {...v} delay={0.25 + i * 0.12} />}</dd>
+          </div>
+        ))}
       </dl>
     </section>
   );

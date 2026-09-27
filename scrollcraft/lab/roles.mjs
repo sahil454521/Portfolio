@@ -4,7 +4,7 @@ import { chromium } from 'playwright-core';
 
 const url = process.argv[2] || 'http://localhost:4500';
 const mobile = process.argv.includes('--mobile');
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 const p = await b.newPage(mobile ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true } : { viewport: { width: 1440, height: 900 } });
 const errors = [];
 p.on('pageerror', (e) => errors.push(String(e)));

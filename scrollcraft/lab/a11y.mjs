@@ -2,7 +2,7 @@
 // screenshot cannot tell you.
 import { chromium } from 'playwright-core';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const browser = await chromium.launch({ executablePath: CHROME });
 const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 } });
 const page = await ctx.newPage();
@@ -31,7 +31,7 @@ for (let i = 0; i < 24; i++) {
 
 const audit = await page.evaluate(() => {
   const heads = [...document.querySelectorAll('h1,h2,h3')].map((h) => h.tagName + ' ' + h.innerText.trim().slice(0, 40));
-  const imgs = [...document.querySelectorAll('img')].map((i) => ({ src: i.getAttribute('src').split('/').pop(), alt: i.getAttribute('alt') }));
+  const imgs = [...document.querySelectorAll('img')].map((i) => ({ src: (i.getAttribute('src') || '(no src)').split('/').pop(), alt: i.getAttribute('alt') }));
   const noAlt = imgs.filter((i) => i.alt === null);
   const emptyAlt = imgs.filter((i) => i.alt === '');
   // em dash check: the hard rule forbids it anywhere visible

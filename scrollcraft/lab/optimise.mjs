@@ -4,7 +4,7 @@
 import { chromium } from 'playwright-core';
 import { readFileSync, writeFileSync, statSync } from 'node:fs';
 
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const jobs = [
   { src: 'assets/shots/amg-work.png', dst: 'assets/shots/amg-work.jpg', w: 1800 },
   { src: 'assets/shots/desi-work.png', dst: 'assets/shots/desi-work.jpg', w: 1800 },

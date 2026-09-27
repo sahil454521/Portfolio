@@ -3,7 +3,7 @@ import { mkdirSync, readdirSync, writeFileSync } from 'node:fs';
 const out = 'scrollcraft/lab/widths';
 mkdirSync(out, { recursive: true });
 const sizes = [[1920,1080],[1680,1050],[1440,900],[1280,800],[1024,768]];
-const b = await chromium.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+const b = await chromium.launch({ executablePath: process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
 for (const [w,h] of sizes) {
   const ctx = await b.newContext({ viewport: { width: w, height: h }, reducedMotion: 'no-preference' });
   const page = await ctx.newPage();

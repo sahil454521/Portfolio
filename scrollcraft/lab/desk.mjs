@@ -5,7 +5,7 @@
 import { chromium } from 'playwright-core';
 import { mkdirSync } from 'node:fs';
 import { checkAll } from '../../server/status.js';
-const CHROME = 'C:/Program Files/Google/Chrome/Application/chrome.exe';
+const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 const url = process.argv[2] || 'http://localhost:4500';
 const out = 'scrollcraft/lab/desk/';
 mkdirSync(out, { recursive: true });
