@@ -1,6 +1,8 @@
 # Sahil Pathak
 
-Portfolio of an AI/ML and full-stack engineer. The hero is a desk in 3D where every object is something I built and every object opens: the arcade plays Portfolio Quest, the terminal runs AI Terminal, the laptop runs NeuraCraft, all live in the page. Status lights are real, checked by a serverless function. Then the client work, the research and the résumé, in the order someone hiring asks for them.
+Portfolio of an AI/ML and full-stack engineer. Dark, one amber signal. A WebGL particle field reacts to the cursor, then on scroll splits into four strands (Interface, Service, Models, Running), braids them and fuses them into one beam: "Both ends, or it is not finished." The same fusion is the research: four signals, one gated answer.
+
+![The site at full motion](docs/signal-preview.jpg)
 
 **The work**, all live
 
@@ -12,36 +14,20 @@ Portfolio of an AI/ML and full-stack engineer. The hero is a desk in 3D where ev
 | [ai-chat-bot-gcar.vercel.app](https://ai-chat-bot-gcar.vercel.app) | AI Terminal |
 | [gamifyport.vercel.app](https://gamifyport.vercel.app) | Portfolio Quest, a pixel-art portfolio you walk around |
 
-## The idea
+## The chapters
 
-Borrowed from basement.studio, whose hero is its office and whose objects are
-the navigation. Here it is a desk, and each object is one piece of work:
-
-| Object | Opens |
+| Chapter | What it does |
 |---|---|
-| Two monitors | The Desi Totes and AMG case studies |
-| Arcade cabinet | Portfolio Quest, playable in a window that grows out of its screen |
-| CRT terminal | AI Terminal, running live |
-| Laptop | NeuraCraft, running live |
-| Stack of papers | The PPEMDD research |
-| Clipboard | The résumé |
-| Phone | A compose window that opens the visitor's own email app |
-| Five stacked boards | A status board: every live site, checked from the server just now |
-| Framed photo | About me |
-| Books | Education, on the résumé |
-| Trophy | Hackathons and prizes, on the résumé |
-| Tote bag | The Desi Totes shop, in a new tab |
-| Lamp | Switches on and off; the one toy on the desk |
+| Hero | Particle field (Three.js shader, 14k points) that parts around the cursor |
+| Braid | Pinned, scrubbed: the field becomes four labelled strands, a braid, then one beam |
+| Desi Totes, AMG | Pinned split: a CSS 3D laptop lid opens on scroll onto the real site, stats count up, live status from the API |
+| X-ray | A lens over the live site shows what is underneath: Razorpay, the cart that survives a refresh, INR and USD, the APIs behind AMG |
+| PPEMDD | Switch any of the four signals off; the gate reweights the rest and signals keep flowing |
+| Stack | A draggable skill constellation (d3-force): click a project to pull its stack in, click a skill to see where it runs, filter by layer. Only real skill-to-project links |
+| Also live | The three side projects as a horizontal accordion |
+| Resume | Cards that stack as you scroll; the full CV is `cv.html`, the PDF in `public/assets` |
 
-The two client sites refuse framing (`X-Frame-Options`), correctly, so they are
-stills of the real pages. The three personal apps allow it, so they run.
-
-Every object is also a real link in the page (`[data-thing]`), so the desk is a
-way in, never the only one: keyboards, screen readers and phones use the list.
-
-`api/status.js` fetches every site and times it. The top bar shows how many
-are up, each object's light breathes while its site answers, and each case
-says how fast it answered. Cached at the edge for a minute.
+Plus a Cmd/Ctrl+K command menu (cmdk), Lenis smooth scroll on GSAP's ticker, magnetic buttons, and a Motion switch in the nav. Motion follows `prefers-reduced-motion`; reduced-motion visitors get a calm version and a notice offering full motion. `?motion` in the URL forces it on.
 
 ## Running it
 
@@ -50,79 +36,34 @@ A React front end over a Node and Express API, built with Vite.
 ```bash
 npm install
 npm run dev        # the site and the API together, http://localhost:4500
-npm run build      # production build into dist/
+npm run build      # production build into dist/ (index.html and cv.html)
 npm run preview    # serve the production build, API included
 ```
 
-On Vercel the front end is the Vite build and the API is one serverless
-function (`api/index.js`) running the same Express app.
+On Vercel the front end is the Vite build and the API is one serverless function (`api/index.js`) running the same Express app.
 
 ### The API
 
 | Route | What it does |
 |---|---|
-| `GET /api/status` | Fetches every live project from the server and times it; cached at the edge for a minute |
-| `POST /api/contact` | Sends the email form. Needs `RESEND_API_KEY` set on Vercel; without it the page opens the visitor's own email app with the message written |
+| `GET /api/status` | Fetches every live project from the server and times it; cached at the edge for a minute. The page's live readings and the Check again button use it |
+| `POST /api/contact` | Sends an email form. Needs `RESEND_API_KEY` set on Vercel; without it the caller is told to fall back to mailto. Not used by the current page, kept for later |
 | `GET /api/health` | Whether the API is up, and whether mail is configured |
-
-To turn on real sending: create a free key at resend.com (sign up with the
-address the mail should reach), then in Vercel add the environment variable
-`RESEND_API_KEY`. Optional: `CONTACT_TO` (defaults to my address) and
-`CONTACT_FROM` (defaults to Resend's test sender).
 
 ## What is in here
 
 | Path | What it is |
 |---|---|
 | `index.html`, `src/main.jsx`, `src/App.jsx` | The React app |
-| `src/data.js` | Every object, link and project the page names, in one place |
-| `src/desk/scene.js` | The Three.js desk, driven by React |
-| `src/lib/windows.jsx` | Every action, and the app, status and email windows |
-| `src/lib/status.jsx` | Live status from the API, shared by the page |
-| `src/lib/motion.js` | Pointer effects (Variable Proximity, Tilted Card, Magnet), the video scrub, section tracking |
-| `src/components/` | The sections; `reactbits/` holds the React Bits pieces: LogoLoop (the Runs on band under the desk, each tool linking to where it runs), Stack (each client's photographs as a pile of prints: drag, flick or tap for the next, captioned), CountUp (the research numbers, counting in once and landing on what the paper measured), SpotlightCard (the Also live rows), FolderFloat (the stack), Lanyard (the 3D badge in the contact section, React Three Fiber and Rapier, loaded only near it and skipped on saved-data plans), and in the windows LatticeLoader (the zoom bar, timing each app's start-up), SplitFlapText (status board times), StatusMark (per-site check) and JellyRadio (email topic) |
-| `scrollcraft/lab/badge.mjs` | Paints the badge and its strap from React Bits' `card.glb` into `public/assets/badge/` |
-| `src/styles/` | The design system, and the scroll engine's styles |
-| `server/` | The Express app and the status checker |
-| `api/index.js` | The Vercel function that runs the Express app |
-| `cv.html` | The résumé as plain, printable HTML |
-| `public/assets/` | Photos, site stills, fonts, the résumé PDF |
-| `scrollcraft/lab/` | Browser tests and capture scripts |
+| `src/data.js` | Every fact, link, metric and skill link the page shows, in one place |
+| `src/motion.js` | Motion preference, Lenis on the GSAP ticker, the live status store |
+| `src/components/SignalField.jsx` | The WebGL particle field and its four states |
+| `src/components/` | The chapters, the nav, the command menu |
+| `src/styles.css` | The whole design system |
+| `cv.html`, `src/styles/site.css` | The resume as plain, printable HTML, with its own stylesheet |
+| `server/`, `api/index.js` | The Express app, the status checker and the Vercel function |
+| `public/work/` | Stills of the live sites |
+| `public/assets/` | The resume's fonts and PDF |
+| `docs/spec.md` | The design spec for this version |
 | `legacy/` | The first React portfolio, kept intact |
-
-## Verifying a change
-
-```bash
-npm run preview
-node scrollcraft/lab/sheet.mjs http://localhost:4500
-node scrollcraft/lab/sheet.mjs http://localhost:4500 --mobile
-node scrollcraft/lab/a11y.mjs http://localhost:4500
-node scrollcraft/lab/hire.mjs http://localhost:4500
-node scrollcraft/lab/desk.mjs http://localhost:4500
-node scrollcraft/lab/clicks.mjs http://localhost:4500 1152x870
-node scrollcraft/lab/flight.mjs http://localhost:4500 quest
-node scrollcraft/lab/zoom.mjs http://localhost:4500 quest      # also term, neura; add --mobile
-node scrollcraft/lab/film.mjs http://localhost:4500
-node scrollcraft/lab/roles.mjs http://localhost:4500
-node scrollcraft/lab/cases.mjs http://localhost:4500
-node scrollcraft/lab/overflow.mjs http://localhost:4500
-node scrollcraft/lab/bits.mjs http://localhost:4500
-node scrollcraft/lab/bits2.mjs http://localhost:4500
-node scrollcraft/lab/badge-check.mjs http://localhost:4500
-node scrollcraft/lab/countup.mjs http://localhost:4500         # add --reduced
-node scrollcraft/lab/fps.mjs http://localhost:4500
-```
-
-The scripts drive Chrome at its default Windows path; set `CHROME` to any other
-Chromium binary to run them elsewhere.
-
-`sheet.mjs` walks the page and tiles the frames into one contact sheet, so the
-composition can be read rather than guessed at. `a11y.mjs` checks tab order,
-focus visibility, the heading outline and alt text. `zoom.mjs` and `film.mjs`
-capture opening an app from the desk (stages, and a filmstrip), `roles.mjs`
-walks the Hiring for chips, `cases.mjs` shoots each case at rest, opened and
-its photographs, `countup.mjs` checks the research numbers settle on the paper's values
-without moving the row, and `overflow.mjs` checks nothing is wider than a phone.
-
-Re-capture the client stills with `node scrollcraft/lab/stills.mjs`, the personal ones with `more.mjs` (needs
-`ffmpeg` on the machine). `fps.mjs` measures the frame rate while scrolling the hero.
+| `scrollcraft/` | Brief and browser test scripts from the previous (desk) version |
