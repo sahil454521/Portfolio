@@ -8,7 +8,11 @@ import api from './server/app.js';
 // (a braced body on purpose: a function returned from these hooks is treated
 // by Vite as a hook to run later)
 const mountApi = (server) => {
-  server.middlewares.use((req, res, next) => (req.url.startsWith('/api/') ? api(req, res, next) : next()));
+  server.middlewares.use((req, res, next) => {
+    // Vercel serves the resume at /cv (cleanUrls); answer the same URL locally
+    if (req.url === '/cv' || req.url.startsWith('/cv?')) req.url = req.url.replace('/cv', '/cv.html');
+    return req.url.startsWith('/api/') ? api(req, res, next) : next();
+  });
 };
 
 export default defineConfig({
