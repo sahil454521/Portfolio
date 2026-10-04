@@ -2,7 +2,7 @@ export const EMAIL = 'sahilpathak2005@gmail.com';
 export const RESUME = '/cv';
 export const RESUME_PDF = '/assets/Sahil_Pathak_Resume.pdf';
 export const GITHUB = 'https://github.com/sahil454521';
-export const LINKEDIN = 'https://www.linkedin.com/in/sahil-pathak-98a523202';
+export const LINKEDIN = 'https://www.linkedin.com/in/sahil-pathak21';
 
 export const projects = [
   {
