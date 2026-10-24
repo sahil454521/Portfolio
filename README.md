@@ -82,6 +82,9 @@ node scrollcraft/lab/bundle.mjs                                     # script the
 node scrollcraft/lab/perf.mjs http://localhost:4500                 # phone, 4x CPU, 4G: largest paint within 2.5 s
 node scrollcraft/lab/a11y.mjs http://localhost:4500                 # tab order, headings, alt text, no em dashes
 node scrollcraft/lab/shots-key.mjs http://localhost:4500            # key frames into scrollcraft/lab/shots/
+node scrollcraft/lab/cv-pdf.mjs http://localhost:4500               # re-print the resume PDF after editing cv.html; reports the page count
 ```
+
+The resume prints in Calibri. On a machine without it, add `--carlito <folder of carlito-latin-*.woff2>` to `cv-pdf.mjs` (Carlito has Calibri's exact metrics, from `npm pack @fontsource/carlito`), or the fallback face is wider and the one page becomes two.
 
 The browser scripts drive Chrome at its Windows path; set `CHROME` to another Chromium to run them elsewhere. They need `playwright-core` (`npm i --no-save playwright-core`).
