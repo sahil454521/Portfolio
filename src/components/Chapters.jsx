@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useRef } from 'react';
 import { gsap, SplitText, motionOn, scrollToId } from '../motion';
-import { EMAIL, strands } from '../data';
-import { CountUp, LivePing, Magnetic } from './bits';
+import { AVAILABILITY, EDUCATION, EMAIL, PLACE, RESUME, ROLE, strands } from '../data';
+import { Arrow, CountUp, LivePing, Magnetic } from './bits';
 
 export function Hero() {
   const ref = useRef(null);
@@ -12,7 +12,7 @@ export function Hero() {
       const split = SplitText.create('.hero h1', { type: 'lines', mask: 'lines' });
       gsap.set('.hero h1', { visibility: 'visible' });
       gsap.from(split.lines, { yPercent: 115, duration: 1.5, ease: 'expo.out', stagger: 0.12, delay: 0.15 });
-      gsap.from('.hero-sub, .hero-ctas', { opacity: 0, y: 28, duration: 1.3, ease: 'expo.out', stagger: 0.12, delay: 0.75 });
+      gsap.from('.hero-sub, .hero-avail, .hero-ctas', { opacity: 0, y: 28, duration: 1.3, ease: 'expo.out', stagger: 0.12, delay: 0.75 });
       gsap.to('.hero-inner', {
         yPercent: -22, opacity: 0, ease: 'none',
         scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom top', scrub: true },
@@ -25,9 +25,11 @@ export function Hero() {
     <section className="hero" id="top" ref={ref}>
       <div className="hero-inner">
         <h1>Everything here is <em>in production.</em></h1>
-        <p className="hero-sub">Final year at IIT Guwahati. Client sites taking real money, a research model, three side projects. All live.</p>
+        <p className="hero-sub">I am Sahil Pathak, a {ROLE}. Final-year {EDUCATION}.</p>
+        <p className="hero-avail"><i aria-hidden="true" />{AVAILABILITY}. {PLACE}.</p>
         <div className="hero-ctas">
           <Magnetic className="btn btn-signal" href="#work" onClick={(e) => { e.preventDefault(); scrollToId('work'); }}>See the work</Magnetic>
+          <Magnetic className="btn btn-ghost" href={RESUME}>Resume</Magnetic>
           <Magnetic className="btn btn-ghost" href={`mailto:${EMAIL}`}>Email me</Magnetic>
         </div>
       </div>
@@ -77,21 +79,27 @@ export function Project({ p, flip }) {
       const tl = gsap.timeline({
         scrollTrigger: desk
           ? { trigger: ref.current, start: 'top top', end: 'bottom bottom', scrub: 0.8 }
-          : { trigger: '.laptop', start: 'top 90%', end: 'top 30%', scrub: 0.8 },
+          : { trigger: p.device === 'phone' ? '.phones' : '.laptop', start: 'top 90%', end: 'top 30%', scrub: 0.8 },
       });
-      tl.fromTo('.lid', { rotateX: -94 }, { rotateX: 6, ease: 'power2.inOut', duration: 0.5 }, 0)
-        .fromTo('.laptop', { scale: 0.8, yPercent: 12 }, { scale: 1, yPercent: 0, ease: 'power2.out', duration: 0.5 }, 0)
-        .fromTo('.screen img', { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.3 }, 0.3)
-        .fromTo('.screen-glow', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.32);
+      if (p.device === 'phone') {
+        // two phones rise into place, the results one landing last and in front
+        tl.fromTo('.phone--0', { yPercent: 22, rotate: -10, opacity: 0 }, { yPercent: 0, rotate: -5, opacity: 1, ease: 'power3.out', duration: 0.45 }, 0)
+          .fromTo('.phone--1', { yPercent: 30, rotate: 9, opacity: 0 }, { yPercent: 0, rotate: 4, opacity: 1, ease: 'power3.out', duration: 0.45 }, 0.08);
+      } else {
+        tl.fromTo('.lid', { rotateX: -94 }, { rotateX: 6, ease: 'power2.inOut', duration: 0.5 }, 0)
+          .fromTo('.laptop', { scale: 0.8, yPercent: 12 }, { scale: 1, yPercent: 0, ease: 'power2.out', duration: 0.5 }, 0)
+          .fromTo('.screen img', { opacity: 0, scale: 1.12 }, { opacity: 1, scale: 1, duration: 0.3 }, 0.3)
+          .fromTo('.screen-glow', { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0.32);
+      }
       if (desk) {
         tl.from('.proj-info > *', { opacity: 0, y: 48, stagger: 0.045, duration: 0.22 }, 0.04).to({}, { duration: 0.3 });
       }
     });
     return () => mm.revert();
-  }, []);
+  }, [p.device]);
 
   return (
-    <section className={`project ${flip ? 'project--flip' : ''}`} ref={ref} aria-labelledby={`${p.id}-title`}>
+    <section id={`case-${p.id}`} className={`project ${flip ? 'project--flip' : ''} ${p.device === 'phone' ? 'project--phone' : ''}`} ref={ref} aria-labelledby={`${p.id}-title`}>
       <div className="project-stage">
         <div className="proj-info">
           <h2 id={`${p.id}-title`}>{p.name}</h2>
@@ -108,19 +116,31 @@ export function Project({ p, flip }) {
             <span className="stat-label">{p.stat.label}</span>
           </p>
           <div className="proj-live">
-            <LivePing url={p.url} label={p.host} />
-            <Magnetic className="btn btn-ghost btn-sm" href={p.url}>Visit the site</Magnetic>
+            <LivePing url={p.url} label={p.device === 'phone' ? 'Hosted on Render' : p.host} />
+            <Magnetic className="btn btn-ghost btn-sm" href={p.url}>{p.device === 'phone' ? 'Try it' : 'Visit the site'}<Arrow /></Magnetic>
+            {p.code && <Magnetic className="btn btn-ghost btn-sm" href={p.code}>Code<Arrow /></Magnetic>}
           </div>
+          {p.note && <p className="proj-note">{p.note}</p>}
         </div>
-        <a className="laptop" href={p.url} aria-label={`Open ${p.host}`}>
-          <div className="lid">
-            <div className="screen">
-              <img src={p.shot} alt={p.alt} width="1680" height="1080" loading="lazy" decoding="async" />
-              <span className="screen-glow" aria-hidden="true" />
-            </div>
+        {p.device === 'phone' ? (
+          <div className="phones">
+            {p.shots.map((shot, i) => (
+              <figure key={shot.src} className={`phone phone--${i}`}>
+                <img src={shot.src} alt={shot.alt} width="780" height="1688" loading="lazy" decoding="async" />
+              </figure>
+            ))}
           </div>
-          <div className="deck" aria-hidden="true"><span /></div>
-        </a>
+        ) : (
+          <a className="laptop" href={p.url} aria-label={`Open ${p.host}`}>
+            <div className="lid">
+              <div className="screen">
+                <img src={p.shot} alt={p.alt} width="1680" height="1080" loading="lazy" decoding="async" />
+                <span className="screen-glow" aria-hidden="true" />
+              </div>
+            </div>
+            <div className="deck" aria-hidden="true"><span /></div>
+          </a>
+        )}
       </div>
     </section>
   );

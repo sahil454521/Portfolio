@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Command } from 'cmdk';
-import { lenis, motionOn, motionOverridden, setMotion, scrollToId, systemReduced } from '../motion';
-import { EMAIL, GITHUB, LINKEDIN, RESUME, projects, sideProjects } from '../data';
+import { motionOn, motionOverridden, setMotion, scrollToId, systemReduced } from '../motion';
+import { EMAIL } from '../data';
 import { Magnetic } from './bits';
 
 const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
@@ -39,49 +38,6 @@ export function Nav({ onPalette }) {
       </button>
       <Magnetic className="btn btn-signal btn-sm" href={`mailto:${EMAIL}`}>Email me</Magnetic>
     </header>
-  );
-}
-
-export function CommandMenu({ open, setOpen }) {
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key.toLowerCase() === 'k' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); setOpen((o) => !o); }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [setOpen]);
-
-  useEffect(() => { if (lenis) (open ? lenis.stop() : lenis.start()); }, [open]);
-
-  const run = (fn) => () => { setOpen(false); fn(); };
-  const links = [
-    ...projects.map((p) => [p.name, p.url]),
-    ...sideProjects.map((p) => [p.name, p.url]),
-    ['Resume', RESUME], ['GitHub', GITHUB], ['LinkedIn', LINKEDIN],
-  ];
-
-  return (
-    <Command.Dialog open={open} onOpenChange={setOpen} label="Command menu" overlayClassName="cmdk-overlay" contentClassName="cmdk-panel">
-      <Command.Input placeholder="Jump to a chapter, open a project, copy the email" />
-      <Command.List>
-        <Command.Empty>Nothing matches. Try desi, resume or email.</Command.Empty>
-        <Command.Group heading="Go to">
-          {chapters.map(([id, label]) => <Command.Item key={id} value={`go ${label}`} onSelect={run(() => scrollToId(id))}>{label}</Command.Item>)}
-        </Command.Group>
-        <Command.Group heading="Open">
-          {links.map(([label, url]) => (
-            <Command.Item key={label} value={`open ${label}`} onSelect={run(() => window.open(url, '_blank', 'noopener'))}>
-              {label}<span>{new URL(url, window.location.href).host}</span>
-            </Command.Item>
-          ))}
-        </Command.Group>
-        <Command.Group heading="Do">
-          <Command.Item value="copy email" onSelect={run(copyEmail)}>Copy email address<span>{EMAIL}</span></Command.Item>
-          <Command.Item value="write email" onSelect={run(() => { window.location.href = `mailto:${EMAIL}`; })}>Write an email</Command.Item>
-          <Command.Item value="motion" onSelect={run(() => setMotion(!motionOn))}>Turn motion {motionOn ? 'off' : 'on'}</Command.Item>
-        </Command.Group>
-      </Command.List>
-    </Command.Dialog>
   );
 }
 

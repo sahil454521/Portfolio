@@ -63,3 +63,14 @@ export function CountUp({ to, decimals = 0, prefix = '', suffix = '' }) {
 }
 
 export { ScrollTrigger };
+
+// One drawn arrow for every outbound or in-page link, so links share a stroke and weight.
+export function Arrow({ down = false }) {
+  return (
+    <svg className="arrow" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true" focusable="false">
+      {down
+        ? <path d="M6 1.5v8.5M2.5 6.5 6 10l3.5-3.5" />
+        : <path d="M3 9 9 3M4 3h5v5" />}
+    </svg>
+  );
+}

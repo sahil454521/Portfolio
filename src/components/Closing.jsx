@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { gsap, motionOn } from '../motion';
-import { EMAIL, GITHUB, LINKEDIN, RESUME, RESUME_PDF, resume, sideProjects } from '../data';
-import { Magnetic } from './bits';
+import { AVAILABILITY, EMAIL, GITHUB, LINKEDIN, PLACE, RESUME, RESUME_PDF, resume, sideProjects } from '../data';
+import { Arrow, Magnetic } from './bits';
 import { copyEmail } from './Chrome';
 
 export function AlsoLive() {
@@ -10,15 +10,19 @@ export function AlsoLive() {
       <h2 id="also-title">Also live.</h2>
       <p className="lede">No client, no brief. Things I built to find out whether I could, and left running.</p>
       <div className="accordion">
+        {/* the whole slice opens the live app (a stretched link); Code sits above it */}
         {sideProjects.map((s) => (
-          <a key={s.id} className="slice" href={s.url}>
+          <article key={s.id} className="slice">
             <img src={s.shot} alt="" width="1680" height="1080" loading="lazy" decoding="async" />
             <div className="slice-body">
-              <h3>{s.name}</h3>
+              <h3><a className="slice-link" href={s.url}>{s.name}</a></h3>
               <p>{s.text}</p>
-              <span className="go">{s.verb}</span>
+              <p className="go">
+                <span>{s.verb}<Arrow /></span>
+                {s.code && <a className="slice-code" href={s.code}>Code<Arrow /><span className="sr"> for {s.name}</span></a>}
+              </p>
             </div>
-          </a>
+          </article>
         ))}
       </div>
     </section>
@@ -77,6 +81,7 @@ export function Contact() {
   return (
     <section id="contact" className="contact" aria-labelledby="contact-title">
       <h2 id="contact-title">Hiring, or building something that has to <em>stay live?</em></h2>
+      <p className="contact-avail"><i aria-hidden="true" />{AVAILABILITY}. {PLACE}.</p>
       <div className="contact-row">
         <Magnetic className="btn btn-signal btn-xl" href={`mailto:${EMAIL}`}>Email me</Magnetic>
         <button type="button" className="copy" onClick={copyEmail}>{EMAIL}<span>Copy</span></button>
