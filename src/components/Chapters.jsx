@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useRef } from 'react';
 import { gsap, SplitText, motionOn, scrollToId } from '../motion';
-import { AVAILABILITY, EDUCATION, EMAIL, PLACE, RESUME, ROLE, strands } from '../data';
+import { AVAILABILITY, EDUCATION, EMAIL, PLACE, proof, RESUME, ROLE, strands } from '../data';
 import { Arrow, CountUp, LivePing, Magnetic } from './bits';
 
 export function Hero() {
@@ -12,7 +12,7 @@ export function Hero() {
       const split = SplitText.create('.hero h1', { type: 'lines', mask: 'lines' });
       gsap.set('.hero h1', { visibility: 'visible' });
       gsap.from(split.lines, { yPercent: 115, duration: 1.5, ease: 'expo.out', stagger: 0.12, delay: 0.15 });
-      gsap.from('.hero-sub, .hero-avail, .hero-ctas', { opacity: 0, y: 28, duration: 1.3, ease: 'expo.out', stagger: 0.12, delay: 0.75 });
+      gsap.from('.hero-sub, .hero-avail, .hero-ctas, .hero-proof > div', { opacity: 0, y: 28, duration: 1.3, ease: 'expo.out', stagger: 0.09, delay: 0.75 });
       gsap.to('.hero-inner', {
         yPercent: -22, opacity: 0, ease: 'none',
         scrollTrigger: { trigger: ref.current, start: 'top top', end: 'bottom top', scrub: true },
@@ -25,12 +25,19 @@ export function Hero() {
     <section className="hero" id="top" ref={ref}>
       <div className="hero-inner">
         <h1>Everything here is <em>in production.</em></h1>
-        <p className="hero-sub">I am Sahil Pathak, a {ROLE}. Final-year {EDUCATION}.</p>
-        <p className="hero-avail"><i aria-hidden="true" />{AVAILABILITY}. {PLACE}.</p>
-        <div className="hero-ctas">
-          <Magnetic className="btn btn-signal" href="#work" onClick={(e) => { e.preventDefault(); scrollToId('work'); }}>See the work</Magnetic>
-          <Magnetic className="btn btn-ghost" href={RESUME}>Resume</Magnetic>
-          <Magnetic className="btn btn-ghost" href={`mailto:${EMAIL}`}>Email me</Magnetic>
+        <div className="hero-foot">
+          <div>
+            <p className="hero-sub">I am Sahil Pathak, a {ROLE}. Final-year {EDUCATION}.</p>
+            <p className="hero-avail"><i aria-hidden="true" />{AVAILABILITY}. {PLACE}.</p>
+            <div className="hero-ctas">
+              <Magnetic className="btn btn-signal" href="#work" onClick={(e) => { e.preventDefault(); scrollToId('work'); }}>See the work</Magnetic>
+              <Magnetic className="btn btn-ghost" href={RESUME}>Resume</Magnetic>
+              <Magnetic className="btn btn-ghost" href={`mailto:${EMAIL}`}>Email me</Magnetic>
+            </div>
+          </div>
+          <dl className="hero-proof">
+            {proof.map(([n, label]) => <div key={n}><dt>{n}</dt><dd>{label}</dd></div>)}
+          </dl>
         </div>
       </div>
       <p className="hero-hint" aria-hidden="true">Move the cursor through the field</p>

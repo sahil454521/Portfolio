@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { forceCenter, forceCollide, forceLink, forceManyBody, forceRadial, forceSimulation, forceX, forceY } from 'd3-force';
 import { loadStatus, motionOn, scrollToId } from '../motion';
-import { GITHUB, RESUME, graph, liveSites, projectInfo, skillGroups } from '../data';
+import { GITHUB, RESUME, graph, liveSites, projectInfo, skillGroups, skillsAll } from '../data';
 import { CountUp, Magnetic, usePing } from './bits';
 
 const groupOf = Object.fromEntries(Object.entries(skillGroups).flatMap(([g, list]) => list.map((s) => [s, g])));
@@ -261,6 +261,10 @@ export function Stack() {
         </div>
         <Magnetic className="cell c-link" href={RESUME} strength={0.12}><h3>Resume</h3><p>The full CV, one page.</p></Magnetic>
         <Magnetic className="cell c-link" href={GITHUB} strength={0.12}><h3>GitHub</h3><p>sahil454521</p></Magnetic>
+      </div>
+      <div className="skills-all">
+        <h3>Everything on the resume</h3>
+        <dl>{skillsAll.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}</dl>
       </div>
     </section>
   );

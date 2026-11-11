@@ -10,6 +10,22 @@ export const EDUCATION = 'B.Tech in Computer Science at DY Patil International U
 export const AVAILABILITY = 'Open to internships now and new-grad roles from 2027';
 export const PLACE = 'Pune, India. On-site or remote';
 
+// The proof above the fold: three numbers a reader can check further down the page.
+export const proof = [
+  ['91.24%', 'accuracy on 2,250 held-out samples, PPEMDD'],
+  ['50-80%', 'load time cut on AMG\'s production app'],
+  ['6', 'projects live right now, two of them client work'],
+];
+
+// Everything on the resume, by row. The graph above only draws skills a project here uses.
+export const skillsAll = [
+  ['Languages', 'Python, JavaScript, TypeScript, SQL, C++, C, HTML, CSS'],
+  ['AI and ML', 'Machine learning, deep learning, NLP, multimodal learning, generative AI, diffusion models, model evaluation'],
+  ['ML libraries', 'PyTorch, TensorFlow, Keras, scikit-learn, Hugging Face Transformers, Diffusers, Pandas, NumPy'],
+  ['Web', 'React, Next.js, Node.js, Express, FastAPI, Flask, Redux, Tailwind CSS, Vite, REST APIs'],
+  ['Data and tools', 'MongoDB, Firebase Firestore, Convex, Git, GitHub, Postman, VS Code, Vercel, Render, CI/CD'],
+];
+
 export const projects = [
   {
     id: 'desi',
@@ -112,7 +128,7 @@ export const resume = [
   { when: 'May to July 2026', title: 'Research intern, VIT', points: ['Built PPEMDD end to end: a review of more than twenty papers, the fused multimodal model, an IEEE-format paper.', '91.24% accuracy on a held-out test of 2,250 samples.'] },
   { when: 'January to June 2025', title: 'Software developer, AMG Turnkey Projects', points: ['Civil accounting modules and REST APIs the operations team runs projects on.', 'Found where the app was slow and cut load time by 50 to 80 percent.'] },
   { when: '2023 to 2027', title: 'Education', points: ['B.Tech, Computer Science, DY Patil International University.', 'BSc (Hons), Data Science and AI, IIT Guwahati, running alongside it.'] },
-  { when: 'Recognition', title: 'Prizes', points: ['Smart India Hackathon, top 15 in the college round.', 'SharkIndia, prize for an AI solution.'] },
+  { when: 'Recognition', title: 'Prizes', points: ['Smart India Hackathon, top 15 in the college round.', 'SharkIndia, prize for an AI solution.', 'FOSS Hackathon 2025, an open-source AI coding assistant.'] },
 ];
 
 // X-ray chapter: what sits underneath each live site. Boxes are % of the screenshot (x, y, w, h).

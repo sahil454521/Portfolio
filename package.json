@@ -10,6 +10,7 @@
     "preview": "vite preview --port 4500"
   },
   "dependencies": {
+    "@fontsource-variable/fraunces": "^5.3.0",
     "@fontsource-variable/geist-mono": "^5.3.0",
     "cmdk": "^1.1.1",
     "d3-force": "^3.0.0",

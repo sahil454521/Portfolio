@@ -98,7 +98,7 @@ export function Contact() {
 export function Footer() {
   return (
     <footer className="footer">
-      <p>Built with React, Three.js and GSAP. Set in Cabinet Grotesk, Satoshi and Geist Mono.</p>
+      <p>Built with React, Three.js and GSAP. Set in Cabinet Grotesk, Fraunces, Satoshi and Geist Mono.</p>
       <p>Sahil Pathak, 2026</p>
     </footer>
   );
