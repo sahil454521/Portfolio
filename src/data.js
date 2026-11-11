@@ -10,13 +10,6 @@ export const EDUCATION = 'B.Tech in Computer Science at DY Patil International U
 export const AVAILABILITY = 'Open to internships now and new-grad roles from 2027';
 export const PLACE = 'Pune, India. On-site or remote';
 
-// The proof above the fold: three numbers a reader can check further down the page.
-export const proof = [
-  ['91.24%', 'accuracy on 2,250 held-out samples, PPEMDD'],
-  ['50-80%', 'load time cut on AMG\'s production app'],
-  ['6', 'projects live right now, two of them client work'],
-];
-
 // Everything on the resume, by row. The graph above only draws skills a project here uses.
 export const skillsAll = [
   ['Languages', 'Python, JavaScript, TypeScript, SQL, C++, C, HTML, CSS'],

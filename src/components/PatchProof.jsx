@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { runHidden } from '../checks';
 import { Arrow } from './bits';
 
 // Counts from results/search.json in the PatchProof repo: 139 seeded bugs, search-based repairer, seed 0.
@@ -7,17 +8,16 @@ const runs = [
   { k: 5, correct: 114, overfit: 16 }, { k: 10, correct: 121, overfit: 9 }, { k: 20, correct: 125, overfit: 3 },
 ];
 const TASKS = 139;
-// Task leap_year-87 at one shown test: how its fix did on each of the 39 hidden tests (1 = pass).
-const hidden = [...'011101011110110111010111011101011111111'].map(Number);
 const CODE = 'https://github.com/sahil454521/Project/tree/claude/gracious-faraday-24cj5i';
 const pct = (a, b) => `${Math.round((100 * a) / b)}%`;
 
 export function PatchProof() {
   const [i, setI] = useState(0);
-  const [ran, setRan] = useState(false);
+  const [ran, setRan] = useState(null); // the hidden-test results, once the visitor runs them
   const { k, correct, overfit } = runs[i];
   const passing = correct + overfit;
   const tests = `${k} ${k === 1 ? 'test' : 'tests'}`;
+  const fails = ran ? ran.filter((t) => !t.ok) : [];
 
   return (
     <section id="patchproof" className="pp" aria-labelledby="pp-title">
@@ -50,18 +50,18 @@ export function PatchProof() {
       <div className="pp-case reveal">
         <div>
           <h3>One real case from the run</h3>
-          <p>A leap-year check has a bug. The tool is shown one test, <code>leap_year(1700)</code> should be <code>False</code>, and finds a one-character change that passes it.</p>
+          <p>A leap-year check has a bug. The tool is shown one test, <code>leap_year(1700)</code> should be <code>False</code>, and finds a one-character change that passes it. The button runs that fix on the hidden tests, here, in your browser.</p>
           <a className="pp-code" href={CODE}>Code and full results<Arrow /></a>
         </div>
         <div className="pp-run">
           <pre><code><del>{'return y % 4 == 0 and (y % 100 == 0 or y % 400 == 0)'}</del>{'\n'}<ins>{'return y % 4 != 0 and (y % 100 == 0 or y % 400 == 0)'}</ins></code></pre>
           <p className="pp-shown"><i className="d-ok" />1 of 1 shown tests passes</p>
-          <button type="button" className="btn btn-sm" onClick={() => setRan(true)} disabled={ran}>
-            {ran ? 'Hidden tests run' : 'Run the 39 hidden tests'}
+          <button type="button" className="btn btn-sm" onClick={() => setRan(runHidden())} disabled={!!ran}>
+            {ran ? 'Ran in your browser' : 'Run the 39 hidden tests'}
           </button>
           <div className="pp-hidden" aria-live="polite">
-            {ran && <p className="pp-strip" role="img" aria-label="29 hidden tests pass, 10 fail">{hidden.map((ok, n) => <i key={n} style={{ '--n': n }} className={ok ? 'd-ok' : 'd-bad'} />)}</p>}
-            <p>{ran && <>29 pass, 10 fail. <code>leap_year(1836)</code> should be <code>True</code>; the fix returns <code>False</code>.</>}</p>
+            {ran && <p className="pp-strip" role="img" aria-label={`${ran.length - fails.length} hidden tests pass, ${fails.length} fail`}>{ran.map((t, n) => <i key={n} style={{ '--n': n }} className={t.ok ? 'd-ok' : 'd-bad'} />)}</p>}
+            <p>{ran && <>{ran.length - fails.length} pass, {fails.length} fail. <code>leap_year({fails[0].y})</code> should be <code>{fails[0].want ? 'True' : 'False'}</code>; the fix returns <code>{fails[0].want ? 'False' : 'True'}</code>.</>}</p>
           </div>
         </div>
       </div>

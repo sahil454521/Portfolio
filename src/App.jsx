@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { gsap, ScrollTrigger, SplitText, motionOn, scrollToId } from './motion';
-import { AVAILABILITY, EMAIL, GITHUB, LINKEDIN, PLACE, RESUME, RESUME_PDF, proof, projects, resume, sideProjects, skillsAll } from './data';
+import { AVAILABILITY, EMAIL, GITHUB, LINKEDIN, PLACE, RESUME, RESUME_PDF, projects, resume, sideProjects, skillsAll } from './data';
 import { Arrow, LivePing, Magnetic } from './components/bits';
 import { copyEmail, MotionNotice, Nav, Toast } from './components/Chrome';
 import { Fusion } from './components/Fusion';
+import { Ledger } from './components/Ledger';
 import { PatchProof } from './components/PatchProof';
 
 const statText = (stat) => stat.parts.map((x) => `${x.to}${x.suffix || ''}`).join('-');
@@ -13,27 +14,15 @@ function Hero() {
     <section className="hero" id="top">
       <div className="hero-copy">
         <p className="hero-avail"><i aria-hidden="true" />{AVAILABILITY}</p>
-        <h1>Everything here is <span className="hl">in production.</span></h1>
-        <p className="hero-sub">Sahil Pathak, full-stack and AI/ML engineer. Final-year B.Tech, with a BSc in data science and AI at IIT Guwahati.</p>
+        <h1>Don’t take my <span className="hl">word for it.</span></h1>
+        <p className="hero-sub">Sahil Pathak, full-stack and AI/ML engineer. This page tests its own claims while you read it.</p>
         <div className="hero-ctas">
           <Magnetic className="btn" href="#work" onClick={(e) => { e.preventDefault(); scrollToId('work'); }}>See the work</Magnetic>
           <Magnetic className="btn btn-ghost" href={RESUME}>Resume</Magnetic>
         </div>
       </div>
-      {/* real screens of two things that are running: the Desi Totes store and Sarkari Saathi */}
-      <div className="hero-art" aria-hidden="true">
-        <img className="hero-desk" src="/work/desi.webp" alt="" width="1680" height="1080" fetchPriority="high" />
-        <img className="hero-phone" src="/work/saathi-results.jpg" alt="" width="390" height="844" />
-      </div>
+      <Ledger />
     </section>
-  );
-}
-
-function Proof() {
-  return (
-    <dl className="proof">
-      {proof.map(([n, label]) => <div key={n} className="reveal"><dt>{n}</dt><dd>{label}</dd></div>)}
-    </dl>
   );
 }
 
@@ -152,10 +141,7 @@ export default function App() {
     if (!motionOn) return undefined;
     const ctx = gsap.context(() => {
       gsap.from('.hero-avail, .hero-sub, .hero-ctas', { opacity: 0, y: 24, duration: 1.1, ease: 'expo.out', stagger: 0.1, delay: 0.5 });
-      gsap.from('.hero-desk', { opacity: 0, y: 60, rotate: 2, duration: 1.4, ease: 'expo.out', delay: 0.25 });
-      gsap.from('.hero-phone', { opacity: 0, y: 110, duration: 1.4, ease: 'expo.out', delay: 0.45 });
-      // the phone rides ahead of the laptop screen on scroll: two layers, so the pair reads as depth
-      gsap.to('.hero-phone', { yPercent: -22, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
+      gsap.from('.ledger', { opacity: 0, y: 40, duration: 1.2, ease: 'expo.out', delay: 0.3 });
       gsap.utils.toArray('.reveal').forEach((el) => {
         gsap.from(el, { opacity: 0, y: 28, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
       });
@@ -181,7 +167,6 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
-        <Proof />
         <Work />
         <Fusion />
         <PatchProof />

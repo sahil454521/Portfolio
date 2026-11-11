@@ -1,6 +1,6 @@
 # Sahil Pathak
 
-Portfolio of an AI/ML and full-stack engineer. One page, light or dark with the system, one orange accent. The hero pairs the claim with real screens of two running projects.
+Portfolio of an AI/ML and full-stack engineer. One page, light or dark with the system, one orange accent. The page checks its own claims live and marks the ones it cannot check.
 
 **The work**, all live
 
@@ -17,8 +17,7 @@ Portfolio of an AI/ML and full-stack engineer. One page, light or dark with the 
 
 | Section | What it does |
 |---|---|
-| Hero | Who, the degrees and availability, beside real screens of Desi Totes and Sarkari Saathi |
-| Proof | Three numbers, each explained further down the page |
+| Hero | "Don't take my word for it": the page runs its own claims as a test suite in the visitor's browser (`src/checks.js`). Site checks use the status API, the GitHub check uses GitHub's public API, the PatchProof check executes the code. Claims that cannot be checked are marked "my word" |
 | Selected work | Desi Totes, AMG and Sarkari Saathi as cards that pin under the nav and stack on scroll, each with live status from the API |
 | PPEMDD | Switch any of the four signals off; the gate reweights the rest |
 | PatchProof | A slider over the benchmark's real results, one dot per bug, and one real wrong fix whose hidden tests the visitor can run |

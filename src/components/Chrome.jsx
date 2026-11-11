@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motionOn, motionOverridden, setMotion, scrollToId, systemReduced } from '../motion';
 import { EMAIL } from '../data';
+import { useChecks } from './Ledger';
 
 const links = [['work', 'Work'], ['research', 'Research'], ['patchproof', 'PatchProof'], ['more', 'Projects'], ['background', 'Experience']];
 const go = (id) => (e) => { e.preventDefault(); scrollToId(id); };
@@ -22,6 +23,7 @@ export async function copyEmail() {
 }
 
 export function Nav() {
+  const { pass, live, stamp } = useChecks();
   return (
     <header className="nav">
       <a className="skip" href="#work">Skip to the work</a>
@@ -30,6 +32,7 @@ export function Nav() {
         <nav aria-label="Sections">
           {links.map(([id, label]) => <a key={id} href={`#${id}`} onClick={go(id)}>{label}</a>)}
         </nav>
+        <a className="nav-score" href="#top" onClick={go('top')}>{stamp ? `${pass} of ${live} live checks pass` : 'Checking claims'}</a>
         <a className="btn btn-sm" href={`mailto:${EMAIL}`}>Email me</a>
       </div>
     </header>

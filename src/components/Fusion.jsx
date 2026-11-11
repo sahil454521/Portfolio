@@ -74,6 +74,7 @@ export function Fusion() {
         <div><dt>F1</dt><dd><CountUp to={0.7809} decimals={4} /></dd></div>
         <div><dt>Held-out test</dt><dd><CountUp to={2250} /> <small>samples, Reddit and WU3D</small></dd></div>
       </dl>
+      <p className="word-note">These four numbers come from the paper. A browser cannot rerun the model, so on this page they rest on my word.</p>
     </section>
   );
 }
