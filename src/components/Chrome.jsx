@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motionOn, motionOverridden, setMotion, scrollToId, systemReduced } from '../motion';
 import { EMAIL } from '../data';
-import { Magnetic } from './bits';
 
-const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
-export const chapters = [['work', 'Work'], ['research', 'Research'], ['stack', 'Stack'], ['resume', 'Resume'], ['contact', 'Contact']];
+const links = [['work', 'Work'], ['research', 'Research'], ['more', 'Projects'], ['background', 'Experience']];
 const go = (id) => (e) => { e.preventDefault(); scrollToId(id); };
 
 let pushToast = () => {};
@@ -23,20 +21,17 @@ export async function copyEmail() {
   catch { pushToast(EMAIL); }
 }
 
-export function Nav({ onPalette }) {
+export function Nav() {
   return (
     <header className="nav">
-      <a className="nav-name" href="#top" onClick={go('top')}><i aria-hidden="true" />Sahil Pathak</a>
-      <nav aria-label="Chapters">
-        {chapters.slice(0, 4).map(([id, label]) => <a key={id} href={`#${id}`} onClick={go(id)}>{label}</a>)}
-      </nav>
-      <button type="button" className="nav-k" onClick={onPalette} aria-label="Open the command menu">
-        <kbd>{isMac ? '⌘' : 'Ctrl'}</kbd><kbd>K</kbd>
-      </button>
-      <button type="button" className="nav-motion" aria-pressed={motionOn} onClick={() => setMotion(!motionOn)}>
-        <span aria-hidden="true" />Motion
-      </button>
-      <Magnetic className="btn btn-signal btn-sm" href={`mailto:${EMAIL}`}>Email me</Magnetic>
+      <a className="skip" href="#work">Skip to the work</a>
+      <div className="nav-in">
+        <a className="nav-name" href="#top" onClick={go('top')}>Sahil Pathak</a>
+        <nav aria-label="Sections">
+          {links.map(([id, label]) => <a key={id} href={`#${id}`} onClick={go(id)}>{label}</a>)}
+        </nav>
+        <a className="btn btn-sm" href={`mailto:${EMAIL}`}>Email me</a>
+      </div>
     </header>
   );
 }
@@ -47,10 +42,8 @@ export function MotionNotice() {
   return (
     <div className="notice" role="note">
       <p>Your system asks for reduced motion, so this page is calm.</p>
-      <button type="button" className="btn btn-signal btn-sm" onClick={() => setMotion(true)}>Turn motion on</button>
-      <button type="button" className="notice-x" onClick={() => setMotion(false)} aria-label="Keep motion off">Keep it calm</button>
+      <button type="button" className="btn btn-sm" onClick={() => setMotion(true)}>Turn motion on</button>
+      <button type="button" className="notice-x" onClick={() => setMotion(false)}>Keep it calm</button>
     </div>
   );
 }
-
-export { pushToast };

@@ -82,93 +82,9 @@ export const sideProjects = [
     text: 'This portfolio as a pixel-art game. Walk the town, enter the buildings, challenge the gym leader for the resume.' },
 ];
 
-// The index under the hero: every project in one line, for the reader with thirty seconds.
-// `story` scrolls to the full case on this page.
-export const index = [
-  { name: 'Desi Totes', kind: 'Client, commerce', line: 'A live store: one-time-code sign-in, Razorpay, Shiprocket shipping and an admin dashboard.', stack: 'React, TypeScript, Node, MongoDB', live: 'https://desitotes.com/', story: 'case-desi' },
-  { name: 'AMG Turnkey Projects', kind: 'Client, six months', line: 'Their site, and the accounting modules and APIs their operations team runs projects on. Load time cut 50 to 80%.', stack: 'React, GSAP, Node, MongoDB', live: 'https://amgprojectsllp.com/', story: 'case-amg' },
-  { name: 'Sarkari Saathi', kind: 'Voice AI', line: 'Talk in Marathi, Hindi or English; plain rules decide which of 13 schemes you may qualify for.', stack: 'TypeScript, Gnani speech, an LLM', live: 'https://sarkari-saathi-kjgb.onrender.com/', code: 'https://github.com/sahil454521/sarkari-saathi', story: 'case-saathi' },
-  { name: 'PPEMDD', kind: 'Research, VIT', line: 'Depression screening from text, EEG, wearables and audio or video in one pass. 91.24% accuracy on 2,250 held-out samples.', stack: 'PyTorch', story: 'research' },
-  { name: 'NeuraCraft', kind: 'Own project', line: 'A browser code editor; a scikit-learn model I trained suggests machine learning code as you type.', stack: 'Next.js, FastAPI, scikit-learn', live: 'https://ai-compiler-eta.vercel.app/', code: 'https://github.com/sahil454521/AiCompiler' },
-  { name: 'AI Terminal', kind: 'Own project', line: 'Ask about any web page and a DeepSeek model answers from its text. A Chrome extension too.', stack: 'Next.js, Hugging Face', live: 'https://ai-chat-bot-gcar.vercel.app/', code: 'https://github.com/sahil454521/ai-chat-bot' },
-  { name: 'Portfolio Quest', kind: 'Own project', line: 'This portfolio as a pixel-art game: walk the town, challenge the gym leader for the résumé.', stack: 'JavaScript, canvas', live: 'https://gamifyport.vercel.app/' },
-];
-
-// The live panel: the same five sites server/status.js checks.
-export const liveSites = [
-  ['desitotes.com', 'https://desitotes.com/'],
-  ['amgprojectsllp.com', 'https://amgprojectsllp.com/'],
-  ['NeuraCraft', 'https://ai-compiler-eta.vercel.app/'],
-  ['AI Terminal', 'https://ai-chat-bot-gcar.vercel.app/'],
-  ['Portfolio Quest', 'https://gamifyport.vercel.app/'],
-];
-
-export const strands = [
-  ['Interface', 'React, Next.js and Vite, Tailwind, GSAP and Three.js where motion carries meaning.'],
-  ['Service', 'Node and Express, FastAPI and Flask, over MongoDB, Firestore or Convex.'],
-  ['Models', 'PyTorch, TensorFlow and Hugging Face; scikit-learn when a small model is right.'],
-  ['Running', 'Vercel and Render, CI on every push, then fixing it in production.'],
-];
-
-// Skill -> project links only where the project actually uses it.
-export const graph = {
-  skills: ['React', 'Vite', 'Tailwind', 'TypeScript', 'GSAP', 'Three.js', 'Node and Express', 'MongoDB', 'Redis', 'Razorpay', 'FastAPI', 'scikit-learn', 'PyTorch', 'Hugging Face', 'TensorFlow', 'Next.js'],
-  projects: ['Desi Totes', 'AMG', 'Sarkari Saathi', 'PPEMDD', 'NeuraCraft', 'This site'],
-  links: [
-    ['React', 'Desi Totes'], ['Vite', 'Desi Totes'], ['Tailwind', 'Desi Totes'], ['TypeScript', 'Desi Totes'], ['Node and Express', 'Desi Totes'], ['MongoDB', 'Desi Totes'], ['Redis', 'Desi Totes'], ['Razorpay', 'Desi Totes'],
-    ['React', 'Sarkari Saathi'], ['Vite', 'Sarkari Saathi'], ['Tailwind', 'Sarkari Saathi'], ['TypeScript', 'Sarkari Saathi'], ['Node and Express', 'Sarkari Saathi'],
-    ['React', 'AMG'], ['Vite', 'AMG'], ['Tailwind', 'AMG'], ['GSAP', 'AMG'], ['Node and Express', 'AMG'], ['MongoDB', 'AMG'],
-    ['PyTorch', 'PPEMDD'],
-    ['scikit-learn', 'NeuraCraft'], ['FastAPI', 'NeuraCraft'],
-    ['React', 'This site'], ['Vite', 'This site'], ['GSAP', 'This site'], ['Three.js', 'This site'],
-  ],
-};
-
 export const resume = [
   { when: 'May to July 2026', title: 'Research intern, VIT', points: ['Built PPEMDD end to end: a review of more than twenty papers, the fused multimodal model, an IEEE-format paper.', '91.24% accuracy on a held-out test of 2,250 samples.'] },
   { when: 'January to June 2025', title: 'Software developer, AMG Turnkey Projects', points: ['Civil accounting modules and REST APIs the operations team runs projects on.', 'Found where the app was slow and cut load time by 50 to 80 percent.'] },
   { when: '2023 to 2027', title: 'Education', points: ['B.Tech, Computer Science, DY Patil International University.', 'BSc (Hons), Data Science and AI, IIT Guwahati, running alongside it.'] },
   { when: 'Recognition', title: 'Prizes', points: ['Smart India Hackathon, top 15 in the college round.', 'SharkIndia, prize for an AI solution.', 'FOSS Hackathon 2025, an open-source AI coding assistant.'] },
 ];
-
-// X-ray chapter: what sits underneath each live site. Boxes are % of the screenshot (x, y, w, h).
-export const xray = [
-  {
-    id: 'desi', name: 'Desi Totes', shot: '/work/desi.webp', url: 'https://desitotes.com/',
-    alt: 'The Desi Totes storefront.',
-    notes: [
-      { box: [66.5, 8.8, 10.5, 5], label: 'INR and USD, switched in place' },
-      { box: [85.5, 8.6, 11.8, 5.2], label: 'A bag that survives a refresh' },
-      { box: [2.8, 74, 40.4, 13.6], label: 'Zip or no zip, and the price gap, settled before the cart' },
-      { box: [2.8, 92.6, 20, 6.6], label: 'Cards through Razorpay' },
-      { box: [53, 31, 44, 68], label: 'Cut and printed after the order arrives' },
-    ],
-    stack: 'React, TypeScript, Vite, Tailwind over Node, Express, MongoDB, Redis',
-  },
-  {
-    id: 'amg', name: 'AMG Turnkey Projects', shot: '/work/amg.webp', url: 'https://amgprojectsllp.com/',
-    alt: 'The AMG Turnkey Projects site.',
-    notes: [
-      { box: [26, 1, 70, 8.5], label: 'The right service and past project, in one pass' },
-      { box: [43, 45.5, 14, 7], label: 'A way to ask, from the first screen' },
-      { box: [31, 11, 38, 30], label: 'Behind it: civil accounting modules and REST APIs' },
-      { box: [8.5, 59, 83, 41], label: 'App load time cut by 50 to 80 percent' },
-    ],
-    stack: 'React, Vite, Tailwind, GSAP over Node, Express, MongoDB',
-  },
-];
-
-export const skillGroups = {
-  Interface: ['React', 'Vite', 'Tailwind', 'TypeScript', 'GSAP', 'Three.js', 'Next.js'],
-  Service: ['Node and Express', 'MongoDB', 'Redis', 'Razorpay', 'FastAPI'],
-  Models: ['PyTorch', 'scikit-learn', 'Hugging Face', 'TensorFlow'],
-};
-
-export const projectInfo = {
-  'Desi Totes': { kind: 'Client project, commerce', text: 'Cotton canvas, cut and printed after the order arrives. One-time-code sign-in, Razorpay, Shiprocket and an admin dashboard.', href: 'https://desitotes.com/', cta: 'Visit desitotes.com' },
-  'Sarkari Saathi': { kind: 'Voice AI, October 2026', text: 'Talk in Marathi, Hindi or English and it finds the government schemes you may qualify for. The model listens; plain rules decide.', href: 'https://sarkari-saathi-kjgb.onrender.com/', cta: 'Try Sarkari Saathi' },
-  AMG: { kind: 'Software developer, January to June 2025', text: 'A turnkey construction firm. The site, plus the accounting modules and REST APIs behind it. Load time down 50 to 80%.', href: 'https://amgprojectsllp.com/', cta: 'Visit amgprojectsllp.com' },
-  PPEMDD: { kind: 'Research, VIT, May to July 2026', text: 'Depression screening from text, EEG, wearables and audio or video in one pass. 91.24% accuracy on 2,250 held-out samples.', href: '#research', cta: 'Open the demo' },
-  NeuraCraft: { kind: 'Side project', text: 'A browser code editor that suggests machine learning code as you type, from a scikit-learn model served by FastAPI.', href: 'https://ai-compiler-eta.vercel.app/', cta: 'Try NeuraCraft' },
-  'This site': { kind: 'You are here', text: 'React, Three.js and GSAP. The particle field, this graph and the gate are all running code.', href: '#top', cta: 'Back to the top' },
-};

@@ -3,7 +3,7 @@ import { CountUp } from './bits';
 
 const signals = ['Text', 'EEG', 'Wearables', 'Audio and video'];
 const outputs = ['Depression screen', 'PHQ-9 severity', 'DSM-5 symptoms'];
-// ponytail: fixed illustrative trust per signal; the paper's gate is learned per sample.
+// shortcut: fixed illustrative trust per signal; the paper's gate is learned per sample.
 const trust = [1, 1.2, 0.8, 1];
 const inY = [12.5, 37.5, 62.5, 87.5];
 const outY = [16.67, 50, 83.33];
@@ -30,13 +30,12 @@ export function Fusion() {
 
   return (
     <section id="research" className="fusion" aria-labelledby="fusion-title">
-      <div className="fusion-head">
+      <div className="fusion-head reveal">
         <h2 id="fusion-title">One model, <em>four kinds of signal.</em></h2>
-        <p className="lede">PPEMDD screens for depression from text, EEG, wearables and audio or video together, and answers three questions in a single pass.</p>
-        <p className="fusion-note">I built it end to end as a research intern at VIT, from a review of more than twenty papers to the fused model, and wrote it up as an IEEE-format paper.</p>
+        <p className="lede">PPEMDD screens for depression from text, EEG, wearables and audio or video in one pass. I built it as a research intern at VIT and wrote it up as an IEEE-format paper.</p>
       </div>
 
-      <figure className={`gate ${count ? '' : 'empty'}`} aria-labelledby="gate-cap">
+      <figure className={`gate reveal ${count ? '' : 'empty'}`} aria-labelledby="gate-cap">
         <p className="gate-try">Try it: switch a signal off.</p>
         <div className="gate-grid">
           <div className="gate-in" role="group" aria-label="Signals going in">
@@ -69,7 +68,7 @@ export function Fusion() {
         <figcaption id="gate-cap">PPEMDD, simplified. When a signal drops out, the dynamic gate reweights what is left by whether it is there and how far to trust it, and multi-head cross-attention lets every signal read the others.</figcaption>
       </figure>
 
-      <dl className="metrics">
+      <dl className="metrics reveal">
         <div><dt>Accuracy</dt><dd><CountUp to={91.24} decimals={2} suffix="%" /></dd></div>
         <div><dt>Recall</dt><dd><CountUp to={79.23} decimals={2} suffix="%" /></dd></div>
         <div><dt>F1</dt><dd><CountUp to={0.7809} decimals={4} /></dd></div>
