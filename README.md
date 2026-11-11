@@ -21,6 +21,7 @@ Portfolio of an AI/ML and full-stack engineer. One page, light or dark with the 
 | Proof | Three numbers, each explained further down the page |
 | Selected work | Desi Totes, AMG and Sarkari Saathi as cards that pin under the nav and stack on scroll, each with live status from the API |
 | PPEMDD | Switch any of the four signals off; the gate reweights the rest |
+| PatchProof | A slider over the benchmark's real results, one dot per bug, and one real wrong fix whose hidden tests the visitor can run |
 | Also live | The three side projects |
 | Experience and skills | The resume entries, and every skill on the resume by group |
 | Contact | Email, copy-to-clipboard, LinkedIn, GitHub, resume |

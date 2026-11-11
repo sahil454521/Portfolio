@@ -4,6 +4,7 @@ import { AVAILABILITY, EMAIL, GITHUB, LINKEDIN, PLACE, RESUME, RESUME_PDF, proof
 import { Arrow, LivePing, Magnetic } from './components/bits';
 import { copyEmail, MotionNotice, Nav, Toast } from './components/Chrome';
 import { Fusion } from './components/Fusion';
+import { PatchProof } from './components/PatchProof';
 
 const statText = (stat) => stat.parts.map((x) => `${x.to}${x.suffix || ''}`).join('-');
 
@@ -12,7 +13,7 @@ function Hero() {
     <section className="hero" id="top">
       <div className="hero-copy">
         <p className="hero-avail"><i aria-hidden="true" />{AVAILABILITY}</p>
-        <h1>Everything here is <em>in production.</em></h1>
+        <h1>Everything here is <span className="hl">in production.</span></h1>
         <p className="hero-sub">Sahil Pathak, full-stack and AI/ML engineer. Final-year B.Tech, with a BSc in data science and AI at IIT Guwahati.</p>
         <div className="hero-ctas">
           <Magnetic className="btn" href="#work" onClick={(e) => { e.preventDefault(); scrollToId('work'); }}>See the work</Magnetic>
@@ -130,7 +131,7 @@ function Background() {
 function Contact() {
   return (
     <section id="contact" className="contact" aria-labelledby="contact-title">
-      <h2 id="contact-title" className="reveal">Hiring, or building something that has to <em>stay live?</em></h2>
+      <h2 id="contact-title" className="reveal">Hiring, or building something that has to stay live?</h2>
       <p className="lede reveal">{AVAILABILITY}. {PLACE}.</p>
       <div className="contact-row reveal">
         <Magnetic className="btn btn-xl" href={`mailto:${EMAIL}`}>Email me</Magnetic>
@@ -183,6 +184,7 @@ export default function App() {
         <Proof />
         <Work />
         <Fusion />
+        <PatchProof />
         <More />
         <Background />
         <Contact />

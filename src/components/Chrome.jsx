@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motionOn, motionOverridden, setMotion, scrollToId, systemReduced } from '../motion';
 import { EMAIL } from '../data';
 
-const links = [['work', 'Work'], ['research', 'Research'], ['more', 'Projects'], ['background', 'Experience']];
+const links = [['work', 'Work'], ['research', 'Research'], ['patchproof', 'PatchProof'], ['more', 'Projects'], ['background', 'Experience']];
 const go = (id) => (e) => { e.preventDefault(); scrollToId(id); };
 
 let pushToast = () => {};

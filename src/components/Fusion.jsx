@@ -31,7 +31,7 @@ export function Fusion() {
   return (
     <section id="research" className="fusion" aria-labelledby="fusion-title">
       <div className="fusion-head reveal">
-        <h2 id="fusion-title">One model, <em>four kinds of signal.</em></h2>
+        <h2 id="fusion-title">One model, four kinds of signal.</h2>
         <p className="lede">PPEMDD screens for depression from text, EEG, wearables and audio or video in one pass. I built it as a research intern at VIT and wrote it up as an IEEE-format paper.</p>
       </div>
 
