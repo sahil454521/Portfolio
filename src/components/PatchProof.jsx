@@ -8,7 +8,7 @@ const runs = [
   { k: 5, correct: 114, overfit: 16 }, { k: 10, correct: 121, overfit: 9 }, { k: 20, correct: 125, overfit: 3 },
 ];
 const TASKS = 139;
-const CODE = 'https://github.com/sahil454521/Project/tree/claude/gracious-faraday-24cj5i';
+const CODE = 'https://github.com/sahil454521/Project';
 const pct = (a, b) => `${Math.round((100 * a) / b)}%`;
 
 export function PatchProof() {
