@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { motionOn } from '../motion';
 
 const LABEL = 'An orange low-poly octopus floating in dark water. Drag it or use the arrow keys to spin it; tap it or press Enter to startle it.';
+const STILL_ALT = 'An orange low-poly octopus floating in dark water.';
 // after first paint, so the octopus never competes with the headline
 const whenIdle = (fn) => (window.requestIdleCallback ? window.requestIdleCallback(fn, { timeout: 1200 }) : window.setTimeout(fn, 1));
 
 // The hero's round tank of dark water. The octopus (three.js) loads as its own chunk once the
-// tank is near the screen and draws only while the tank is on screen. If WebGL cannot start,
-// the dark water stays.
+// tank is near the screen and draws only while the tank is on screen. If WebGL cannot start, or
+// its GPU context is lost, a still of the octopus (public/octopus.webp) takes its place.
 export function Octopus() {
   const tank = useRef(null);
   const canvas = useRef(null);
-  const [state, setState] = useState('wait'); // wait | live | off
+  const [state, setState] = useState('wait'); // wait | live | still
 
   useEffect(() => {
     let api = null;
@@ -19,7 +20,7 @@ export function Octopus() {
     const stop = () => {
       api?.dispose();
       api = null;
-      if (!gone) setState('off');
+      if (!gone) setState('still');
     };
     const seen = new IntersectionObserver(([e]) => api?.setActive(e.isIntersecting));
     const start = () => import('../octopus/scene.js')
@@ -49,7 +50,9 @@ export function Octopus() {
 
   return (
     <div ref={tank} className={`tank${state === 'live' ? ' is-live' : ''}`}>
-      {state !== 'off' && <canvas ref={canvas} tabIndex={state === 'live' ? 0 : -1} role="img" aria-label={LABEL} />}
+      {state === 'still'
+        ? <img src="/octopus.webp" alt={STILL_ALT} width="920" height="920" decoding="async" />
+        : <canvas ref={canvas} tabIndex={state === 'live' ? 0 : -1} role="img" aria-label={LABEL} />}
     </div>
   );
 }

@@ -2,9 +2,10 @@
 // Prints PASS or FAIL per check and exits 1 if any fail.
 //   node scrollcraft/lab/octopus.mjs http://localhost:4500 [layout|scene|fallback]
 // Needs playwright-core (npm i --no-save playwright-core) and Chrome at CHROME.
+import { statSync } from 'node:fs';
 import { chromium } from 'playwright-core';
 
-const URL = process.argv[2] || 'http://localhost:4500';
+const SITE = process.argv[2] || 'http://localhost:4500';
 const only = process.argv[3];
 const CHROME = process.env.CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe';
 // software WebGL, so the checks behave the same on any machine
@@ -54,7 +55,7 @@ async function open(browser, { width, height, reduced = false, phone = false, de
   const errors = [];
   page.on('request', (r) => requests.push(r.url()));
   page.on('pageerror', (e) => errors.push(String(e)));
-  await page.goto(URL, { waitUntil: 'load' });
+  await page.goto(SITE, { waitUntil: 'load' });
   await page.evaluate(() => document.fonts.ready);
   await page.evaluate(() => document.querySelector('.notice')?.remove());
   return { ctx, page, requests, errors };
@@ -270,7 +271,41 @@ async function scene(browser) {
   await s.ctx.close();
 }
 
-const groups = { layout, scene };
+async function fallback(browser) {
+  // Chrome with WebGL switched off
+  const noGL = await chromium.launch({ executablePath: CHROME, args: ['--disable-webgl', '--disable-3d-apis'] });
+  let s = await open(noGL, { width: 1440, height: 900 });
+  await t('without WebGL the tank shows the still', async () => {
+    const shown = await s.page.waitForSelector('.tank img', { timeout: 15000 }).then(() => true, () => false);
+    if (!shown) return [false, 'no image in the tank'];
+    const img = await s.page.evaluate(async () => {
+      const i = document.querySelector('.tank img');
+      await i.decode().catch(() => {});
+      return { complete: i.complete, w: i.naturalWidth, alt: i.alt, canvas: !!document.querySelector('.tank canvas') };
+    });
+    return [img.complete && img.w === 920 && img.alt.length > 10 && !img.canvas, `${img.w}px, alt "${img.alt}"`];
+  });
+  await s.ctx.close();
+  await noGL.close();
+
+  // the GPU context is lost after the octopus started
+  s = await open(browser, { width: 1440, height: 900 });
+  await t('a lost GPU context falls back to the still', async () => {
+    if (!(await waitLive(s.page))) return [false, 'never went live'];
+    await s.page.evaluate(() => document.querySelector('.tank canvas').getContext('webgl2').getExtension('WEBGL_lose_context').loseContext());
+    const shown = await s.page.waitForSelector('.tank img', { timeout: 5000 }).then(() => true, () => false);
+    const canvas = await s.page.evaluate(() => !!document.querySelector('.tank canvas'));
+    return [shown && !canvas, `${shown ? 'still shown' : 'no still'}, canvas ${canvas ? 'still there' : 'gone'}`];
+  });
+  await s.ctx.close();
+
+  await t('still image is under 80 KB', async () => {
+    const size = statSync(new URL('../../public/octopus.webp', import.meta.url)).size;
+    return [size < 80000, `${Math.round(size / 1024)} KB`];
+  });
+}
+
+const groups = { layout, scene, fallback };
 const browser = await chromium.launch({ executablePath: CHROME, args: GL });
 for (const [name, run] of Object.entries(groups)) {
   if (only && only !== name) continue;

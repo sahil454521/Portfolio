@@ -295,6 +295,8 @@ html[data-motion="off"] .flow { display: none; }
 .tank.is-live canvas { opacity: 1; }
 .tank canvas:active { cursor: grabbing; }
 .tank canvas:focus-visible { outline-offset: 4px; border-radius: 50%; }
+/* Without WebGL, or after a lost GPU context: a still of the octopus at rest. */
+.tank img { position: absolute; inset: 0; width: 100%; height: 100%; border-radius: 50%; }
 
 /* Checks: the ledger sits right under the hero, its claims in two columns on wide screens. */
 .checks { padding-top: 0; }

@@ -63,6 +63,7 @@ On Vercel the front end is the Vite build and the API is one serverless function
 | `server/`, `api/index.js` | The Express app, the status checker and the Vercel function |
 | `public/work/` | Stills of the live sites, and Sarkari Saathi's screens (`saathi-*.jpg`, made by `scrollcraft/lab/saathi-shots.mjs` from the app's own recorded output) |
 | `public/assets/` | The resume's fonts and PDF |
+| `public/octopus.webp` | The octopus at rest, shown in the tank when WebGL is missing or its GPU context is lost. Made by `scrollcraft/lab/octopus-still.mjs` from the running site; rerun it after changing the scene |
 | `docs/spec.md` | The design spec for this version |
 | `legacy/` | The first React portfolio, kept intact |
 | `scrollcraft/` | Brief and browser test scripts; the `lab/` scripts other than `a11y.mjs` were written for the previous design |
