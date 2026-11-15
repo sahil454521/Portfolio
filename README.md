@@ -17,7 +17,7 @@ Portfolio of an AI/ML and full-stack engineer. One page, light or dark with the 
 
 | Section | What it does |
 |---|---|
-| Hero | "Don't take my word for it", beside a round tank of dark water |
+| Hero | "Don't take my word for it", beside a round tank of dark water with a 3D octopus in it: drag it or use the arrow keys to spin it, tap it or press Enter to startle it. three.js loads as its own chunk after the first paint, and the octopus only draws while it is on screen |
 | Checks | Right under the hero, the page runs its own claims as a test suite in the visitor's browser (`src/checks.js`). Site checks use the status API, the GitHub check uses GitHub's public API, the PatchProof check executes the code. Claims that cannot be checked are marked "my word". The check count in the nav jumps here |
 | Selected work | Desi Totes, AMG and Sarkari Saathi as cards that pin under the nav and stack on scroll, each with live status from the API |
 | PPEMDD | Switch any of the four signals off; the gate reweights the rest |
@@ -57,6 +57,7 @@ On Vercel the front end is the Vite build and the API is one serverless function
 | `src/data.js` | Every fact, link, metric and skill link the page shows, in one place |
 | `src/motion.js` | Motion preference, Lenis on the GSAP ticker, the live status store |
 | `src/components/` | The nav, toast and motion notice (`Chrome.jsx`), the PPEMDD gate (`Fusion.jsx`) and shared pieces (`bits.jsx`); the sections themselves are in `App.jsx` |
+| `src/components/Octopus.jsx`, `src/octopus/scene.js` | The hero's octopus: the tank that loads it, pauses it off screen and follows the motion setting, and the three.js scene itself (ported from the "Sahil the Octopus" artifact, recoloured to the site's orange) |
 | `src/styles.css` | The whole design system |
 | `cv.html`, `src/styles/site.css` | The resume as plain, printable HTML, with its own stylesheet |
 | `server/`, `api/index.js` | The Express app, the status checker and the Vercel function |
@@ -71,6 +72,7 @@ On Vercel the front end is the Vite build and the API is one serverless function
 ```bash
 npm run build && npm run preview
 node scrollcraft/lab/a11y.mjs http://localhost:4500                 # tab order, headings, alt text, no em dashes
+node scrollcraft/lab/octopus.mjs http://localhost:4500              # the octopus tank and the ledger under the hero; exits 1 on a failure
 node scrollcraft/lab/cv-pdf.mjs http://localhost:4500               # re-print the resume PDF after editing cv.html; reports the page count
 ```
 

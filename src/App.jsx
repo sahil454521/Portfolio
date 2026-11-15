@@ -186,7 +186,7 @@ export default function App() {
         <Contact />
       </main>
       <footer className="footer">
-        <p>Sahil Pathak, 2026. Built with React and GSAP, set in Bricolage Grotesque and Archivo.</p>
+        <p>Sahil Pathak, 2026. Built with React, GSAP and three.js, set in Bricolage Grotesque and Archivo.</p>
       </footer>
       <MotionNotice />
       <Toast />
