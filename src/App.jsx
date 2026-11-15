@@ -5,6 +5,7 @@ import { Arrow, LivePing, Magnetic } from './components/bits';
 import { copyEmail, MotionNotice, Nav, Toast } from './components/Chrome';
 import { Fusion } from './components/Fusion';
 import { Ledger } from './components/Ledger';
+import { Octopus } from './components/Octopus';
 import { PatchProof } from './components/PatchProof';
 
 const statText = (stat) => stat.parts.map((x) => `${x.to}${x.suffix || ''}`).join('-');
@@ -21,7 +22,16 @@ function Hero() {
           <Magnetic className="btn btn-ghost" href={RESUME}>Resume</Magnetic>
         </div>
       </div>
-      <Ledger />
+      <Octopus />
+    </section>
+  );
+}
+
+// Right under the hero: the page runs its own claims as a test suite.
+function Checks() {
+  return (
+    <section id="checks" className="checks" aria-label="Claims, checked live">
+      <div className="reveal"><Ledger /></div>
     </section>
   );
 }
@@ -141,7 +151,7 @@ export default function App() {
     if (!motionOn) return undefined;
     const ctx = gsap.context(() => {
       gsap.from('.hero-avail, .hero-sub, .hero-ctas', { opacity: 0, y: 24, duration: 1.1, ease: 'expo.out', stagger: 0.1, delay: 0.5 });
-      gsap.from('.ledger', { opacity: 0, y: 40, duration: 1.2, ease: 'expo.out', delay: 0.3 });
+      gsap.from('.tank', { opacity: 0, scale: 0.94, duration: 1.2, ease: 'expo.out', delay: 0.3 });
       gsap.utils.toArray('.reveal').forEach((el) => {
         gsap.from(el, { opacity: 0, y: 28, duration: 0.9, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
       });
@@ -167,6 +177,7 @@ export default function App() {
       <Nav />
       <main>
         <Hero />
+        <Checks />
         <Work />
         <Fusion />
         <PatchProof />

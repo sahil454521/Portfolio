@@ -32,7 +32,7 @@ export function Nav() {
         <nav aria-label="Sections">
           {links.map(([id, label]) => <a key={id} href={`#${id}`} onClick={go(id)}>{label}</a>)}
         </nav>
-        <a className="nav-score" href="#top" onClick={go('top')}>{stamp ? `${pass} of ${live} live checks pass` : 'Checking claims'}</a>
+        <a className="nav-score" href="#checks" onClick={go('checks')}>{stamp ? `${pass} of ${live} live checks pass` : 'Checking claims'}</a>
         <a className="btn btn-sm" href={`mailto:${EMAIL}`}>Email me</a>
       </div>
     </header>

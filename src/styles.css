@@ -275,3 +275,19 @@ html[data-motion="off"] .flow { display: none; }
   .gate-out li { padding-left: 12px; font-size: 0.8125rem; }
   .copy { font-size: 0.8125rem; }
 }
+
+/* The octopus: a round tank of dark water beside the headline. Dark in both themes, because the
+   glow needs dark water. The gradient is the water the scene draws, so nothing jumps when it arrives. */
+.tank {
+  position: relative; justify-self: center; width: min(460px, 100%); aspect-ratio: 1; border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%, #3A241D 0%, #2A1D1A 30%, #1F1817 62%, #151314 88%, #121112 100%);
+  box-shadow: 0 0 0 1px var(--line), var(--shadow);
+}
+@media (max-width: 900px) { .tank { width: min(320px, 82vw); } }
+
+/* Checks: the ledger sits right under the hero, its claims in two columns on wide screens. */
+.checks { padding-top: 0; }
+@media (min-width: 901px) {
+  .checks .ledger ol { columns: 2; column-gap: clamp(28px, 4vw, 64px); }
+  .checks .ledger li { break-inside: avoid; }
+}

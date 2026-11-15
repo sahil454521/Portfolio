@@ -17,7 +17,8 @@ Portfolio of an AI/ML and full-stack engineer. One page, light or dark with the 
 
 | Section | What it does |
 |---|---|
-| Hero | "Don't take my word for it": the page runs its own claims as a test suite in the visitor's browser (`src/checks.js`). Site checks use the status API, the GitHub check uses GitHub's public API, the PatchProof check executes the code. Claims that cannot be checked are marked "my word" |
+| Hero | "Don't take my word for it", beside a round tank of dark water |
+| Checks | Right under the hero, the page runs its own claims as a test suite in the visitor's browser (`src/checks.js`). Site checks use the status API, the GitHub check uses GitHub's public API, the PatchProof check executes the code. Claims that cannot be checked are marked "my word". The check count in the nav jumps here |
 | Selected work | Desi Totes, AMG and Sarkari Saathi as cards that pin under the nav and stack on scroll, each with live status from the API |
 | PPEMDD | Switch any of the four signals off; the gate reweights the rest |
 | PatchProof | A slider over the benchmark's real results, one dot per bug, and one real wrong fix whose hidden tests the visitor can run |
